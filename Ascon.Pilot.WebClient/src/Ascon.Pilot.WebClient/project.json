@@ -9,10 +9,7 @@
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
     "Microsoft.Extensions.Logging.Console": "1.0.0",
-    "protobuf-net": "2.1.0",
-    "Ascon.Pilot.Core": "1.0.0-0",
-    "NLog.Extensions.Logging": "1.0.0-rc1-final-2016-03-11",
-    "NLog": "5.0.0-beta07"
+    "protobuf-net": "2.1.0"
   },
 
   "tools": {
