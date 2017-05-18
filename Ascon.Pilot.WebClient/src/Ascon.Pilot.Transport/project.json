@@ -3,7 +3,7 @@
   "description": "Ascon.Pilot.Transport Class Library",
 
   "dependencies": {
-    "NETStandard.Library": "1.6.0",
+    "NETStandard.Library": "1.6.1",
     "Castle.Core": "4.0.0",
     "Ascon.Pilot.Core": "0.0.1-*"
   },
