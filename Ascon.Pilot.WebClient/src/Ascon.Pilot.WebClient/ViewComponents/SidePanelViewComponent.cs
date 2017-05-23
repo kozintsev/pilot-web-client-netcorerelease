@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Ascon.Pilot.Core;
 using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.ViewModels;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ascon.Pilot.WebClient.ViewComponents
 {

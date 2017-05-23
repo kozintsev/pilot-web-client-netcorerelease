@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Ascon.Pilot.Core;
+using Ascon.Pilot.Transport;
 using Ascon.Pilot.Server.Api;
 using Ascon.Pilot.Server.Api.Contracts;
 using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.ViewModels;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Authentication;
-using Microsoft.AspNet.Http.Authentication.Internal;
-using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.Authentication;
 
 namespace Ascon.Pilot.WebClient.Controllers
 {
@@ -39,8 +38,8 @@ namespace Ascon.Pilot.WebClient.Controllers
                 //Login = "admin",
                 //Password = "123456"
                 DatabaseName = "pilot-ice_ru",
-                Login = "sedov",
-                Password = "GM9d3Lqw"
+                Login = "pavlenko",
+                Password = "123456"
 #endif
             };
             return View(logInViewModel);
@@ -83,6 +82,9 @@ namespace Ascon.Pilot.WebClient.Controllers
 
             HttpContext.SetClient(client, sid);
             DMetadata dMetadata = serverApi.GetMetadata(dbInfo.MetadataVersion);
+            //DMetadata dMetadata = serverApi.GetMetadata(0);
+            Debug.WriteLine(dMetadata.Types.ToString());
+            Debug.WriteLine(dMetadata.Version.ToString());
             HttpContext.Session.SetSessionValues(SessionKeys.MetaTypes, dMetadata.Types.ToDictionary(x => x.Id, y => y));
 
             return RedirectToAction("Index", "Files");

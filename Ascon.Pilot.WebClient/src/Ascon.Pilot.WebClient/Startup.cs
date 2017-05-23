@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.Extensions.PlatformAbstractions;
 using NLog.Extensions.Logging;
-//using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace Ascon.Pilot.WebClient
 {
@@ -21,9 +21,11 @@ namespace Ascon.Pilot.WebClient
         {
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            this.Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -37,19 +39,20 @@ namespace Ascon.Pilot.WebClient
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
-            services.AddCaching();
+            //services.AddCaching();
+            services.AddMemoryCache();
             services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(Microsoft.AspNet.Builder.IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseCookieAuthentication(options =>
+            app.UseCookieAuthentication(new CookieAuthenticationOptions()
             {
-                options.AuthenticationScheme = ApplicationConst.PilotMiddlewareInstanceName;
-                options.LoginPath = new PathString("/Account/LogIn");
-                options.AutomaticAuthenticate = true;
-                options.AutomaticChallenge = true;
+                AuthenticationScheme = ApplicationConst.PilotMiddlewareInstanceName,
+                LoginPath = new PathString("/Account/LogIn"),
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
             });
 
             loggerFactory.AddNLog();
@@ -60,7 +63,7 @@ namespace Ascon.Pilot.WebClient
 
             if (env.IsDevelopment())
             {
-                //app.UseBrowserLink();
+                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -70,7 +73,7 @@ namespace Ascon.Pilot.WebClient
 
             app.UseSession();
 
-            app.UseIISPlatformHandler();
+            //app.UseIISPlatformHandler();
 
             app.UseStaticFiles();
 
@@ -79,10 +82,11 @@ namespace Ascon.Pilot.WebClient
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+                
             });
         }
 
         // Entry point for the application.
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
+        //public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }

@@ -2,8 +2,8 @@
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Http;
 using NLog;
+using Microsoft.AspNetCore.Http;
 
 namespace Ascon.Pilot.Transport
 {

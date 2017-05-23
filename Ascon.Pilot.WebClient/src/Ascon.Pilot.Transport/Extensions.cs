@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
-using Microsoft.AspNet.Http;
 
 namespace Ascon.Pilot.Transport
 {

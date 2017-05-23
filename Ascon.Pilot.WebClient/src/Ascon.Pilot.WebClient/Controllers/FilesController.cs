@@ -11,12 +11,11 @@ using Ascon.Pilot.WebClient.Models;
 using Ascon.Pilot.WebClient.ViewComponents;
 using Ascon.Pilot.WebClient.ViewModels;
 using Castle.Core.Logging;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Session;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 #if DNX451
 using MuPDFLib;
@@ -102,7 +101,8 @@ namespace Ascon.Pilot.WebClient.Controllers
         public IActionResult GetObject(Guid id, bool isSource = false)
         {
             var filesPanelType = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
-            return ViewComponent(typeof (FilesPanelViewComponent), id, filesPanelType, isSource);
+
+            return ViewComponent(typeof(FilesPanelViewComponent), new { folderId = id, panelType = filesPanelType, onlySource = isSource });
         }
 
         public IActionResult GetSource(Guid id)
@@ -147,7 +147,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         public IActionResult DownloadArchive(Guid[] objectsIds)
         {
             if (objectsIds.Length == 0)
-                return HttpNotFound();
+                return NotFound();
 
             var serverApi = HttpContext.GetServerApi();
             var objects = serverApi.GetObjects(objectsIds);
@@ -287,23 +287,23 @@ namespace Ascon.Pilot.WebClient.Controllers
             return RedirectToAction("Index", new { id = removeRootId });
         }
         
-        [HttpPost]
-        public async Task<RedirectToActionResult> Upload(Guid folderId, IFormFile file)
-        {
-            try
-            {
-                if (file.Length == 0)
-                    throw new ArgumentNullException(nameof(file));
+        //[HttpPost]
+        //public async Task<RedirectToActionResult> Upload(Guid folderId, IFormFile file)
+        //{
+        //    try
+        //    {
+        //        if (file.Length == 0)
+        //            throw new ArgumentNullException(nameof(file));
 
-                string fileName = file.GetFileName();
-                var pathToSave = Path.Combine(_environment.WebRootPath, fileName);
-                //await file.SaveAsAsync(pathToSave);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(1, "Unable to upload file", ex);
-            }
-            return RedirectToAction("Index", new { id = folderId });
-        }
+        //        string fileName = file.GetFileName();
+        //        var pathToSave = Path.Combine(_environment.WebRootPath, fileName);
+        //        await file.SaveAsAsync(pathToSave);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogWarning(1, "Unable to upload file", ex);
+        //    }
+        //    return RedirectToAction("Index", new { id = folderId });
+        //}
     }
 }

@@ -306,6 +306,7 @@ namespace Ascon.Pilot.Core
         }
     }
 
+
     [Obsolete("Use DChild instead")]
     public enum LinkType
     {
@@ -934,7 +935,7 @@ namespace Ascon.Pilot.Core
             }
         }
     }
-
+    [ProtoContract(EnumPassthru = true)]
     public enum TypeKind
     {
         User = 0,
@@ -1019,7 +1020,7 @@ namespace Ascon.Pilot.Core
             return clone;
         }
     }
-
+    [ProtoContract(EnumPassthru = true)]
     public enum MAttrType 
     {
         Integer, 
@@ -1123,6 +1124,7 @@ namespace Ascon.Pilot.Core
         }
     }
 
+    [ProtoContract(EnumPassthru = true)]
     public enum ActivityStatus
     {
         Active = 1, Vacation = 2, Dismissed = 3
@@ -1639,7 +1641,7 @@ namespace Ascon.Pilot.Core
             return copy;
         }
     }
-
+    [ProtoContract(EnumPassthru = true)]
     public enum FileSystemNodeKind : byte
     {
         File = 0,
@@ -1666,7 +1668,7 @@ namespace Ascon.Pilot.Core
         [ProtoMember(6)]
         public bool CanBeRenamedOrDeleted { get; set; }
     }
-
+    [ProtoContract(EnumPassthru = true)]
     public enum DatabaseState
     {
         Launched = 1,
@@ -1741,7 +1743,7 @@ namespace Ascon.Pilot.Core
             Version = version;
         }
     }
-
+    [ProtoContract(EnumPassthru = true)]
     public enum SearchKind
     {
         FullText,
@@ -1967,7 +1969,7 @@ namespace Ascon.Pilot.Core
         public string Value { get; set; }
     }
 
-[ProtoContract]
+    [ProtoContract]
     public class DAnnotationCorrespondenceHistory
     {
         [ProtoMember(1)]
@@ -1977,6 +1979,7 @@ namespace Ascon.Pilot.Core
         public IEnumerable<Guid> CorrespondenceIds { get; set; }
     }
 
+    [ProtoContract(EnumPassthru = true)]
     public enum CounterResetPeriod
     {
         None,
@@ -2009,7 +2012,7 @@ namespace Ascon.Pilot.Core
         [ProtoMember(4)]
         public string Name { get; set; }
     }
-
+    [ProtoContract(EnumPassthru = true)]
     public enum LockState
     {
         None,

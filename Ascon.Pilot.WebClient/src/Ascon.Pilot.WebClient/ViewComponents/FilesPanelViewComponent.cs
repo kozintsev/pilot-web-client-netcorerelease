@@ -8,9 +8,8 @@ using Ascon.Pilot.WebClient.Controllers;
 using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.Models;
 using Ascon.Pilot.WebClient.ViewModels;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ascon.Pilot.WebClient.ViewComponents
 {
@@ -25,7 +24,6 @@ namespace Ascon.Pilot.WebClient.ViewComponents
         {
             _logger = logger;
         }
-
         /// <summary>
         /// Вызвать компонент панели файлов
         /// </summary>
@@ -33,7 +31,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
         /// <param name="panelType">Тип отображения панели</param>
         /// <param name="onlySource">Отображать только исходные файлы</param>
         /// <returns>Представление панели управения файлом для каталога с идентификатором Id и итпом отбражения Type.</returns>
-        public async Task<IViewComponentResult> InvokeAsync(Guid folderId, FilesPanelType panelType, bool onlySource = false)
+        public async Task<IViewComponentResult> InvokeAsync(Guid folderId, FilesPanelType panelType, bool onlySource)
         {
             return await Task.Run(() =>
             {
@@ -41,10 +39,10 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     var types = HttpContext.Session.GetMetatypes();
                     var serverApi = HttpContext.GetServerApi();
                     var folder = serverApi.GetObjects(new[] { folderId }).First();
-                    
+
                     if (folder.Children?.Any() != true)
                         return View(panelType == FilesPanelType.List ? "List" : "Grid", new FileViewModel[] { });
-                    
+
                     var childrenIds = folder.Children.Select(x => x.ObjectId).ToArray();
                     var childrens = serverApi.GetObjects(childrenIds);
                     var model = new List<FileViewModel>(childrens.Count);
@@ -72,7 +70,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                         FillModel(childrens, types, model);
                     }
 
-                    return View(panelType == FilesPanelType.List ? "List" : "Grid", model); 
+                    return View(panelType == FilesPanelType.List ? "List" : "Grid", model);
                 }
             });
         }

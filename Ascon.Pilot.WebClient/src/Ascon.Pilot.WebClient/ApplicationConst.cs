@@ -9,14 +9,14 @@ namespace Ascon.Pilot.WebClient
 {
     public static class ApplicationConst
     {
-        static ApplicationConst()
-        {
-            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
-            var config = builder.Build();
-            PilotServerUrl = config["PilotServer:Url"];
-        }
+        //static ApplicationConst()
+        //{
+        //    var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+        //    var config = builder.Build();
+        //    PilotServerUrl = config["PilotServer:Url"];
+        //}
 
-        public static readonly string PilotServerUrl;
+        public static readonly string PilotServerUrl = "http://serjhon:5545";
         public static readonly string PilotMiddlewareInstanceName = "AskonPilotMiddlewareInstance";
 
         public static readonly string HttpSchemeName = "http";

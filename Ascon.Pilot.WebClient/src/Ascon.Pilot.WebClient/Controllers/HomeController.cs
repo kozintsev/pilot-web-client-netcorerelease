@@ -1,6 +1,6 @@
 ﻿using Ascon.Pilot.WebClient.Extensions;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ascon.Pilot.WebClient.Controllers
 {

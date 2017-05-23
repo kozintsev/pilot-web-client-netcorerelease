@@ -1,7 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 
 namespace Ascon.Pilot.Core
 {
+    [ProtoContract(EnumPassthru = true)]
     [Flags]
     public enum NotificationSourceKind : byte
     {

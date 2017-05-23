@@ -4,8 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.WebUtilities;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace Ascon.Pilot.Transport

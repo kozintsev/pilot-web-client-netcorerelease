@@ -1,8 +1,10 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Linq;
 
 namespace Ascon.Pilot.Core
 {
+    [ProtoContract(EnumPassthru = true)]
     public enum NotificationChangeKind : byte
     {
         Created = 0,
