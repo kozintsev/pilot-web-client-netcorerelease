@@ -25,7 +25,7 @@ namespace Ascon.Pilot.WebClient
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            this.Configuration = builder.Build();
+            this.Configuration = builder.Build();          
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -33,6 +33,8 @@ namespace Ascon.Pilot.WebClient
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            //var appSettings = Configuration.GetSection("PilotServer");
+            //services.Configure<PilotServer>(appSettings);
             services.AddAuthorization();
             services.AddMvc(options =>
             {
