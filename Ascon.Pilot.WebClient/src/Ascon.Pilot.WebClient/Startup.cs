@@ -12,19 +12,21 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.Extensions.FileProviders;
+using System.Reflection;
 
 namespace Ascon.Pilot.WebClient
 {
     public class Startup
     {
+        
         public Startup(IHostingEnvironment env)
         {
-            // Set up configuration sources.
+            // Set up configuration sources.  
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             this.Configuration = builder.Build();
         }
 

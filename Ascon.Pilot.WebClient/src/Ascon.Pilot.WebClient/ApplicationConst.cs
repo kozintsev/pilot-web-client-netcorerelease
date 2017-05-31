@@ -1,22 +1,29 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using Ascon.Pilot.Core;
 using Ascon.Pilot.WebClient.Controllers;
 using Ascon.Pilot.WebClient.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Ascon.Pilot.WebClient
 {
     public static class ApplicationConst
     {
-        //static ApplicationConst()
-        //{
-        //    var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
-        //    var config = builder.Build();
-        //    PilotServerUrl = config["PilotServer:Url"];
-        //}
+        public static IConfigurationRoot Configuration { get; set; }
+        static string path = Directory.GetCurrentDirectory();
+        static ApplicationConst()
+        {
+            var builder = new ConfigurationBuilder();
+            builder.SetBasePath(path);
+            builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            Configuration = builder.Build();
+            var pilotServer = Configuration.GetValue<string>("PilotServer:Url", "http://localhost:5545");
+            PilotServerUrl = pilotServer;
+        }
 
-        public static readonly string PilotServerUrl = "http://serjhon:5545";
+        public static readonly string PilotServerUrl;
         public static readonly string PilotMiddlewareInstanceName = "AskonPilotMiddlewareInstance";
 
         public static readonly string HttpSchemeName = "http";
