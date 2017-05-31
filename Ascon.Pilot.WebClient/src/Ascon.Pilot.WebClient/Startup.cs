@@ -12,20 +12,22 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.Extensions.FileProviders;
+using System.Reflection;
 
 namespace Ascon.Pilot.WebClient
 {
     public class Startup
     {
+        
         public Startup(IHostingEnvironment env)
         {
-            // Set up configuration sources.
+            // Set up configuration sources.  
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            this.Configuration = builder.Build();          
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            this.Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -33,9 +35,6 @@ namespace Ascon.Pilot.WebClient
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions();
-            var appSettings = Configuration.GetSection("PilotServer");
-            services.Configure<PilotServer>(appSettings);
             services.AddAuthorization();
             services.AddMvc(options =>
             {
