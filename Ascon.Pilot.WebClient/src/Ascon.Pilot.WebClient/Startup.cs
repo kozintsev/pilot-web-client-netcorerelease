@@ -33,8 +33,9 @@ namespace Ascon.Pilot.WebClient
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //var appSettings = Configuration.GetSection("PilotServer");
-            //services.Configure<PilotServer>(appSettings);
+            services.AddOptions();
+            var appSettings = Configuration.GetSection("PilotServer");
+            services.Configure<PilotServer>(appSettings);
             services.AddAuthorization();
             services.AddMvc(options =>
             {

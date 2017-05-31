@@ -16,7 +16,7 @@ namespace Ascon.Pilot.WebClient
             builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             Configuration = builder.Build();
             var pilotServerSection = Configuration.GetSection("PilotServer");
-            var pilotServer = pilotServerSection.GetValue<string>("PilotServer:Url", "http://serjhon:5545");
+            var pilotServer = pilotServerSection.GetValue<string>("PilotServer:Url", "http://localhost:5545");
             PilotServerUrl = pilotServer;
         }
 
