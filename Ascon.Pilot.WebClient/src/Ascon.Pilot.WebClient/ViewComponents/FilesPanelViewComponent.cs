@@ -77,7 +77,13 @@ namespace Ascon.Pilot.WebClient.ViewComponents
 
         private static void FillModel(List<DObject> childrens, IDictionary<int, MType> types, List<FileViewModel> model)
         {
-            foreach (var dObject in childrens.Where(x => !types[x.TypeId].IsProjectFileOrFolder()))
+            var childrenList = childrens.Where(x =>
+            {
+                var type = types[x.TypeId];
+                return !type.IsService;
+            });
+
+            foreach (var dObject in childrenList)
             {
                 var mType = types[dObject.TypeId];
                 if (mType.Children.Any())

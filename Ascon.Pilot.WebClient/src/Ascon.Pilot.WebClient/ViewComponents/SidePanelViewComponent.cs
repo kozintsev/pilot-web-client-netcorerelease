@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Ascon.Pilot.Core;
 using Ascon.Pilot.WebClient.Extensions;
@@ -34,7 +35,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             id = id ?? DObject.RootId;
             
             var serverApi = HttpContext.GetServerApi();
-            var rootObject = serverApi.GetObjects(new[] { id.Value }).First();
+            var obj = serverApi.GetObjects(new[] { id.Value }).First();
 
             var mTypes = HttpContext.Session.GetMetatypes();
             var model = new SidePanelViewModel
@@ -43,35 +44,26 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                 Types = mTypes,
                 Items = new List<SidePanelItem>()
             };
-            
-            var prevId = rootObject.Id;
-            var parentId = rootObject.Id;
-            do
+
+
+            var children = serverApi.GetObjects(obj.Children.Select(x => x.ObjectId).ToArray());
+            foreach (var child in children)
             {
-                var parentObject = serverApi.GetObjects(new[] {parentId}).First();
-                var parentChildsIds = parentObject.Children
-                                        .Where(x => mTypes[x.TypeId].Children.Any())
-                                        .Select(x => x.ObjectId).ToArray();
-                if (parentChildsIds.Length != 0)
+                MType type;
+                if (mTypes.TryGetValue(child.TypeId, out type))
                 {
-                    var parentChilds = serverApi.GetObjects(parentChildsIds);
-                    var subtree = model.Items;
-                    model.Items = new List<SidePanelItem>(parentChilds.Count);
-                    foreach (var parentChild in parentChilds)
-                    {
-                        model.Items.Add(new SidePanelItem
+                    if (type.IsService)
+                        continue;
+                    
+                    model.Items.Add(new SidePanelItem
                         {
-                            Type = mTypes[parentChild.TypeId],
-                            DObject = parentChild,
-                            SubItems = parentChild.Id == prevId ? subtree : null,
-                            Selected = parentChild.Id == id
+                            Type = mTypes[child.TypeId],
+                            DObject = child,
+                            Selected = child.Id == id
                         });
-                    }
                 }
-                
-                prevId = parentId;
-                parentId = parentObject.ParentId;
-            } while (parentId != Guid.Empty);
+            }
+
             return View(model);
         }
     }

@@ -76,16 +76,23 @@ namespace Ascon.Pilot.WebClient.Controllers
                                     .Select(child => child.ObjectId).ToArray();
                 var nodeChilds = serverApi.GetObjects(childIds);
                 
-                var childNodes = nodeChilds
-                    .Select(x =>
+                var childNodes = nodeChilds.Where(t =>
+                {
+                    var mType = types[t.TypeId];
+                    return !mType.IsService;
+
+                }).Select(x =>
                     {
                         var mType = types[x.TypeId];
+
+
                         var sidePanelItem = new SidePanelItem
                         {
                             DObject = x,
                             Type = mType,
                             SubItems = x.Children.Any(y => types[y.TypeId].Children.Any()) ? new List<SidePanelItem>() : null
                         };
+
                         return sidePanelItem.GetDynamic(id, types);
                     })
                     .ToArray();
