@@ -250,3 +250,5 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/Ascon.Pilot.WebClient/src/Ascon.Pilot.WebClient/Properties/PublishProfiles/netcore-publish.ps1
+/Ascon.Pilot.WebClient/src/Ascon.Pilot.WebClient/Properties/PublishProfiles/publish-module.psm1
