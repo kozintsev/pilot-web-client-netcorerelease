@@ -33,9 +33,9 @@ namespace Ascon.Pilot.WebClient.ViewComponents
         public IViewComponentResult GetSidePanel(Guid? id)
         {
             id = id ?? DObject.RootId;
-            
+
             var serverApi = HttpContext.GetServerApi();
-            var obj = serverApi.GetObjects(new[] { id.Value }).First();
+            var rootObject = serverApi.GetObjects(new[] { id.Value }).First();
 
             var mTypes = HttpContext.Session.GetMetatypes();
             var model = new SidePanelViewModel
@@ -45,25 +45,34 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                 Items = new List<SidePanelItem>()
             };
 
-
-            var children = serverApi.GetObjects(obj.Children.Select(x => x.ObjectId).ToArray());
-            foreach (var child in children)
+            var prevId = rootObject.Id;
+            var parentId = rootObject.Id;
+            do
             {
-                MType type;
-                if (mTypes.TryGetValue(child.TypeId, out type))
+                var parentObject = serverApi.GetObjects(new[] { parentId }).First();
+                var parentChildsIds = parentObject.Children
+                                        .Where(x => mTypes[x.TypeId].Children.Any())
+                                        .Select(x => x.ObjectId).ToArray();
+                if (parentChildsIds.Length != 0)
                 {
-                    if (type.IsService)
-                        continue;
-                    
-                    model.Items.Add(new SidePanelItem
+                    var parentChilds = serverApi.GetObjects(parentChildsIds);
+                    var subtree = model.Items;
+                    model.Items = new List<SidePanelItem>(parentChilds.Count);
+                    foreach (var parentChild in parentChilds)
+                    {
+                        model.Items.Add(new SidePanelItem
                         {
-                            Type = mTypes[child.TypeId],
-                            DObject = child,
-                            Selected = child.Id == id
+                            Type = mTypes[parentChild.TypeId],
+                            DObject = parentChild,
+                            SubItems = parentChild.Id == prevId ? subtree : null,
+                            Selected = parentChild.Id == id
                         });
+                    }
                 }
-            }
 
+                prevId = parentId;
+                parentId = parentObject.ParentId;
+            } while (parentId != Guid.Empty);
             return View(model);
         }
     }
