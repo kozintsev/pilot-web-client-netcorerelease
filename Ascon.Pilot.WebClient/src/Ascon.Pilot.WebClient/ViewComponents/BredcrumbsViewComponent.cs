@@ -9,16 +9,15 @@ namespace Ascon.Pilot.WebClient.ViewComponents
 {
     public class BreadcrumbsViewComponent : ViewComponent
     {
-        public IViewComponentResult Invoke(Guid? id)
+        public IViewComponentResult Invoke(Guid id)
         {
-            id = id ?? DObject.RootId;
             var types = HttpContext.Session.GetMetatypes();
 
             var serverApi = HttpContext.GetServerApi();
             Queue<KeyValuePair<string, string>> result = new Queue<KeyValuePair<string, string>>();
-            Guid parentId = id.Value;
+            Guid parentId = id;
             bool isSource = ViewBag.IsSource ?? false;
-            if(parentId != DObject.RootId)
+            while (parentId != DObject.RootId)
             {
                 var obj = serverApi.GetObjects(new[] { parentId })[0];
                 var mType = types[obj.TypeId];
@@ -27,8 +26,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     isSource = false;
                 parentId = obj.ParentId;
             }
-            else
-                result.Enqueue(new KeyValuePair<string, string>(Url.Action("Index", "Files", new { id = DObject.RootId }), "Начало"));
+            result.Enqueue(new KeyValuePair<string, string>(Url.Action("Index", "Files", new { id = DObject.RootId }), "Начало"));
             return View(result);
         }
     }

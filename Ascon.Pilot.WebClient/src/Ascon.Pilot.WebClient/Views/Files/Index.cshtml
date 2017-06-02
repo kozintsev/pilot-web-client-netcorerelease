@@ -10,11 +10,11 @@
 <form action="/Files/DownloadArchive" id="downloadArchiveForm" method="post">
     <div class="row">
         <div class="col-md-4 hidden-xs hidden-sm collapse in" id="sidePanel" style="padding-right: 0;">
-            @await Component.InvokeAsync("SidePanel", Model.CurrentFolderId)
+            @await Component.InvokeAsync("SidePanel", new { id = Model.CurrentFolderId })
         </div>
         <div class="col-md-8 col-sm-12" id="filesPanelContainer">
             <div>
-                @await Component.InvokeAsync("Breadcrumbs", Model.CurrentFolderId)
+                @await Component.InvokeAsync("Breadcrumbs", new { id = Model.CurrentFolderId })
             </div>
             <div id="filesPanel" style="padding-bottom: 15px;">
                 @await Component.InvokeAsync("FilesPanel", new { folderId = Model.CurrentFolderId, panelType = Model.FilesPanelType, onlySource = ViewBag.IsSource ?? false })
