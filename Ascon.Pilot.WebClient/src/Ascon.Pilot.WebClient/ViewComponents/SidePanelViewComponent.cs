@@ -33,38 +33,52 @@ namespace Ascon.Pilot.WebClient.ViewComponents
         public IViewComponentResult GetSidePanel(Guid? id)
         {
             id = id ?? DObject.RootId;
-            
-            var serverApi = HttpContext.GetServerApi();
-            var obj = serverApi.GetObjects(new[] { id.Value }).First();
-
-            var mTypes = HttpContext.Session.GetMetatypes();
-            var model = new SidePanelViewModel
+            var model = new SidePanelViewModel();
+            try
             {
-                ObjectId = id.Value,
-                Types = mTypes,
-                Items = new List<SidePanelItem>()
-            };
+                var serverApi = HttpContext.GetServerApi();
+                var obj = serverApi.GetObjects(new[] { id.Value }).First();
 
+                var mTypes = HttpContext.Session.GetMetatypes();
+                model.ObjectId = id.Value;
+                model.Types = mTypes;
+                model.Items = new List<SidePanelItem>();
 
-            var children = serverApi.GetObjects(obj.Children.Select(x => x.ObjectId).ToArray());
-            foreach (var child in children)
-            {
-                MType type;
-                if (mTypes.TryGetValue(child.TypeId, out type))
+                var children = serverApi.GetObjects(obj.Children.Where(t => mTypes[t.TypeId].IsService == false).Select(x => x.ObjectId).ToArray());
+                Guid reqId = id.Value;
+                model.Items = GetListSidePanel(children, mTypes, reqId);
+
+                while (reqId != DObject.RootId)
                 {
-                    if (type.IsService)
-                        continue;
-                    
-                    model.Items.Add(new SidePanelItem
-                        {
-                            Type = mTypes[child.TypeId],
-                            DObject = child,
-                            Selected = child.Id == id
-                        });
+                    if (obj.Id == DObject.RootId)
+                        break;
+                    obj = serverApi.GetObjects(new[] { obj.ParentId }).First();
+                    children = serverApi.GetObjects(obj.Children.Where(t => mTypes[t.TypeId].IsService == false).Select(x => x.ObjectId).ToArray());
+                    var subtree = model.Items;
+                    model.Items = GetListSidePanel(children, mTypes, reqId, subtree);
                 }
             }
-
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
             return View(model);
+        }
+
+        static List<SidePanelItem> GetListSidePanel(List<DObject> list, IDictionary<int, MType> mtype, Guid id, List<SidePanelItem> subitem = null)
+        {
+            List<SidePanelItem> md = new List<SidePanelItem>();
+            foreach (var child in list)
+            {
+                md.Add(new SidePanelItem
+                {
+                    Type = mtype[child.TypeId],
+                    DObject = child,
+                    SubItems = subitem,
+                    Selected = child.Id == id
+                });
+            }
+            return md;
         }
     }
 }

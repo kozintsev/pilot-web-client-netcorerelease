@@ -36,40 +36,47 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             return await Task.Run(() =>
             {
                 {
-                    var types = HttpContext.Session.GetMetatypes();
-                    var serverApi = HttpContext.GetServerApi();
-                    var folder = serverApi.GetObjects(new[] { folderId }).First();
+                    List<FileViewModel> model = new List<FileViewModel>();
+                    try
+                    {
+                        var types = HttpContext.Session.GetMetatypes();
+                        var serverApi = HttpContext.GetServerApi();
+                        var folder = serverApi.GetObjects(new[] { folderId }).First();
 
-                    if (folder.Children?.Any() != true)
-                        return View(panelType == FilesPanelType.List ? "List" : "Grid", new FileViewModel[] { });
+                        if (folder.Children?.Any() != true)
+                            return View(panelType == FilesPanelType.List ? "List" : "Grid", new FileViewModel[] { });
 
-                    var childrenIds = folder.Children.Select(x => x.ObjectId).ToArray();
-                    var childrens = serverApi.GetObjects(childrenIds);
-                    var model = new List<FileViewModel>(childrens.Count);
+                        var childrenIds = folder.Children.Select(x => x.ObjectId).ToArray();
+                        var childrens = serverApi.GetObjects(childrenIds);
 
-                    var folderType = types[folder.TypeId];
-                    if (folderType.IsMountable && !(ViewBag.IsSource ?? false))
-                        model.Add(new FileViewModel
+                        var folderType = types[folder.TypeId];
+                        if (folderType.IsMountable && !(ViewBag.IsSource ?? false))
+                            model.Add(new FileViewModel
+                            {
+                                IsFolder = true,
+                                Id = folder.Id,
+                                ObjectId = folder.Id,
+                                ObjectName = "Исходные файлы",
+                                ObjectTypeName = "Папка с исходными файлами",
+                                ObjectTypeId = ApplicationConst.SourcefolderTypeid,
+                                LastModifiedDate = folder.Created,
+                                ChildrenCount = folder.Children.Count(x => types[x.TypeId].IsProjectFileOrFolder())
+                            });
+
+                        if (onlySource)
                         {
-                            IsFolder = true,
-                            Id = folder.Id,
-                            ObjectId = folder.Id,
-                            ObjectName = "Исходные файлы",
-                            ObjectTypeName = "Папка с исходными файлами",
-                            ObjectTypeId = ApplicationConst.SourcefolderTypeid,
-                            LastModifiedDate = folder.Created,
-                            ChildrenCount = folder.Children.Count(x => types[x.TypeId].IsProjectFileOrFolder())
-                        });
-
-                    if (onlySource)
-                    {
-                        FillModelWithSource(childrens, types, model);
+                            FillModelWithSource(childrens, types, model);
+                        }
+                        else
+                        {
+                            FillModel(childrens, types, model);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        FillModel(childrens, types, model);
-                    }
 
+                        throw new Exception(ex.Message);
+                    }
                     return View(panelType == FilesPanelType.List ? "List" : "Grid", model);
                 }
             });

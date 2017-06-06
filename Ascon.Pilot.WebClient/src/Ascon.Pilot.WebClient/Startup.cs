@@ -41,7 +41,6 @@ namespace Ascon.Pilot.WebClient
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
-            //services.AddCaching();
             services.AddMemoryCache();
             services.AddSession();
         }
