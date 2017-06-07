@@ -51,20 +51,14 @@ namespace Ascon.Pilot.WebClient.Controllers
         public IActionResult Index(Guid? id, bool isSource = false)
         {
             var model = new UserPositionViewModel();
-            try
-            {
+
                 id = id ?? DObject.RootId;
                 FilesPanelType type = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
                 model.CurrentFolderId = id.Value;
                 model.FilesPanelType = type;
                 ViewBag.FilesPanelType = type;
                 ViewBag.IsSource = isSource;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(1, "Download page File_Index", ex);
-                throw new Exception(ex.Message);
-            }
+
             return View(model);
         }
         
@@ -73,8 +67,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             return await Task.Run(() =>
             {
                 dynamic[] childNodes;
-                try
-                {
+
                     var serverApi = HttpContext.GetServerApi();
                     var node = serverApi.GetObjects(new[] { id }).First();
 
@@ -105,12 +98,6 @@ namespace Ascon.Pilot.WebClient.Controllers
                             return sidePanelItem.GetDynamic(id, types);
                         })
                         .ToArray();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(1, "GetNodeChilds", ex);
-                    throw new Exception(ex.Message);
-                }
                 return Json(childNodes);
             });
         }
@@ -143,20 +130,13 @@ namespace Ascon.Pilot.WebClient.Controllers
         public IActionResult DownloadPdf(Guid id, int size, string name)
         {
             byte[] fileChunk;
-            try
-            {
+
                 var serverApi = HttpContext.GetServerApi();
                 fileChunk = serverApi.GetFileChunk(id, 0, size);
                 var fileDownloadName = string.IsNullOrWhiteSpace(name) ? id.ToString() : name;
                 if (Response.Headers.ContainsKey("Content-Disposition"))
                     Response.Headers.Remove("Content-Disposition");
                 Response.Headers.Add("Content-Disposition", $"inline; filename={fileDownloadName}");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(1, "DownloadPdf", ex);
-                throw new Exception(ex.Message);
-            }
             return new FileContentResult(fileChunk, "application/pdf");
         }
 
@@ -180,8 +160,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             if (objectsIds.Length == 0)
                 return NotFound();
             byte[] mstData;
-            try
-            {
+
                 var serverApi = HttpContext.GetServerApi();
                 var objects = serverApi.GetObjects(objectsIds);
 
@@ -195,12 +174,6 @@ namespace Ascon.Pilot.WebClient.Controllers
                     }
                     mstData = compressedFileStream.ToArray();
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(1, "DownloadArchive", ex);
-                throw new Exception(ex.Message);
-            }
             return new FileContentResult(mstData, "application/zip") { FileDownloadName = "archive.zip" };
         }
 
@@ -303,8 +276,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         [HttpPost]
         public ActionResult Rename(Guid idToRename, string newName, Guid renameRootId)
         {
-            try
-            {
+
                 var api = HttpContext.GetServerApi();
                 var objectToRename = api.GetObjects(new[] { idToRename })[0];
                 var newObject = objectToRename.Clone();
@@ -320,12 +292,6 @@ namespace Ascon.Pilot.WebClient.Controllers
                         }
                     }
                 });*/
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(1, "Rename", ex);
-                throw new Exception(ex.Message);
-            }
             return RedirectToAction("Index", new {id = renameRootId });
         }
 

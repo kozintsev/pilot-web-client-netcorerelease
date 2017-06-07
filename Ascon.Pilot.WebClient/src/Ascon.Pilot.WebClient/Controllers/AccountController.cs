@@ -31,8 +31,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         public IActionResult LogIn(string returnUrl = null)
         {
             var logInViewModel = new LogInViewModel();
-            try
-            {
+
             ViewData["ReturnUrl"] = returnUrl;
 
 #if (DEBUG)
@@ -43,12 +42,7 @@ namespace Ascon.Pilot.WebClient.Controllers
                 logInViewModel.Login = "pavlenko";
                 logInViewModel.Password = "123456";
     #endif
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(1, "Download page Login", ex);
-                throw new Exception(ex.Message);
-            }
+
             return View(logInViewModel);
         }
 
@@ -56,8 +50,6 @@ namespace Ascon.Pilot.WebClient.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LogIn(LogInViewModel model)
         {
-            try
-            {
                 if (!ModelState.IsValid)
                     return View("LogIn");
 
@@ -95,12 +87,7 @@ namespace Ascon.Pilot.WebClient.Controllers
                 Debug.WriteLine(dMetadata.Types.ToString());
                 Debug.WriteLine(dMetadata.Version.ToString());
                 HttpContext.Session.SetSessionValues(SessionKeys.MetaTypes, dMetadata.Types.ToDictionary(x => x.Id, y => y));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(1, "Ошибка при авторизации", ex);
-                throw new Exception(ex.Message);
-            }
+
             return RedirectToAction("Index", "Files");
         }
         
