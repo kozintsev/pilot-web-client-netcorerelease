@@ -50,15 +50,15 @@ namespace Ascon.Pilot.WebClient.Controllers
 
         public IActionResult Index(Guid? id, bool isSource = false)
         {
-            id = id ?? DObject.RootId;
-            FilesPanelType type = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
-            var model = new UserPositionViewModel
-            {
-                CurrentFolderId = id.Value,
-                FilesPanelType = type
-            };
-            ViewBag.FilesPanelType = type;
-            ViewBag.IsSource = isSource;
+            var model = new UserPositionViewModel();
+
+                id = id ?? DObject.RootId;
+                FilesPanelType type = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
+                model.CurrentFolderId = id.Value;
+                model.FilesPanelType = type;
+                ViewBag.FilesPanelType = type;
+                ViewBag.IsSource = isSource;
+
             return View(model);
         }
         
@@ -66,36 +66,38 @@ namespace Ascon.Pilot.WebClient.Controllers
         {
             return await Task.Run(() =>
             {
-                var serverApi = HttpContext.GetServerApi();
-                var node = serverApi.GetObjects(new[] {id}).First();
+                dynamic[] childNodes;
 
-                var types = HttpContext.Session.GetMetatypes();
+                    var serverApi = HttpContext.GetServerApi();
+                    var node = serverApi.GetObjects(new[] { id }).First();
 
-                var childIds = node.Children?
-                                    .Where(x => types[x.TypeId].Children?.Any() == true)
-                                    .Select(child => child.ObjectId).ToArray();
-                var nodeChilds = serverApi.GetObjects(childIds);
-                
-                var childNodes = nodeChilds.Where(t =>
-                {
-                    var mType = types[t.TypeId];
-                    return !mType.IsService;
+                    var types = HttpContext.Session.GetMetatypes();
 
-                }).Select(x =>
+                    var childIds = node.Children?
+                                        .Where(x => types[x.TypeId].Children?.Any() == true)
+                                        .Select(child => child.ObjectId).ToArray();
+                    var nodeChilds = serverApi.GetObjects(childIds);
+
+                    childNodes = nodeChilds.Where(t =>
                     {
-                        var mType = types[x.TypeId];
+                        var mType = types[t.TypeId];
+                        return !mType.IsService;
 
-
-                        var sidePanelItem = new SidePanelItem
+                    }).Select(x =>
                         {
-                            DObject = x,
-                            Type = mType,
-                            SubItems = x.Children.Any(y => types[y.TypeId].Children.Any()) ? new List<SidePanelItem>() : null
-                        };
+                            var mType = types[x.TypeId];
 
-                        return sidePanelItem.GetDynamic(id, types);
-                    })
-                    .ToArray();
+
+                            var sidePanelItem = new SidePanelItem
+                            {
+                                DObject = x,
+                                Type = mType,
+                                SubItems = x.Children.Any(y => types[y.TypeId].Children.Any()) ? new List<SidePanelItem>() : null
+                            };
+
+                            return sidePanelItem.GetDynamic(id, types);
+                        })
+                        .ToArray();
                 return Json(childNodes);
             });
         }
@@ -127,12 +129,14 @@ namespace Ascon.Pilot.WebClient.Controllers
 
         public IActionResult DownloadPdf(Guid id, int size, string name)
         {
-            var serverApi = HttpContext.GetServerApi();
-            var fileChunk = serverApi.GetFileChunk(id, 0, size);
-            var fileDownloadName = string.IsNullOrWhiteSpace(name) ? id.ToString() : name;
-            if (Response.Headers.ContainsKey("Content-Disposition"))
-                Response.Headers.Remove("Content-Disposition");
-            Response.Headers.Add("Content-Disposition", $"inline; filename={fileDownloadName}");
+            byte[] fileChunk;
+
+                var serverApi = HttpContext.GetServerApi();
+                fileChunk = serverApi.GetFileChunk(id, 0, size);
+                var fileDownloadName = string.IsNullOrWhiteSpace(name) ? id.ToString() : name;
+                if (Response.Headers.ContainsKey("Content-Disposition"))
+                    Response.Headers.Remove("Content-Disposition");
+                Response.Headers.Add("Content-Disposition", $"inline; filename={fileDownloadName}");
             return new FileContentResult(fileChunk, "application/pdf");
         }
 
@@ -155,20 +159,22 @@ namespace Ascon.Pilot.WebClient.Controllers
         {
             if (objectsIds.Length == 0)
                 return NotFound();
+            byte[] mstData;
 
-            var serverApi = HttpContext.GetServerApi();
-            var objects = serverApi.GetObjects(objectsIds);
+                var serverApi = HttpContext.GetServerApi();
+                var objects = serverApi.GetObjects(objectsIds);
 
-            var types = HttpContext.Session.GetMetatypes();
+                var types = HttpContext.Session.GetMetatypes();
 
-            using (var compressedFileStream = new MemoryStream())
-            {
-                using (var zipArchive = new ZipArchive(compressedFileStream, ZipArchiveMode.Update, true))
+                using (var compressedFileStream = new MemoryStream())
                 {
-                    AddObjectsToArchive(serverApi, objects, zipArchive, types, "");
+                    using (var zipArchive = new ZipArchive(compressedFileStream, ZipArchiveMode.Update, true))
+                    {
+                        AddObjectsToArchive(serverApi, objects, zipArchive, types, "");
+                    }
+                    mstData = compressedFileStream.ToArray();
                 }
-                return new FileContentResult(compressedFileStream.ToArray(), "application/zip") { FileDownloadName = "archive.zip" };
-            }
+            return new FileContentResult(mstData, "application/zip") { FileDownloadName = "archive.zip" };
         }
 
         private void AddObjectsToArchive(IServerApi serverApi, List<DObject> objects, ZipArchive archive, IDictionary<int, MType> types, string currentPath)
@@ -270,21 +276,22 @@ namespace Ascon.Pilot.WebClient.Controllers
         [HttpPost]
         public ActionResult Rename(Guid idToRename, string newName, Guid renameRootId)
         {
-            var api = HttpContext.GetServerApi();
-            var objectToRename = api.GetObjects(new[] {idToRename})[0];
-            var newObject = objectToRename.Clone();
-            
-            /*api.Change(new DChangesetData()
-            {
-                Changes = new List<DChange>
+
+                var api = HttpContext.GetServerApi();
+                var objectToRename = api.GetObjects(new[] { idToRename })[0];
+                var newObject = objectToRename.Clone();
+
+                /*api.Change(new DChangesetData()
                 {
-                    new DChange()
+                    Changes = new List<DChange>
                     {
-                        New = newObject,
-                        Old = objectToRename
+                        new DChange()
+                        {
+                            New = newObject,
+                            Old = objectToRename
+                        }
                     }
-                }
-            });*/
+                });*/
             return RedirectToAction("Index", new {id = renameRootId });
         }
 

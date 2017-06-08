@@ -35,13 +35,14 @@ namespace Ascon.Pilot.WebClient.Controllers
         public IActionResult GetTypeIcon(int id)
         {
             const string svgContentType = "image/svg+xml";
-            var mTypes = HttpContext.Session.GetMetatypes();
-            if (mTypes.ContainsKey(id))
-            {
-                var mType = mTypes[id];
-                if (mType.Icon != null)
-                    return File(mType.Icon, svgContentType);
-            }
+
+                var mTypes = HttpContext.Session.GetMetatypes();
+                if (mTypes.ContainsKey(id))
+                {
+                    var mType = mTypes[id];
+                    if (mType.Icon != null)
+                        return File(mType.Icon, svgContentType);
+                }
             return File(Url.Content("~/images/file.svg"), svgContentType);
         }
         /// <summary>

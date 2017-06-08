@@ -25,6 +25,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             return await Task.Run(() => GetSidePanel(id)) ;
         }
 
+
         /// <summary>
         /// Отображение боковой панели.
         /// </summary>
@@ -36,7 +37,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
 
             var serverApi = HttpContext.GetServerApi();
             var rootObject = serverApi.GetObjects(new[] { id.Value }).First();
-
+            var bRootObject = serverApi.GetObjects(new[] { DObject.RootId }).First();
             var mTypes = HttpContext.Session.GetMetatypes();
             var model = new SidePanelViewModel
             {
@@ -51,7 +52,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             {
                 var parentObject = serverApi.GetObjects(new[] { parentId }).First();
                 var parentChildsIds = parentObject.Children
-                                        .Where(x => mTypes[x.TypeId].Children.Any())
+                                        .Where(x => mTypes[x.TypeId].IsService == false)
                                         .Select(x => x.ObjectId).ToArray();
                 if (parentChildsIds.Length != 0)
                 {
@@ -72,7 +73,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
 
                 prevId = parentId;
                 parentId = parentObject.ParentId;
-            } while (parentId != Guid.Empty);
+            } while (parentId != bRootObject.ParentId);
             return View(model);
         }
     }

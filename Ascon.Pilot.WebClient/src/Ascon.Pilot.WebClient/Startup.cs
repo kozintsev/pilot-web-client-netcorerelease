@@ -41,7 +41,6 @@ namespace Ascon.Pilot.WebClient
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
-            //services.AddCaching();
             services.AddMemoryCache();
             services.AddSession();
         }
@@ -54,6 +53,8 @@ namespace Ascon.Pilot.WebClient
                 AuthenticationScheme = ApplicationConst.PilotMiddlewareInstanceName,
                 LoginPath = new PathString("/Account/LogIn"),
                 AutomaticAuthenticate = true,
+                SlidingExpiration = true,
+                ExpireTimeSpan = TimeSpan.FromDays(1),
                 AutomaticChallenge = true
             });
 
@@ -61,7 +62,7 @@ namespace Ascon.Pilot.WebClient
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            //env.ConfigureNLog("nlog.config");
+            loggerFactory.ConfigureNLog( Path.Combine(env.ContentRootPath, "nlog.config"));
 
             if (env.IsDevelopment())
             {
@@ -70,7 +71,7 @@ namespace Ascon.Pilot.WebClient
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Shared/Error");
             }
 
             app.UseSession();
