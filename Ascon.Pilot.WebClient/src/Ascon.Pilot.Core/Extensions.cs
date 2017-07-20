@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using Newtonsoft.Json;
 
 namespace Ascon.Pilot.Core
@@ -275,9 +277,36 @@ namespace Ascon.Pilot.Core
     {
         public static DateTime ToUniversalDateTime(this DateTime dateTime)
         {
+            if (dateTime == DateTime.MaxValue)
+                return dateTime;
+
             if (dateTime.Kind != DateTimeKind.Utc)
                 return dateTime.ToUniversalTime();
             return dateTime;
+        }
+
+        public static DateTime StartOfWeek(this DateTime dt)
+        {
+            var startOfWeek = DateTimeFormatInfo.CurrentInfo.FirstDayOfWeek;
+            int diff = dt.DayOfWeek - startOfWeek;
+            if (diff < 0)
+            {
+                diff += 7;
+            }
+            return dt.AddDays(-1 * diff).Date;
+        }
+
+        public static DateTime ToLocalDateTime(this DateTime dateTime)
+        {
+            if (dateTime == DateTime.MaxValue)
+                return dateTime;
+
+            return dateTime.ToLocalTime();
+        }
+
+        public static string ToShortDateString(this DateTime dateTime)
+        {
+            return dateTime.ToString("d", DateTimeFormatInfo.CurrentInfo);
         }
     }
 }

@@ -241,12 +241,12 @@ namespace Ascon.Pilot.Core
 
         public static implicit operator String(DValue value)
         {
-            return (String)value.Value;
+            return (string) value?.Value;
         }
 
         public static implicit operator String[](DValue value)
         {
-            return (String[])value.Value;
+            return (String[])value?.Value;
         }
 
         public static implicit operator DateTime(DValue value)
@@ -278,7 +278,7 @@ namespace Ascon.Pilot.Core
             if (DoubleValue != null)
                 return DoubleValue.ToString();
             if (DateValue != null)
-                return DateValue.Value.ToString("d");
+                return DateValue.Value.ToShortDateString();
             if (DecimalValue != null)
                 return DecimalValue.Value.ToString(CultureInfo.InvariantCulture);
             if (ArrayValue != null)
@@ -306,8 +306,8 @@ namespace Ascon.Pilot.Core
         }
     }
 
-
     [Obsolete("Use DChild instead")]
+    [ProtoContract(EnumPassthru = true)]
     public enum LinkType
     {
         Tree = 1,
@@ -316,12 +316,14 @@ namespace Ascon.Pilot.Core
         Messages = 4,
     }
 
+    [ProtoContract(EnumPassthru = true)]
     public enum RelationType
     {
         SourceFiles = 1,
         TaskInitiatorAttachments = 2,
         TaskExecutorAttachments = 3,
-        MessageAttachments = 4
+        MessageAttachments = 4,
+        Custom = 5
     }
 
     [Obsolete("Use DChild instead")]
@@ -345,14 +347,37 @@ namespace Ascon.Pilot.Core
         }
     }
 
+    [ProtoContract(EnumPassthru = true)]
+    public enum ObjectState : byte
+    {
+        Alive,
+        InRecycleBin,
+        DeletedPermanently,
+        Frozen,
+        LockRequested,
+        LockAccepted
+    }
+
     [ProtoContract]
     [DebuggerDisplay("{Id}")]
     public class DObject
     {
+        public static readonly Guid GlobalRootId = new Guid("2EA0EA87-69CB-400C-8909-59F1322814DA");
         public static readonly Guid RootId = new Guid("00000001-0001-0001-0001-000000000001");
         public static readonly Guid TaskRootId = new Guid("ADB79734-723C-4FF8-8DA8-8F52E140FBF4");
         public static readonly Guid ExtensionRootId = new Guid("E6519D37-1984-407E-96A0-1CD371F68F16");
         public static readonly Guid ReportRootId = new Guid("7DAB217D-6E06-4C2C-AB77-B5EC9361415D");
+        public static readonly Guid TaskTemplateRootId = new Guid("DB4AB44C-B3D1-4F5A-B049-13CDF0C2EFE7");
+        public static readonly Guid DocumentTemplateRootId = new Guid("109DA1F5-7E1A-4DF4-95BD-1FD5AA023DD6");
+
+        public static IEnumerable<Guid> RootsIds()
+        {
+            yield return RootId;
+            yield return TaskRootId;
+            yield return ExtensionRootId;
+            yield return ReportRootId;
+            yield return TaskTemplateRootId;
+        }
         
         [ProtoMember(1)]
         public Guid Id { get; set; }
@@ -375,6 +400,7 @@ namespace Ascon.Pilot.Core
 #pragma warning disable 618
         [ProtoMember(10)]
         [Obsolete("Use the ActualFileSnapshot property instead")]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public List<DFile> Files { get; private set; }
 #pragma warning restore 618
 
@@ -385,25 +411,31 @@ namespace Ascon.Pilot.Core
         public DateTime Created { get; set; }
 
         [ProtoMember(14)]
-        public Dictionary<int, Access> Access { get; private set; }
+        public HashSet<AccessRecord> Access { get; private set; }
 
-        [ProtoMember(15)]
+        [ProtoMember(15), Obsolete("Use the Access.SecretParentId instead")]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public bool IsSecret { get; set; }
 
-        [ProtoMember(16)]
+        [ProtoMember(16), Obsolete("Use the State property instead")]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public bool IsDeleted { get; set; }
 
-        [ProtoMember(17)]
+        [ProtoMember(17), Obsolete("Use the State property instead")]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public bool IsInRecycleBin { get; set; }
 
 #pragma warning disable 618
         [ProtoMember(18)]
         [Obsolete("Use the Children property instead")]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public ChildrenCollection OldChildren { get; private set; }
 #pragma warning restore 618
 
         [ProtoMember(19)]
-        public RelationsCollection Relations { get; private set; }
+        [Obsolete("Use Relations instead")]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public RelationsCollection OldRelations { get; private set; }
 
         [ProtoMember(20)]
         public HashSet<int> Subscribers { get; private set; }
@@ -412,11 +444,24 @@ namespace Ascon.Pilot.Core
         public List<DChild> Children { get; private set; }
 
         [ProtoMember(22)]
+        [Obsolete("Use the State property instead")]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public DLockInfo LockInfo { get; private set; }
 
         [ProtoMember(23)]
         public DFilesSnapshot ActualFileSnapshot { get; private set; }
 
+        [ProtoMember(24)]
+        public DStateInfo StateInfo { get; private set; }
+
+        [ProtoMember(25)]
+        public SecretInfo SecretInfo { get; set; }
+
+        [ProtoMember(26)]
+        public List<Guid> Context { get; private set; }
+
+        [ProtoMember(27)]
+        public List<DRelation> Relations { get; private set; }
 
         public DObject()
         {
@@ -425,18 +470,17 @@ namespace Ascon.Pilot.Core
             Attributes = new SortedList<string, DValue>();
             ActualFileSnapshot = new DFilesSnapshot();
             PreviousFileSnapshots = new List<DFilesSnapshot>();
-            Access = new Dictionary<int, Access>();
-            IsSecret = false;
-            IsDeleted = false;
-            IsInRecycleBin = false;
+            Access = new HashSet<AccessRecord>();
 #pragma warning disable 618
             Files = new List<DFile>();
             OldChildren = new ChildrenCollection();
+            OldRelations = new RelationsCollection();
 #pragma warning restore 618
-            Relations = new RelationsCollection();
+            Relations = new List<DRelation>();
             Subscribers = new HashSet<int>();
             Children = new List<DChild>();
-            LockInfo = new DLockInfo();
+            StateInfo = new DStateInfo();
+            Context = new List<Guid>();
         }
 
         public void AssignTo(DObject other)
@@ -447,13 +491,11 @@ namespace Ascon.Pilot.Core
             other.ParentId = ParentId;
             other.LastChange = LastChange;
             other.Created = Created;
-            other.IsSecret = IsSecret;
-            other.IsDeleted = IsDeleted;
-            other.IsInRecycleBin = IsInRecycleBin;
 
             other.Access.Clear();
             foreach (var item in Access)
-                other.Access.Add(item.Key, item.Value);
+                other.Access.Add(item);
+            other.SecretInfo = SecretInfo;
 
             other.Attributes.Clear();
             foreach (var item in Attributes)
@@ -466,15 +508,20 @@ namespace Ascon.Pilot.Core
                 other.PreviousFileSnapshots.Add(item.Clone());
 
 #pragma warning disable 618
+            other.IsSecret = IsSecret;
             other.Files.Clear();
             foreach (var dFile in Files)
             {
                 other.Files.Add(dFile.Clone());
             }
             OldChildren.AssignTo(other.OldChildren);
+            other.IsDeleted = IsDeleted;
+            other.IsInRecycleBin = IsInRecycleBin;
+            OldRelations.AssignTo(other.OldRelations);
 #pragma warning restore 618
 
-            Relations.AssignTo(other.Relations);
+            other.Relations.Clear();
+            other.Relations.AddRange(Relations.Select(x => x.Clone()));
 
             other.Subscribers.Clear();
             foreach (var item in Subscribers)
@@ -484,7 +531,10 @@ namespace Ascon.Pilot.Core
             foreach (var child in Children)
                 other.Children.Add(child.Clone());
 
-            LockInfo.AssignTo(other.LockInfo);
+            StateInfo.AssignTo(other.StateInfo);
+
+            other.Context.Clear();
+            other.Context.AddRange(Context);
         }
 
         public DObject Clone()
@@ -649,6 +699,65 @@ namespace Ascon.Pilot.Core
     }
 
     [ProtoContract]
+    [DebuggerDisplay("{Type} {TargetId} {Name}")]
+    public class DRelation
+    {
+        [ProtoMember(1)]
+        public Guid Id { get; set; }
+
+        [ProtoMember(2)]
+        public Guid TargetId { get; set; }
+
+        [ProtoMember(3)]
+        public RelationType Type { get; set; }
+
+        [ProtoMember(4)]
+        public string Name { get; set; }
+
+        [ProtoMember(5)]
+        public DateTime VersionId { get; set; }
+
+        protected bool Equals(DRelation other)
+        {
+            return Id.Equals(other.Id) && TargetId.Equals(other.TargetId) && Type == other.Type && string.Equals(Name, other.Name) && VersionId == other.VersionId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((DRelation) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Id.GetHashCode();
+                hashCode = (hashCode * 397) ^ TargetId.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int) Type;
+                hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ VersionId.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public DRelation Clone()
+        {
+            return new DRelation
+            {
+                Id = Id,
+                TargetId = TargetId,
+                Type = Type,
+                Name = Name,
+                VersionId = VersionId
+            };
+        }
+    }
+
+    [ProtoContract]
+    [Obsolete("Use DRelation instead")]
     [DebuggerDisplay("Relations: {SourceFiles.Count}, InitiatorAttach: {TaskInitiatorAttachments.Count}, ExecutorAttach: {TaskExecutorAttachments.Count}")]
     public class RelationsCollection
     {
@@ -694,6 +803,8 @@ namespace Ascon.Pilot.Core
                         return _taskInitiatorAttachments;
                     case RelationType.MessageAttachments:
                         return _messageAttachments;
+                    case RelationType.Custom:
+                        return new List<Guid>();
                     default:
                         throw new NotSupportedException();
                 }
@@ -729,19 +840,86 @@ namespace Ascon.Pilot.Core
     }
 
     [ProtoContract]
-    [DebuggerDisplay("AccessLevel : {AccessLevel}, IsInheritable : {IsInheritable}")]
+    [DebuggerDisplay("{OrgUnitId} - {Access}")]
+    public struct AccessRecord
+    {
+        public static readonly AccessRecord Empty = new AccessRecord();
+        public const int RECORD_OWNER_UNDEFINED = 0;
+
+        [ProtoMember(1)]
+        public int OrgUnitId { get; set; }
+
+        [ProtoMember(2)]
+        public Access Access { get; set; }
+
+        [ProtoMember(3)]
+        public int RecordOwnerPosition { get; set; }
+
+        [ProtoMember(4)]
+        public Guid InheritanceSource { get; set; }
+
+        public AccessRecord(int organizationalUnitId, int recordOwnerPosition, Guid inheritanceSource, Access access) : this()
+        {
+            OrgUnitId = organizationalUnitId;
+            Access = access;
+            RecordOwnerPosition = recordOwnerPosition;
+            InheritanceSource = inheritanceSource;
+        }
+
+        public bool Equals(AccessRecord other)
+        {
+            return OrgUnitId == other.OrgUnitId && Access.Equals(other.Access) && RecordOwnerPosition == other.RecordOwnerPosition && InheritanceSource == other.InheritanceSource;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is AccessRecord && Equals((AccessRecord)obj);
+        }
+
+        public static bool operator ==(AccessRecord record1, AccessRecord record2)
+        {
+            return record1.Equals(record2);
+        }
+
+        public static bool operator !=(AccessRecord record1, AccessRecord record2)
+        {
+            return !record1.Equals(record2);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = OrgUnitId;
+                hashCode = (hashCode * 397) ^ Access.GetHashCode();
+                hashCode = (hashCode * 397) ^ RecordOwnerPosition.GetHashCode();
+                hashCode = (hashCode * 397) ^ InheritanceSource.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public bool IsTwinTo(AccessRecord other)
+        {
+            return this.OrgUnitId == other.OrgUnitId
+                   && this.RecordOwnerPosition == other.RecordOwnerPosition
+                   && Equals(this.Access, other.Access);
+        }
+
+        public override string ToString()
+        {
+            return $"AccessRecord : {OrgUnitId}, OwnerPosition: {RecordOwnerPosition}, InheritanceSource : {InheritanceSource}, Access:{Access}";
+        }
+    }
+
+    [ProtoContract]
+    [DebuggerDisplay("AccessLevel : {AccessLevel}, IsInheritable : {IsInheritable}, ValidThrough:{ValidThrough}")]
     public struct Access
     {
         private DateTime _validThrough;
         
-        public AccessLevel AccessLevel { get; set; }
-
         [ProtoMember(1)]
-        private byte AccessLevelWire
-        {
-            get { return (byte)AccessLevel; }
-            set { AccessLevel = (AccessLevel)value; }
-        }
+        public AccessLevel AccessLevel { get; set; }
 
         [ProtoMember(2)]
         public DateTime ValidThrough
@@ -761,20 +939,18 @@ namespace Ascon.Pilot.Core
         [ProtoMember(3)]
         public bool IsInheritable { get; set; }
 
-        [ProtoMember(4)]
-        public bool IsInherited { get; set; }
-
-        public Access(AccessLevel accessLevel, DateTime validThrough, bool isInheritable, bool isInherited) : this()
+        public Access(AccessLevel accessLevel, DateTime validThrough, bool isInheritable) : this()
         {
             AccessLevel = accessLevel;
             ValidThrough = validThrough;
             IsInheritable = isInheritable;
-            IsInherited = isInherited;
         }
 
         public bool Equals(Access other)
         {
-            return AccessLevel == other.AccessLevel && IsInheritable.Equals(other.IsInheritable);
+            return AccessLevel == other.AccessLevel &&
+                   IsInheritable.Equals(other.IsInheritable) &&
+                   ValidThrough.Equals(other.ValidThrough);
         }
 
         public override bool Equals(object obj)
@@ -788,34 +964,95 @@ namespace Ascon.Pilot.Core
             unchecked
             {
                 var hashCode = (int) AccessLevel;
-                hashCode = (hashCode*397) ^ ValidThrough.GetHashCode();
-                hashCode = (hashCode*397) ^ IsInheritable.GetHashCode();
+                hashCode = (hashCode * 397) ^ ValidThrough.GetHashCode();
+                hashCode = (hashCode * 397) ^ IsInheritable.GetHashCode();
                 return hashCode;
             }
         }
 
-        public Access Clone()
+        public override string ToString()
         {
-            return new Access
-            {
-                AccessLevel = AccessLevel,
-                ValidThrough = ValidThrough,
-                IsInheritable = IsInheritable,
-                IsInherited = IsInherited
-            };
+            return $"Access : {AccessLevel}, IsInheritable: {IsInheritable}, ValidThrough : {ValidThrough}";
         }
     }
 
     [Flags]
+    [ProtoContract(EnumPassthru = true)]
     public enum AccessLevel : byte
     {
         None = 0,
         Create = 1 << 0,
         Edit = 1 << 1,
         View = 1 << 2,
+        Freeze = 1 << 3,
+        Agreement = 1 << 4,
 
         ViewCreate = View | Create,
-        ViewEdit = ViewCreate | Edit,
+        ViewEdit = View | Create | Edit,
+        ViewEditAgrement = ViewEdit | Agreement,
+        Full = View | Create | Edit | Freeze | Agreement
+    }
+
+    [ProtoContract]
+    [DebuggerDisplay("IsSecret = {IsSecret}")]
+    public struct SecretInfo
+    {
+        public static readonly SecretInfo Public = new SecretInfo();
+
+        public SecretInfo(Guid secretParentId, int secretChangedBy, DateTime secretChangedTimestamp)
+        {
+            SecretParentId = secretParentId;
+            SecretChangedBy = secretChangedBy;
+            SecretChangedTimestamp = secretChangedTimestamp;
+        }
+
+        [ProtoMember(1)]
+        public Guid SecretParentId { get; set; }
+
+        [ProtoMember(2)]
+        public int SecretChangedBy { get; set; }
+
+        [ProtoMember(3)]
+        public DateTime SecretChangedTimestamp { get; set; }
+
+        public bool IsSecret => SecretParentId != Guid.Empty;
+
+        private bool Equals(SecretInfo other)
+        {
+            return
+                SecretParentId.Equals(other.SecretParentId) &&
+                SecretChangedBy == other.SecretChangedBy &&
+                SecretChangedTimestamp.Equals(other.SecretChangedTimestamp);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((SecretInfo)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = SecretParentId.GetHashCode();
+                hashCode = (hashCode * 397) ^ SecretChangedBy;
+                hashCode = (hashCode * 397) ^ SecretChangedTimestamp.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(SecretInfo a, SecretInfo b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(SecretInfo a, SecretInfo b)
+        {
+            return !a.Equals(b);
+        }
     }
 
     [ProtoContract]
@@ -914,27 +1151,28 @@ namespace Ascon.Pilot.Core
                 other.Files.Add(file.Clone());
         }
 
-        public void AddFile(DFile file, int personId)
+        public void AddFile(DFile file, int personId, DateTime? created = null)
         {
-            Init(personId);
+            Init(personId, created);
             Files.Add(file);
         }
 
-        public void AddFiles(IEnumerable<DFile> files, int personId)
+        public void AddFiles(IEnumerable<DFile> files, int personId, DateTime? created = null)
         {
-            Init(personId);
+            Init(personId, created);
             Files.AddRange(files);
         }
 
-        private void Init(int personId)
+        private void Init(int personId, DateTime? created)
         {
             if (IsEmpty)
             {
                 CreatorId = personId;
-                Created = DateTime.UtcNow;
+                Created = created ?? DateTime.UtcNow;
             }
         }
     }
+
     [ProtoContract(EnumPassthru = true)]
     public enum TypeKind
     {
@@ -987,6 +1225,9 @@ namespace Ascon.Pilot.Core
         [ProtoMember(13)]
         public bool IsService { get; set; }
 
+        [ProtoMember(14)]
+        public bool IsProject { get; set; }
+
         public MType()
         {
             Name = String.Empty;
@@ -1008,7 +1249,8 @@ namespace Ascon.Pilot.Core
                 IsMountable = IsMountable,
                 Kind = Kind,
                 Sort = Sort,
-                IsService = IsService
+                IsService = IsService,
+                IsProject = IsProject
             };
             
             foreach (var attribute in Attributes)
@@ -1020,15 +1262,18 @@ namespace Ascon.Pilot.Core
             return clone;
         }
     }
+
     [ProtoContract(EnumPassthru = true)]
     public enum MAttrType 
     {
-        Integer, 
-        Double, 
-        DateTime, 
-        String,
-        Decimal,
-        Numerator
+        Integer = 0, 
+        Double = 1, 
+        DateTime = 2, 
+        String = 3,
+        Decimal = 4,
+        Numerator = 5,
+        Array = 6
+        //Don't forget to update SDK's AttributeType
     }
 
     [ProtoContract]
@@ -1247,13 +1492,16 @@ namespace Ascon.Pilot.Core
         public string Title { get; set; }
 
         [ProtoMember(3)]
-        public bool IsLastLeaf { get; set; }
+        public bool IsPosition { get; set; }
 
         [ProtoMember(4)]
         public List<int> Children { get; private set; }
 
         [ProtoMember(5)]
         public bool IsDeleted { get; set; }
+
+        [ProtoMember(6)]
+        public bool IsBoss { get; set; }
 
         public DOrganisationUnit()
         {
@@ -1273,8 +1521,9 @@ namespace Ascon.Pilot.Core
         {
             other.Id = Id;
             other.Title = Title;
-            other.IsLastLeaf = IsLastLeaf;
+            other.IsPosition = IsPosition;
             other.IsDeleted = IsDeleted;
+            other.IsBoss = IsBoss;
 
             foreach (var child in Children)
                 other.Children.Add(child);
@@ -1329,14 +1578,6 @@ namespace Ascon.Pilot.Core
 
         [ProtoMember(2)]
         public DObject New { get; set; }
-
-#if DEBUG
-        //[ProtoIgnore]
-        //public ChangeDebug DebugView
-        //{
-        //    get { return new ChangeDebug(this); }
-        //}
-#endif
     }
 
     [ProtoContract]
@@ -1641,6 +1882,7 @@ namespace Ascon.Pilot.Core
             return copy;
         }
     }
+
     [ProtoContract(EnumPassthru = true)]
     public enum FileSystemNodeKind : byte
     {
@@ -1668,6 +1910,7 @@ namespace Ascon.Pilot.Core
         [ProtoMember(6)]
         public bool CanBeRenamedOrDeleted { get; set; }
     }
+
     [ProtoContract(EnumPassthru = true)]
     public enum DatabaseState
     {
@@ -1743,6 +1986,7 @@ namespace Ascon.Pilot.Core
             Version = version;
         }
     }
+
     [ProtoContract(EnumPassthru = true)]
     public enum SearchKind
     {
@@ -1758,7 +2002,7 @@ namespace Ascon.Pilot.Core
         OutdatedTasks,
         CompletedTasks,
         RevokedTasks,
-        CopedTasks,
+        AuditorTasks,
         Custom,
         FileContent
     }
@@ -1772,7 +2016,7 @@ namespace Ascon.Pilot.Core
         [ProtoMember(2)]
         public string SearchString { get; set; }
 
-        [ProtoMember(3)]
+        [ProtoMember(3), Obsolete("Use the DObject.CONTEXT field intead")]
         public Guid ContextObjectId { get; set; }
         
         [ProtoMember(4)]
@@ -1790,7 +2034,6 @@ namespace Ascon.Pilot.Core
         public DSearchDefinition()
         {
             Id = Guid.NewGuid();
-            ContextObjectId = DObject.RootId;
             MaxResults = Constants.MAX_ITEMS_LOAD_PER_PAGE;
             SortFieldName = string.Empty;
         }
@@ -1912,6 +2155,12 @@ namespace Ascon.Pilot.Core
 
         [ProtoMember(7)]
         public NotificationSourceKind SourceKind { get; set; }
+
+        [ProtoMember(9)]
+        public DateTime VersionTime { get; set; }
+
+        [ProtoMember(10)]
+        public string NameOfChangedFile { get; set; }
     }
 
     [ProtoContract]
@@ -1970,6 +2219,88 @@ namespace Ascon.Pilot.Core
     }
 
     [ProtoContract]
+    public class DReservation
+    {
+        [ProtoMember(1)]
+        public Guid DatabaseId { get; set; }
+
+        [ProtoMember(2)]
+        public int ProductId { get; set; }
+
+        [ProtoMember(3)]
+        public int OrganisationUnitId { get; set; }
+
+        [ProtoMember(4)]
+        public int Amount { get; set; }
+
+        [ProtoMember(5)]
+        public string OrganisationUnitTitle { get; set; }
+
+        [ProtoMember(6)]
+        public bool IsLastLeaf { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var reservation = obj as DReservation;
+            if (reservation == null)
+                return false;
+            if (reservation == this)
+                return true;
+
+            return DatabaseId.Equals(reservation.DatabaseId) &&
+                   ProductId == reservation.ProductId &&
+                   OrganisationUnitId == reservation.OrganisationUnitId;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = DatabaseId.GetHashCode();
+                hashCode = (hashCode*397) ^ ProductId;
+                hashCode = (hashCode*397) ^ OrganisationUnitId;
+                return hashCode;
+            }
+        }
+    }
+    
+    [ProtoContract]
+    public class DActiveSession
+    {
+        [ProtoMember(1)]
+        public Guid SessionId { get; set; }
+
+        [ProtoMember(2)]
+        public int ProductId { get; set; }
+
+        [ProtoMember(3)]
+        public string UserName { get; set; }
+
+        [ProtoMember(4)]
+        public string Ip { get; set; }
+
+        [ProtoMember(5)]
+        public string HostName { get; set; }
+
+        [ProtoMember(6)]
+        public Guid DatabaseId { get; set; }
+        
+        public override bool Equals(object other)
+        {
+            var session = other as DActiveSession;
+            if (session == null)
+                return false;
+            return SessionId.Equals(session.SessionId);
+
+        }
+
+        public override int GetHashCode()
+        {
+            return SessionId.GetHashCode();
+        }
+    }
+    
+    [ProtoContract]
     public class DAnnotationCorrespondenceHistory
     {
         [ProtoMember(1)]
@@ -2012,6 +2343,7 @@ namespace Ascon.Pilot.Core
         [ProtoMember(4)]
         public string Name { get; set; }
     }
+
     [ProtoContract(EnumPassthru = true)]
     public enum LockState
     {
@@ -2076,6 +2408,84 @@ namespace Ascon.Pilot.Core
             State = LockState.None;
             Date = default(DateTime);
             PersonId = default(int);
+        }
+    }
+
+    [ProtoContract]
+    [DebuggerDisplay("State: {State} PersonId: {PersonId} Date: {Date}")]
+    public class DStateInfo
+    {
+        public DStateInfo()
+        {
+            State = ObjectState.Alive;
+        }
+
+        [ProtoMember(1)]
+        public ObjectState State { get; set; }
+
+        [ProtoMember(2)]
+        public DateTime Date { get; set; }
+
+        [ProtoMember(3)]
+        public int PersonId { get; set; }
+
+        [ProtoMember(4)]
+        public int PositionId { get; set; }
+
+        protected bool Equals(DStateInfo other)
+        {
+            return State == other.State && Date.Equals(other.Date) && PersonId == other.PersonId && PositionId == other.PositionId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DStateInfo)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = State.GetHashCode();
+                hashCode = (hashCode * 397) ^ Date.GetHashCode();
+                hashCode = (hashCode * 397) ^ PersonId;
+                hashCode = (hashCode * 397) ^ PositionId;
+                return hashCode;
+            }
+        }
+
+        public void AssignTo(DStateInfo stateInfo)
+        {
+            stateInfo.State = State;
+            stateInfo.Date = Date;
+            stateInfo.PersonId = PersonId;
+            stateInfo.PositionId = PositionId;
+        }
+
+        public bool IsLockStateNone()
+        {
+            return State != ObjectState.LockAccepted && State != ObjectState.LockRequested;
+        }
+
+        public void SetState(ObjectState state, int personId, int positionId, DateTime date)
+        {
+            State = state;
+            PersonId = personId;
+            PositionId = positionId;
+            Date = date;
+        }
+
+        public void SetState(ObjectState state, int personId, int positionId)
+        {
+            SetState(state, personId, positionId, DateTime.UtcNow);
+        }
+
+        public void SetState(DStateInfo stateInfo)
+        {
+            SetState(stateInfo.State, stateInfo.PersonId, stateInfo.PositionId, stateInfo.Date);
         }
     }
 }
