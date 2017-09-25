@@ -1580,9 +1580,6 @@ namespace Ascon.Pilot.Core
     }
 
     [ProtoContract]
-#if DEBUG
-    [DebuggerDisplay("{DebugView}")]
-#endif
     public class DChange
     {
         [ProtoMember(1)]
@@ -1590,14 +1587,6 @@ namespace Ascon.Pilot.Core
 
         [ProtoMember(2)]
         public DObject New { get; set; }
-
-#if DEBUG
-        [ProtoIgnore]
-        public ChangeDebug DebugView
-        {
-            get { return new ChangeDebug(this); }
-        }
-#endif
     }
 
     [ProtoContract]
