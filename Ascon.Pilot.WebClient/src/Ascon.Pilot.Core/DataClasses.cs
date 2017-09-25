@@ -1306,10 +1306,16 @@ namespace Ascon.Pilot.Core
         [ProtoMember(11)]
         public string Configuration { get; set; }
 
+        [ProtoMember(12)]
+        public bool InGroup { get; set; }
+
+        [ProtoMember(13)]
+        public bool IsUnique { get; set; }
+
         public MAttribute()
         {
-            Name = String.Empty;
-            Title = String.Empty;
+            Name = string.Empty;
+            Title = string.Empty;
             DisplayHeight = 1;
         }
 
@@ -1320,10 +1326,12 @@ namespace Ascon.Pilot.Core
                 && Obligatory.Equals(other.Obligatory) 
                 && DisplaySortOrder == other.DisplaySortOrder
                 && ShowInTree == other.ShowInTree
+                && InGroup == other.InGroup
                 && Type == other.Type 
                 && IsService == other.IsService
                 && DisplayHeight == other.DisplayHeight
-                && Configuration == other.Configuration;
+                && Configuration == other.Configuration
+                && IsUnique == other.IsUnique;
         }
 
         public override bool Equals(object obj)
@@ -1347,6 +1355,8 @@ namespace Ascon.Pilot.Core
                 hashCode = (hashCode * 397) ^ (int) Type;
                 hashCode = (hashCode * 397) ^ IsService.GetHashCode();
                 hashCode = (hashCode * 397) ^ DisplayHeight;
+                hashCode = (hashCode * 397) ^ InGroup.GetHashCode();
+                hashCode = (hashCode * 397) ^ IsUnique.GetHashCode();
                 return hashCode;
             }
         }
@@ -1361,9 +1371,11 @@ namespace Ascon.Pilot.Core
                 Name = Name,
                 Obligatory = Obligatory,
                 ShowInTree = ShowInTree,
+                InGroup = InGroup,
                 Configuration = Configuration,
                 Title = Title,
-                Type = Type
+                Type = Type,
+                IsUnique = IsUnique
             };
             return clone;
         }
@@ -1578,6 +1590,14 @@ namespace Ascon.Pilot.Core
 
         [ProtoMember(2)]
         public DObject New { get; set; }
+
+#if DEBUG
+        [ProtoIgnore]
+        public ChangeDebug DebugView
+        {
+            get { return new ChangeDebug(this); }
+        }
+#endif
     }
 
     [ProtoContract]
