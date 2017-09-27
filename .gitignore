@@ -252,3 +252,4 @@ paket-files/
 *.sln.iml
 /Ascon.Pilot.WebClient/src/Ascon.Pilot.WebClient/Properties/PublishProfiles/netcore-publish.ps1
 /Ascon.Pilot.WebClient/src/Ascon.Pilot.WebClient/Properties/PublishProfiles/publish-module.psm1
+Ascon.Pilot.WebClient/src/Ascon.Pilot.WebClient/Properties/PublishProfiles/Release-publish.ps1
