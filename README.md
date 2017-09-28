@@ -1,7 +1,6 @@
 # pilot-web-client-netcorerelease
 Новая редакция Web-клиента на ASP.NET Core 1.1 для системы управления двнными Pilot-ICE
-Актуальные версии компонентов ASP.NET Core можно скачать здесь: 
- -https://www.microsoft.com/net/download/core#/runtime
+Актуальные версии компонентов ASP.NET Core можно скачать здесь: https://www.microsoft.com/net/download/core#/runtime
 
 Прямые ссылки:
  - https://download.microsoft.com/download/6/F/B/6FB4F9D2-699B-4A40-A674-B7FF41E0E4D2/dotnet-win-x64.1.1.4.exe
