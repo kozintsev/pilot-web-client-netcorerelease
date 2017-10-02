@@ -1,0 +1,52 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<!-- Toolbar -->
+<div class="navbar navbar-default toolbar" id="toolbar">
+    <div class="navbar-header">
+        <div class="navbar-brand">
+            <a id="downloadButton" href="#" role="button" title="Скачать" target="_blank">
+                <span class="glyphicon glyphicon-download-alt"></span>&nbsp;
+                <span class="hidden-xs">Создать</span>
+            </a>
+            <a id="downloadArchiveButton" role="button" onclick="downloadArchive(this)" title="Скачать архивом">
+                <span class="glyphicon glyphicon-folder-close"></span>&nbsp;
+                <span class="hidden-xs">Настройки</span>
+            </a>
+            <a id="filesPanelToggler" role="button">
+               <span class="glyphicon glyphicon-th"></span>&nbsp;
+                <span class="hidden-xs">Настройки</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row">
+    <div class="col-md-2">
+        <div class="list-group">
+            <a href="#" class="list-group-item active">First item</a>
+            <a href="#" class="list-group-item">Second item</a>
+            <a href="#" class="list-group-item">Third item</a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="well content">
+            {$content}
+        </div>
+        <br /><br />
+        {$spacebottom}
+    </div>
+    <div class="col-md-4">
+        <div id="advertising">
+            {$spaceright}
+        </div>
+    </div>
+</div>
+
+<!-- Tasks -->
+
+<!-- Task Preview -->
