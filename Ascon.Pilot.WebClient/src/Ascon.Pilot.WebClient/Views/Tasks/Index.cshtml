@@ -25,22 +25,27 @@
 </div>
 
 <!-- Filters -->
-    <div class="row-fluid ">
+    <div class="row-fluid">
         <div class="col-md-2">
-            <div class="list-group">
-                <a href="#" class="list-group-item active">Актуальные</a>
-                <a href="#" class="list-group-item">Выданные</a>
-                <a href="#" class="list-group-item">Полученные</a>
-                <a href="#" class="list-group-item">Вы в аудиторах</a>
-                <a href="#" class="list-group-item">Просроченные</a>
-                <a href="#" class="list-group-item">Выполненные</a>
-                <a href="#" class="list-group-item">Отозванные</a>
-                <a href="#" class="list-group-item">Все</a>
+            <div class="list-group" id="ddlCategory">
+                <a onclick="loadTasks(6)" class="list-group-item">Актуальные</a>
+                <a onclick="loadTasks(7)" class="list-group-item">Выданные</a>
+                <a onclick="loadTasks(8)" class="list-group-item">Полученные</a>
+                <a onclick="loadTasks(12)" class="list-group-item">Вы в аудиторах</a>
+                <a onclick="loadTasks(9)" class="list-group-item">Просроченные</a>
+                <a onclick="loadTasks(10)" class="list-group-item">Выполненные</a>
+                <a onclick="loadTasks(11)" class="list-group-item">Отозванные</a>
+                <a onclick="loadTasks(5)" class="list-group-item">Все</a>
             </div>
         </div>
         <div class="col-md-5">
             <!-- Tasks -->
-            @await Component.InvokeAsync("TaskList", new { id = 1 })
+            <div id="progress" class="text-center" style="display: none;">
+                <span class="glyphicon glyphicon-spin glyphicon-refresh"></span>
+            </div>
+
+            <div id="taskList">
+            </div>
         </div>
         <div class="col-md-5">
             <div>
@@ -49,3 +54,6 @@
             </div>
         </div>
     </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="~/js/tasks.js"></script>

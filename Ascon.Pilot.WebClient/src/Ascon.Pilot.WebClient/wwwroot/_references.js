@@ -2,6 +2,7 @@
 /// <reference path="js/dropzone.js" />
 /// <reference path="js/files.js" />
 /// <reference path="js/site.js" />
+/// <reference path="js/tasks.js" />
 /// <reference path="lib/bootstrap/dist/js/bootstrap.min.js" />
 /// <reference path="lib/bootstrap/dist/js/npm.js" />
 /// <reference path="lib/bootstrap/grunt/bs-commonjs-generator.js" />

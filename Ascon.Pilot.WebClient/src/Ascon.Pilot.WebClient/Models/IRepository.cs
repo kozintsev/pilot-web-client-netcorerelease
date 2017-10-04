@@ -37,7 +37,14 @@ namespace Ascon.Pilot.WebClient.Models
 
         public void Notify(DSearchResult result)
         {
-            _searchCompletionSource.SetResult(result);
+            try
+            {
+                _searchCompletionSource.SetResult(result);
+            }
+            catch (Exception e)
+            {
+                ;
+            }
         }
     }
 }

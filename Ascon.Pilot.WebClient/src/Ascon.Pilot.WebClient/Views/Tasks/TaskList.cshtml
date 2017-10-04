@@ -1,0 +1,15 @@
+﻿@model IEnumerable<Ascon.Pilot.WebClient.ViewModels.TaskNode>
+
+<div class="list-group">
+    @if (Model == null || !Model.Any())
+    {
+        <p>Нет данных для отображения</p>
+    }
+    else
+    {
+        @foreach (var todo in Model)
+        {
+            <a href="#" class="list-group-item">@todo.Name</a>
+        }
+    }
+</div>
