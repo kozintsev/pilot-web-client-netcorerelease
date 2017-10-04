@@ -22,6 +22,39 @@ body {
     z-index: 1;
 }
 
+/* ------    SideNav ---------- */
+.sidenav {
+    display: none;
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    z-index: 10;
+    top: 47px;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 10px;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    color: #818181;
+    display: block;
+    font-size: medium;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+    background: #5e5e5e;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+
 /* ------   owerride bootstrap styles -------- */
 
 .toolbar {
@@ -45,20 +78,12 @@ body {
     color: #5e5e5e;
 }
 
-.navbar-toggle {
-  border-radius: 0px;
-}
-
-.navbar-inverse .navbar-toggle{
-    border-color: transparent;
-}
-
-.navbar-default .navbar-toggle{
-    border-color: transparent;
-}
-
 .navbar-text {
     margin-left: 15px;
+}
+
+a.navbar-brand {
+    padding: 0px 0px; 
 }
 
 .list-group-item:first-child {
@@ -139,71 +164,6 @@ textarea {
     to {transform:rotate(360deg);}
 }
 
-/*------------Menu-------------------*/
-
-a#menuToggler {
-    color: #9d9d9d;
-    padding-right: 10px;
-}
-
-a#menuToggler:hover {
-    color: white;
-}
-
-#menu {
-    position:absolute;    
-    top: 51px;
-    bottom: 0px;
-    left: -200px;    
-    background-color: #2f2f2f;
-    color: #9d9d9d;
-    z-index: 1030;
-    width: 200px;
-    border-right: 1px solid black;
-}
-
-#menu.menu-slide-in {
-    left: 0;
-    animation: menu-slide-in 0.3s forwards;    
-}
-
-#menu.menu-slide-out {
-    left: -200px;
-    animation: menu-slide-out 0.3s forwards;    
-}
-
-@keyframes menu-slide-in {
-    0% { left: -200px; }
-    100% { left: 0; }
-}
-   
-@keyframes menu-slide-out {
-    0% { left: 0; }
-    100% { left: -200px; }
-}
-
-#menu ul {
-    display: block;
-    list-style: none;
-    margin: 0;    
-    padding: 0;
-    font-size: 1.2em;
-}
-
-#menu ul li {
-    display: block;
-    padding: 10px;
-}
-
-#menu ul li a {
-    color: #9d9d9d;
-    text-decoration: none;
-}
-
-#menu ul li:hover {    
-    background-color: #3f3f3f;
-    color: white;
-}
 
 /*--------------------------------------Modal preview---------------------------*/
 

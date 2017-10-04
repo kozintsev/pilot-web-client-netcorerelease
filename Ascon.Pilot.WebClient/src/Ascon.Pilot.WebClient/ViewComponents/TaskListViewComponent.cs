@@ -45,9 +45,10 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             var searchDefinition = new DSearchDefinition()
             {
                 Id = Guid.NewGuid(),
-                MaxResults = 250,
-                SearchKind = SearchKind.ActualTasks,
-                Ascending = true
+                MaxResults = 10,
+                SearchKind = SearchKind.AllTasks,
+                Ascending = true,
+                SortFieldName = SystemAttributes.TASK_DATE_OF_ASSIGNMENT
             };
 
             _serverApi.AddSearch(searchDefinition);

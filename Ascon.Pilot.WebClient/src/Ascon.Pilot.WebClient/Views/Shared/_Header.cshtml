@@ -12,9 +12,8 @@
             <span class="icon-bar"></span>
         </button>
         <div class="navbar-brand">
-            <a asp-controller="Home" asp-action="Index">
-                <img src="@Url.Content("~/images/logo.png")" height="28" alt="Pilot-WEB" />
-            </a>
+            <a class="glyphicon glyphicon-align-justify navbar-link" style="cursor:pointer;margin-right:10px; text-decoration:none" onclick="openNav()"></a>
+            <a asp-controller="Home" asp-action="Index"><img src="@Url.Content("~/images/logo.png")" height="28" alt="Pilot-WEB"></a>
         </div>
     </div>
     <div class="navbar-collapse collapse" id="colapsedMenu">
@@ -55,19 +54,24 @@
     </div>
 }  
   
+<div id="mySidenav" class="sidenav">
+    <a asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
+    <a asp-controller="Tasks" asp-action="Index" onclick="openNav()">Задания</a>
+</div>
+
   <script type="text/javascript">    
-    function toggleMenu(el) {        
-        var menu = $("#menu");
-        if (menu.hasClass("menu-slide-in")) {
-            menu.toggleClass("menu-slide-in menu-slide-out");
-            menu.show();
-        } else if (menu.hasClass("menu-slide-out")) {
-            menu.show();
-            menu.toggleClass("menu-slide-in menu-slide-out");
+
+      function openNav() {
+        var sidenav = document.getElementById("mySidenav");
+        if (sidenav.style.display == "block") {
+            sidenav.style.display = "none";
+            if (sidenav.classList.contains('active'))
+                sidenav.classList.toggle('active');
+        }
+        else {
+            document.getElementById("mySidenav").style.display = "block";
+            sidenav.classList.remove('active');
         }
     }
-    
-    function hideMenu() {
-        $("#menu").removeClass("menu-slide-in").addClass("menu-slide-out");
-    }
+
 </script>
