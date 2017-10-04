@@ -18,11 +18,13 @@ namespace Ascon.Pilot.WebClient.ViewComponents
     /// </summary>
     public class FilesPanelViewComponent : ViewComponent
     {
-        private ILogger<FilesController> _logger;
+        private readonly ILogger<FilesController> _logger;
+        private readonly IContext _context;
 
-        public FilesPanelViewComponent(ILogger<FilesController> logger)
+        public FilesPanelViewComponent(ILogger<FilesController> logger, IContext context)
         {
             _logger = logger;
+            _context = context;
         }
         /// <summary>
         /// Вызвать компонент панели файлов
@@ -40,7 +42,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     try
                     {
                         var types = HttpContext.Session.GetMetatypes();
-                        var serverApi = HttpContext.GetServerApi();
+                        var serverApi = _context.ServerApi;
                         var folder = serverApi.GetObjects(new[] { folderId }).First();
 
                         if (folder.Children?.Any() != true)

@@ -4,18 +4,27 @@ using Ascon.Pilot.Core;
 using Ascon.Pilot.WebClient.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Ascon.Pilot.Server.Api.Contracts;
+using Ascon.Pilot.WebClient.Models;
 
 namespace Ascon.Pilot.WebClient.ViewComponents
 {
     public class BreadcrumbsViewComponent : ViewComponent
     {
+        private IContext _context;
+
+        public BreadcrumbsViewComponent(IContext context)
+        {
+            _context = context;
+        }
+
         public IViewComponentResult Invoke(Guid id)
         {
             Queue<KeyValuePair<string, string>> result = new Queue<KeyValuePair<string, string>>();
             try
             {
                 var types = HttpContext.Session.GetMetatypes();
-                var serverApi = HttpContext.GetServerApi();
+                var serverApi = _context.ServerApi;
 
                 Guid parentId = id;
                 bool isSource = ViewBag.IsSource ?? false;

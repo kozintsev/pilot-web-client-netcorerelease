@@ -7,6 +7,7 @@ using Ascon.Pilot.Core;
 using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Ascon.Pilot.WebClient.Models;
 
 namespace Ascon.Pilot.WebClient.ViewComponents
 {
@@ -15,6 +16,13 @@ namespace Ascon.Pilot.WebClient.ViewComponents
     /// </summary>
     public class SidePanelViewComponent : ViewComponent
     {
+        private readonly IContext _context;
+
+        public SidePanelViewComponent(IContext context)
+        {
+            _context = context;
+        }
+
         /// <summary>
         /// Вызов боковой панели.
         /// </summary>
@@ -35,7 +43,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
         {
             id = id ?? DObject.RootId;
 
-            var serverApi = HttpContext.GetServerApi();
+            var serverApi = _context.ServerApi;
             var rootObject = serverApi.GetObjects(new[] { id.Value }).First();
             var bRootObject = serverApi.GetObjects(new[] { DObject.RootId }).First();
             var mTypes = HttpContext.Session.GetMetatypes();

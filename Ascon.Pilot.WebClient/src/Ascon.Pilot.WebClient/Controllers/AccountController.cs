@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Authentication;
+using Ascon.Pilot.WebClient.Models;
 
 namespace Ascon.Pilot.WebClient.Controllers
 {
@@ -21,10 +22,12 @@ namespace Ascon.Pilot.WebClient.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger<FilesController> _logger;
+        private readonly IContext _context;
 
-        public AccountController(ILogger<FilesController> logger)
+        public AccountController(ILogger<FilesController> logger, IContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [AllowAnonymous]
@@ -87,6 +90,8 @@ namespace Ascon.Pilot.WebClient.Controllers
                 Debug.WriteLine(dMetadata.Types.ToString());
                 Debug.WriteLine(dMetadata.Version.ToString());
                 HttpContext.Session.SetSessionValues(SessionKeys.MetaTypes, dMetadata.Types.ToDictionary(x => x.Id, y => y));
+
+            _context.Build(HttpContext);
 
             return RedirectToAction("Index", "Files");
         }

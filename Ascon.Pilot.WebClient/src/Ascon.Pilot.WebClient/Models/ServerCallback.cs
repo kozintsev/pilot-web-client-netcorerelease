@@ -7,23 +7,18 @@ using Ascon.Pilot.Core;
 
 namespace Ascon.Pilot.WebClient.Models
 {
-    interface IListener
+    interface IRemoteStorageListener
     {
         void Notify(DSearchResult result);
     }
     
     class ServerCallback : IServerCallback
     {
-        private IListener _listener;
-
-        public void Subscribe(IListener listener)
+        private IRemoteStorageListener _listener;
+        
+        public void SetCallbackListener(IRemoteStorageListener listener)
         {
             _listener = listener;
-        }
-
-        public void Unsubscribe()
-        {
-            _listener = null;
         }
 
         public void NotifyChangeset(DChangeset changeset)
