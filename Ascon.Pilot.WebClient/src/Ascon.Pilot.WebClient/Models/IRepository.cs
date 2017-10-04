@@ -32,7 +32,7 @@ namespace Ascon.Pilot.WebClient.Models
 
         public List<DObject> GetObjects(Guid[] ids)
         {
-            throw new NotImplementedException();
+            return _serverApi.GetObjects(ids);
         }
 
         public void Notify(DSearchResult result)

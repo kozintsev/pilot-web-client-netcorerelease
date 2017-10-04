@@ -1,4 +1,5 @@
-﻿using Ascon.Pilot.Server.Api;
+﻿using Ascon.Pilot.Core;
+using Ascon.Pilot.Server.Api;
 using Ascon.Pilot.Server.Api.Contracts;
 using Ascon.Pilot.WebClient.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,8 @@ namespace Ascon.Pilot.WebClient.Models
         void Build(HttpContext http);
         IRepository Repository { get; }
         IServerApi ServerApi { get; }
+        HttpPilotClient Client { get; }
+        DDatabaseInfo Connect(HttpContext http, Credentials credentials);
     }
 
     class Context : IContext
@@ -20,16 +23,26 @@ namespace Ascon.Pilot.WebClient.Models
         private ServerCallback _serverCallback;
         bool _isInitialized;
 
+        public Context()
+        {
+            _serverCallback = new ServerCallback();
+        }
+
+        public DDatabaseInfo Connect(HttpContext http, Credentials credentials)
+        {
+             _client = new HttpPilotClient();
+            _client.Connect(ApplicationConst.PilotServerUrl);
+            ServerApi = _client.GetServerApi(_serverCallback);
+            var dbInfo = ServerApi.OpenDatabase(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth);
+            http.SetClient(_client, credentials.Sid);
+            return dbInfo;
+        }
+
         public void Build(HttpContext http)
         {
             if (_isInitialized)
                 return;
 
-            _client = http.GetClient();
-            if (_client == null)
-                _client = new HttpPilotClient();
-
-            _serverCallback = new ServerCallback();
             ServerApi = http.GetServerApi(_serverCallback);
             _repository = new Repository(ServerApi);
             _serverCallback.SetCallbackListener(_repository);
@@ -46,14 +59,15 @@ namespace Ascon.Pilot.WebClient.Models
             get; private set;
         }
 
-        //TODO create in this class
-        public void SetHttpClient(HttpPilotClient client)
+        public HttpPilotClient Client
         {
-            _client = client;
+            get { return _client; }
         }
 
         public void Dispose()
         {
+            _client?.Disconnect();
+            _client?.Dispose();
         }
     }
 }
