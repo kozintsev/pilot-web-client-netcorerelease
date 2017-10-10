@@ -4,6 +4,7 @@ using Ascon.Pilot.Server.Api.Contracts;
 using Ascon.Pilot.WebClient.Extensions;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Security.Claims;
 
 namespace Ascon.Pilot.WebClient.Models
 {
@@ -46,6 +47,8 @@ namespace Ascon.Pilot.WebClient.Models
             ServerApi = http.GetServerApi(_serverCallback);
             _repository = new Repository(ServerApi);
             _serverCallback.SetCallbackListener(_repository);
+            var login = http.User.FindFirstValue(ClaimTypes.Name);
+            _repository.Initialize(login);
             _isInitialized = true;
         }
 

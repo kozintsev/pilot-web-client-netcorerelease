@@ -262,7 +262,7 @@ namespace Ascon.Pilot.Transport
         private object DataToResult(byte[] data, MethodInfo method)
         {
             if (data.Length == 0)
-                return Convert.ChangeType(null, method.ReturnType);
+                return null;// Convert.ChangeType(null, method.ReturnType);
             using (var mem = new MemoryStream(data))
             {
                 var result = ProtoSerializer.Deserialize(mem, method.ReturnType);

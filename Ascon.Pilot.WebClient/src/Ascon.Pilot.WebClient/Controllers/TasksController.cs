@@ -61,7 +61,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             }
 
             var objects = repo.GetObjects(searchResults.Found.ToArray());
-            var list = objects.Select(o => new TaskNode(o));
+            var list = objects.Select(o => new TaskNode(o, _context.Repository));
             return list;
         }
 

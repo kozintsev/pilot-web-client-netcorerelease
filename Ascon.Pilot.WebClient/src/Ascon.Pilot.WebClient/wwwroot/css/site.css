@@ -1,7 +1,8 @@
 ﻿/* ------ Body ---------*/
 html,body,.container {
     height:100%;
-    background: #f5f9fc;
+    background: #F8F9FB;
+    color: #5D687F;
 }
 
 .body-content {
@@ -21,8 +22,6 @@ html,body,.container {
     padding: 0 !important; /*set left/right padding according to needs*/
     box-sizing: border-box;
 }
-
-
 
 .col-overflow {
     overflow: auto;
@@ -97,6 +96,11 @@ html,body,.container {
     background: white;
 }
 
+.row {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
 /* ---------- side menu -------- */
 .noborder {
   border: 1px solid #fff;
@@ -120,6 +124,7 @@ html,body,.container {
     height: 100%;
     width: 250px;
     background-color: white;
+    border-right: 1px solid #DFE4E8;
 }
 
 .sidebar-right{
@@ -128,6 +133,7 @@ html,body,.container {
     position: fixed;
     top: 0;
     right: 0;
+    border-left: 1px solid #DFE4E8;
 }
 
 .main-content {
@@ -196,6 +202,36 @@ a.navbar-brand {
 
 .breadcrumb li a {
     display: inline;
+}
+
+
+/* ---------------------- tasks -------------------------------- */
+
+.task-node {
+    display: block;
+    height: 60px;
+    padding: 5px;
+    margin-bottom: 10px;
+    background-color: transparent;
+    border-bottom: 1px solid #DFE4E8;
+}
+
+a.task-node {
+    text-decoration: none;
+    color: black;
+}
+
+.col-fix {
+  position: relative;
+  height: 16px;
+  width: 16px;
+  float: left;
+  margin-right: 5px;
+}
+
+.text-title {
+    font-weight:bold;
+    color: #242D3E;
 }
 
 /*--------------------------------------Modal preview---------------------------*/
@@ -371,7 +407,6 @@ a.navbar-brand {
 
 .file-list .file-card .file-card-icon div {
     display: block;
-    vertical-align: middle;
     height: 50px;
     width: 50px;
 }

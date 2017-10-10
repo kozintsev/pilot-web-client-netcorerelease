@@ -11,16 +11,29 @@ namespace Ascon.Pilot.WebClient.Models
     {
         Task<DSearchResult> Search(DSearchDefinition searchDefinition);
         List<DObject> GetObjects(Guid[] ids);
+        DPerson GetPersonOnOrganisationUnit(int id);
+        DOrganisationUnit GetOrganisationUnit(int id);
+        DPerson CurrentPerson();
     }
 
     class Repository : IRepository, IRemoteStorageListener
     {
         private IServerApi _serverApi;
+        private Dictionary<int, DPerson> _persons = new Dictionary<int, DPerson>();
+        private Dictionary<int, DOrganisationUnit> _organisationUnits = new Dictionary<int, DOrganisationUnit>();
         private TaskCompletionSource<DSearchResult> _searchCompletionSource;
+        private DPerson _person;
 
         public Repository(IServerApi serverApi)
         {
             _serverApi = serverApi;
+        }
+
+        public void Initialize(string currentLogin)
+        {
+            _persons = _serverApi.LoadPeople().ToDictionary(x => x.Id, y => y);
+            _organisationUnits = _serverApi.LoadOrganisationUnits().ToDictionary(x => x.Id, y => y);
+            _person = _persons.First(p => p.Value.Login == currentLogin).Value;
         }
 
         public Task<DSearchResult> Search(DSearchDefinition searchDefinition)
@@ -33,6 +46,26 @@ namespace Ascon.Pilot.WebClient.Models
         public List<DObject> GetObjects(Guid[] ids)
         {
             return _serverApi.GetObjects(ids);
+        }
+
+        public DPerson GetPersonOnOrganisationUnit(int id)
+        {
+            return _persons.Values.Where(p => p.Positions.Select(m => m.Position).Contains(id))
+                .OrderBy(o => o.Positions.First(x => x.Position == id).Order)
+                .FirstOrDefault();
+        }
+
+        public DOrganisationUnit GetOrganisationUnit(int id)
+        {
+            DOrganisationUnit result;
+            if (!_organisationUnits.TryGetValue(id, out result))
+                return new DOrganisationUnit();
+            return result;
+        }
+
+        public DPerson CurrentPerson()
+        {
+            return _person;
         }
 
         public void Notify(DSearchResult result)

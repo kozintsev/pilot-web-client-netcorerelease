@@ -1,4 +1,5 @@
 ﻿using Ascon.Pilot.Core;
+using Ascon.Pilot.WebClient.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,11 @@ namespace Ascon.Pilot.WebClient.Models
         private readonly DObject _source;
         private DOrganisationUnit _executorPosition;
         private DOrganisationUnit _initiatorPosition;
+        private readonly IRepository _repository;
 
-        public DTask(DObject obj)
+        public DTask(DObject obj, IRepository repository)
         {
+            _repository = repository;
             _id = obj.Id;
             _source = obj;
         }
@@ -39,8 +42,7 @@ namespace Ascon.Pilot.WebClient.Models
                 if (_initiator != null)
                     return _initiator;
 
-                return null;
-                //return InitiatorPosition != null ? _repository.GetPersonOnOrganisationUnit(InitiatorPosition.Id) : _initiator;
+                return InitiatorPosition != null ? _repository.GetPersonOnOrganisationUnit(InitiatorPosition.Id) : _initiator;
             }
         }
 
@@ -51,8 +53,7 @@ namespace Ascon.Pilot.WebClient.Models
                 if (_executor != null)
                     return _executor;
 
-                return null;
-                //return ExecutorPosition != null ? _repository.GetPersonOnOrganisationUnit(ExecutorPosition.Id) : _executor;
+                return ExecutorPosition != null ? _repository.GetPersonOnOrganisationUnit(ExecutorPosition.Id) : _executor;
             }
         }
 
@@ -68,7 +69,7 @@ namespace Ascon.Pilot.WebClient.Models
                         int pos;
                         if (int.TryParse(executorPositionId.ToString(), out pos))
                         {
-                            //_executorPosition = _repository.GetOrganisationUnit(pos);
+                            _executorPosition = _repository.GetOrganisationUnit(pos);
                         }
                     }
                 }
@@ -88,7 +89,7 @@ namespace Ascon.Pilot.WebClient.Models
                         int pos;
                         if (int.TryParse(initiatorPositionId.ToString(), out pos))
                         {
-                            //_initiatorPosition = _repository.GetOrganisationUnit(pos);
+                            _initiatorPosition = _repository.GetOrganisationUnit(pos);
                         }
                     }
                 }
@@ -313,6 +314,61 @@ namespace Ascon.Pilot.WebClient.Models
 
                 return false;
             }
+        }
+    }
+
+    public static class TaskExtensions
+    {
+        public static string GetTitle(this DTask task)
+        {
+            if (string.IsNullOrEmpty(task.Title))
+            {
+                return task.Description.LimitCharacters(150);
+            }
+
+            return task.Title;
+        }
+
+        public static bool IsTaskExecutor(this DTask task, DPerson user)
+        {
+            var executorPosition = task.ExecutorPosition;
+            return user.Positions.Any(x => x.Position == executorPosition.Id);
+        }
+
+        public static bool IsTaskInitiator(this DTask task, DPerson user)
+        {
+            var executorPosition = task.InitiatorPosition;
+            return user.Positions.Any(x => x.Position == executorPosition.Id);
+        }
+
+        public static string GetInitiatorDisplayName(this DTask task, IRepository repository)
+        {
+            string name;
+            if (task.Initiator == null)
+            {
+                name = repository.GetOrganisationUnit(task.InitiatorPosition.Id).Title;
+            }
+            else
+            {
+                name = IsTaskInitiator(task, repository.CurrentPerson()) ? "Вы" : task.Initiator.GetActualName();
+            }
+
+            return name;
+        }
+
+        public static string GetExecutorDisplayName(this DTask task, IRepository repository)
+        {
+            string name;
+            if (task.Executor == null)
+            {
+                name = repository.GetOrganisationUnit(task.ExecutorPosition.Id).Title;
+            }
+            else
+            {
+                name = IsTaskExecutor(task, repository.CurrentPerson()) ? "Вы" : task.Executor.GetActualName();
+            }
+
+            return name;
         }
     }
 }
