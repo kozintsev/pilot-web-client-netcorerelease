@@ -25,36 +25,35 @@
 </div>
 
 <!-- Filters -->
-<div class="container5">
-    <div class="row">
-        <div class="col-md-2">
-            <div class="list-group" id="ddlCategory">
-                <a onclick="loadTasks(6)" class="list-group-item">Актуальные</a>
-                <a onclick="loadTasks(7)" class="list-group-item">Выданные</a>
-                <a onclick="loadTasks(8)" class="list-group-item">Полученные</a>
-                <a onclick="loadTasks(12)" class="list-group-item">Вы в аудиторах</a>
-                <a onclick="loadTasks(9)" class="list-group-item">Просроченные</a>
-                <a onclick="loadTasks(10)" class="list-group-item">Выполненные</a>
-                <a onclick="loadTasks(11)" class="list-group-item">Отозванные</a>
-                <a onclick="loadTasks(5)" class="list-group-item">Все</a>
-            </div>
-        </div>
-        <div class="col-md-5">
-            <!-- Tasks -->
-            <div id="progress" class="text-center" style="display: none;">
-                <span class="glyphicon glyphicon-spin glyphicon-refresh"></span>
-            </div>
-
-            <div id="taskList">
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div>
-                <!-- Task Preview -->
-                {$spaceright}
-            </div>
+<div class="wrap">
+    <div class="hidden-xs hidden-sm sidebar-left">
+        <div class="list-group" id="ddlCategory">
+            <a href="#" onclick="loadTasks(6)" class="list-group-item noborder">Актуальные</a>
+            <a href="#" onclick="loadTasks(7)" class="list-group-item noborder">Выданные</a>
+            <a href="#" onclick="loadTasks(8)" class="list-group-item noborder">Полученные</a>
+            <a href="#" onclick="loadTasks(12)" class="list-group-item noborder">Вы в аудиторах</a>
+            <a href="#" onclick="loadTasks(9)" class="list-group-item noborder">Просроченные</a>
+            <a href="#" onclick="loadTasks(10)" class="list-group-item noborder">Выполненные</a>
+            <a href="#" onclick="loadTasks(11)" class="list-group-item noborder">Отозванные</a>
+            <a href="#" onclick="loadTasks(5)" class="list-group-item noborder">Все</a>
         </div>
     </div>
+    
+    <div class="main-content">
+            <div class="col-md-6">
+                <div id="progress" class="text-center" style="display: none;">
+                    <span class="glyphicon glyphicon-spin glyphicon-refresh"></span>
+                </div>
+                <div id="taskList"></div>
+            </div>
+            
+           
+    </div>
+
+    <div class="hidden-xs hidden-sm sidebar-right">
+        rrrrr
+    </div>
+
 </div>
 
 <script src="~/js/tasks.js"></script>
