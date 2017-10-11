@@ -49,7 +49,7 @@ namespace Ascon.Pilot.WebClient.Controllers
                 Id = Guid.NewGuid(),
                 MaxResults = 20,
                 SearchKind = (SearchKind)id,
-                Ascending = true,
+                Ascending = false,
                 SortFieldName = SystemAttributes.TASK_DATE_OF_ASSIGNMENT
             };
 

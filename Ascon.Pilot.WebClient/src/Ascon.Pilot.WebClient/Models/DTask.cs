@@ -187,19 +187,19 @@ namespace Ascon.Pilot.WebClient.Models
             }
         }
 
-        //public TaskKind Kind
-        //{
-        //    get
-        //    {
-        //        object result;
-        //        if (_source.Attributes.TryGetValue(SystemAttributes.TASK_KIND, out result))
-        //        {
-        //            return (TaskKind)Int32.Parse(result.ToString());
-        //        }
+        public TaskKind Kind
+        {
+            get
+            {
+                DValue result;
+                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_KIND, out result))
+                {
+                    return (TaskKind)Int32.Parse(result.ToString());
+                }
 
-        //        return TaskKind.Task;
-        //    }
-        //}
+                return TaskKind.Task;
+            }
+        }
 
         public string Description
         {
@@ -287,19 +287,19 @@ namespace Ascon.Pilot.WebClient.Models
             }
         }
 
-        //public State State
-        //{
-        //    get
-        //    {
-        //        object state;
-        //        if (_source.Attributes.TryGetValue(SystemAttributes.TASK_STATE, out state))
-        //        {
-        //            return (State)Enum.Parse(typeof(State), state.ToString());
-        //        }
+        public TaskState State
+        {
+            get
+            {
+                DValue state;
+                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_STATE, out state))
+                {
+                    return (TaskState)Enum.Parse(typeof(TaskState), state.ToString());
+                }
 
-        //        return State.None;
-        //    }
-        //}
+                return TaskState.None;
+            }
+        }
 
 
         public bool IsVersion

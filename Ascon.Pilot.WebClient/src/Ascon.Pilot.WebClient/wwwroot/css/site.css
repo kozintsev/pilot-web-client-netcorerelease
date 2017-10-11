@@ -2,7 +2,6 @@
 html,body,.container {
     height:100%;
     background: #F8F9FB;
-    color: #5D687F;
 }
 
 .body-content {
@@ -122,7 +121,7 @@ html,body,.container {
     padding-top: 100px;
     padding-bottom: 0; 
     height: 100%;
-    width: 250px;
+    width: 200px;
     background-color: white;
     border-right: 1px solid #DFE4E8;
 }
@@ -137,7 +136,7 @@ html,body,.container {
 }
 
 .main-content {
-    margin-left: 250px;
+    margin-left: 200px;
     overflow: auto;
 }
 
@@ -155,31 +154,31 @@ html,body,.container {
 
 @media (min-width: 991px) and (max-width: 1020px) {
   .sidebar-right {
-      width : 38.5%;
+      width : 34.5%;
   }
 }
 
 @media (min-width: 1020px) and (max-width: 1160px) {
   .sidebar-right {
-      width : 38%;
+      width : 34%;
   }
 }
 
 @media (min-width: 1160px) and (max-width: 1220px) {
   .sidebar-right {
-      width : 39%;
+      width : 35%;
   }
 }
 
 @media (min-width: 1220px) and (max-width: 1462px) {
   .sidebar-right {
-      width : 40%;
+      width : 35%;
   }
 }
 
 @media (min-width: 1462px) {
   .sidebar-right {
-      width : 42%;
+      width : 36%;
   }
 }
 
@@ -209,11 +208,16 @@ a.navbar-brand {
 
 .task-node {
     display: block;
-    height: 60px;
+    height: 70px;
     padding: 5px;
     margin-bottom: 10px;
     background-color: transparent;
     border-bottom: 1px solid #DFE4E8;
+    font-size: smaller;
+    color: #626262; /*#5D687F;*/
+
+    margin-left: -5px;
+    margin-right: -15px;
 }
 
 a.task-node {
@@ -221,7 +225,7 @@ a.task-node {
     color: black;
 }
 
-.col-fix {
+.col-fix-16 {
   position: relative;
   height: 16px;
   width: 16px;
@@ -229,9 +233,30 @@ a.task-node {
   margin-right: 5px;
 }
 
+.col-fix-16>img{
+    width: 16px;
+    height: 16px;
+}
+
+.col-fix-145 {
+  position: relative;
+  width: 160px;
+  float: left;
+}
+
+.col-float-right{
+  float: right;
+}
+
 .text-title {
-    font-weight:bold;
-    color: #242D3E;
+    color: #141414;/*#242D3E;*/
+    white-space: nowrap;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /*--------------------------------------Modal preview---------------------------*/

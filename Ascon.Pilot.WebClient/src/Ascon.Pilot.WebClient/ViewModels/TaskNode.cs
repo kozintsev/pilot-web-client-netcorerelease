@@ -16,10 +16,20 @@ namespace Ascon.Pilot.WebClient.ViewModels
             Name = task.DisplayTitle;
             Initiator = task.Initiator.GetActualName();
             Executor = task.Executor.GetActualName();
+            State = task.State;
+            Kind = task.Kind;
+            DateOfAssignment = task.DateOfAssignment;
+            DeadlineDate = task.DeadlineDate;
+            DateOfStart = task.DateOfStart;
         }
 
         public string Name { get; private set; }
         public string Initiator { get; private set; }
         public string Executor { get; private set; }
+        public TaskState State { get; private set; }
+        public TaskKind Kind { get; private set; }
+        public DateTime DateOfAssignment { get; private set; }
+        public DateTime DeadlineDate { get; private set; }
+        public DateTime? DateOfStart { get; private set; }
     }
 }
