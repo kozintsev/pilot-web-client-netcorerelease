@@ -143,8 +143,9 @@ html,body,.container {
     border-left: 1px solid #DFE4E8;
 
 
-    width: -moz-calc(41% - 80px); /* Firefox 4+ */
-    width: calc(41% - 80px); /* IE9+ и будущие браузеры */ 
+    width: -moz-calc(41% - 73px); /* Firefox 4+ */
+    width: calc(41% - 73px); /* IE9+ и будущие браузеры */ 
+    width: expression(80% - 73px);
 }
 
 .main-content {
@@ -222,7 +223,7 @@ a.task-node {
 
 .col-fix-145 {
   position: relative;
-  width: 155px;
+  width: 160px;
   float: left;
 }
 
