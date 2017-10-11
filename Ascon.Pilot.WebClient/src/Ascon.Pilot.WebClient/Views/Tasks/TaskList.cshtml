@@ -2,77 +2,75 @@
 
 @model IEnumerable<Ascon.Pilot.WebClient.ViewModels.TaskNode>
 
-<div class="list-group" style="margin:0;">
-    @if (Model == null || !Model.Any())
+@if (Model == null || !Model.Any())
+{
+    <p>Нет данных для отображения</p>
+}
+else
+{
+    @foreach (var node in Model)
     {
-        <p>Нет данных для отображения</p>
-    }
-    else
-    {
-        @foreach (var node in Model)
-        {
-            <div class="task-node">
-                <div class="row">
-                    @if (node.Kind == TaskKind.Agreement)
-                    {
-                        <div class="col-fix-16"><img src="~/images/agree_task_kind.png"/></div>
-                    }
-                    else
-                    {
-                        <div class="col-fix-16"></div>
-                    }
-                    @switch (node.State)
-                    {
-                        case TaskState.None:
-                            <div class="col-fix-16"></div>
-                            break;
-                        case TaskState.Assigned:
-                            <div class="col-fix-16"><img src="~/images/tasks/assigned.png" /></div>
-                            break;
-                        case TaskState.InProgress:
-                            <div class="col-fix-16"><img src="~/images/tasks/in_progress.png" /></div>
-                            break;
-                        case TaskState.Revoked:
-                            <div class="col-fix-16"><img src="~/images/tasks/assigned.png" /></div>
-                            break;
-                        case TaskState.OnValidation:
-                            <div class="col-fix-16"><img src="~/images/tasks/validation.png" /></div>
-                            break;
-                        case TaskState.Completed:
-                            <div class="col-fix-16"><img src="~/images/tasks/completed.png" /></div>
-                            break;
-                        default:
-                            <div class="col-fix-16"></div>
-                            break;
-                    }
-                    <div class="col-md-6 col-sm-8 text-title truncate">@node.Name</div>
-                    <div class="col-fix-145 col-float-right hidden-xs">Выдано @node.DateOfAssignment.ToString("g")</div>
-                </div>
-                <div class="row">
+        <div class="task-node">
+            <div class="row">
+                @if (node.Kind == TaskKind.Agreement)
+                {
+                    <div class="col-fix-16"><img src="~/images/agree_task_kind.png"/></div>
+                }
+                else
+                {
                     <div class="col-fix-16"></div>
-                    <div class="col-fix-16"></div> 
-                    <div class="col-md-6 col-sm-8 truncate">@node.Initiator → @node.Executor</div>
-                    @if (node.DeadlineDate == DateTime.MaxValue)
-                    {
-                        <div class="col-fix-145 col-float-right hidden-xs"></div>
-                    }
-                    else 
-                    {
-                       <div class="col-fix-145 col-float-right hidden-xs">Срок @node.DeadlineDate.ToString("g")</div>
-                    }
-                </div>
-                <div class="row">
-                    @if (node.DateOfStart == null)
-                    {
-                        <div class="col-fix-145 col-float-right hidden-xs"></div>
-
-                    }
-                    else
-                    {
-                        <div class="col-fix-145 col-float-right hidden-xs">Начало @node.DateOfStart?.ToString("g")</div>
-                    }
-                </div>
+                }
+                @switch (node.State)
+                {
+                    case TaskState.None:
+                        <div class="col-fix-16"></div>
+                        break;
+                    case TaskState.Assigned:
+                        <div class="col-fix-16"><img src="~/images/tasks/assigned.png" /></div>
+                        break;
+                    case TaskState.InProgress:
+                        <div class="col-fix-16"><img src="~/images/tasks/in_progress.png" /></div>
+                        break;
+                    case TaskState.Revoked:
+                        <div class="col-fix-16"><img src="~/images/tasks/assigned.png" /></div>
+                        break;
+                    case TaskState.OnValidation:
+                        <div class="col-fix-16"><img src="~/images/tasks/validation.png" /></div>
+                        break;
+                    case TaskState.Completed:
+                        <div class="col-fix-16"><img src="~/images/tasks/completed.png" /></div>
+                        break;
+                    default:
+                        <div class="col-fix-16"></div>
+                        break;
+                }
+                <div class="col-md-6 col-sm-8 text-title truncate">@node.Name</div>
+                <div class="col-fix-145 col-float-right hidden-xs">Выдано @node.DateOfAssignment.ToString("g")</div>
             </div>
-        }
+            <div class="row">
+                <div class="col-fix-16"></div>
+                <div class="col-fix-16"></div> 
+                <div class="col-md-6 col-sm-8 truncate">@node.Initiator → @node.Executor</div>
+                @if (node.DeadlineDate == DateTime.MaxValue)
+                {
+                    <div class="col-fix-145 col-float-right hidden-xs"></div>
+                }
+                else 
+                {
+                    <div class="col-fix-145 col-float-right hidden-xs">Срок @node.DeadlineDate.ToString("g")</div>
+                }
+            </div>
+            <div class="row">
+                @if (node.DateOfStart == null)
+                {
+                    <div class="col-fix-145 col-float-right hidden-xs"></div>
+
+                }
+                else
+                {
+                    <div class="col-fix-145 col-float-right hidden-xs">Начало @node.DateOfStart?.ToString("g")</div>
+                }
+            </div>
+        </div>
     }
-</div>
+}

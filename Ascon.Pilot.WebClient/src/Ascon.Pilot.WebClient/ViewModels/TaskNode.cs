@@ -13,6 +13,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
         public TaskNode(DObject obj, IRepository repository)
         {
             var task = new DTask(obj, repository);
+            Id = task.Id;
             Name = task.DisplayTitle;
             Initiator = task.Initiator.GetActualName();
             Executor = task.Executor.GetActualName();
@@ -23,6 +24,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
             DateOfStart = task.DateOfStart;
         }
 
+        public Guid Id { get; private set; }
         public string Name { get; private set; }
         public string Initiator { get; private set; }
         public string Executor { get; private set; }

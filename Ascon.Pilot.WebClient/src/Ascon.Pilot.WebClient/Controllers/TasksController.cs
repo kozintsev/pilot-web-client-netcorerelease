@@ -1,6 +1,7 @@
 ﻿using Ascon.Pilot.Core;
 using Ascon.Pilot.WebClient.Models;
 using Ascon.Pilot.WebClient.ViewModels;
+using Ascon.Pilot.WebClient.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -37,17 +38,74 @@ namespace Ascon.Pilot.WebClient.Controllers
         [HttpPost]
         public async Task<ActionResult> GetTasks(string filterId)
         {
-            var lookupId = int.Parse(filterId);
-            var model = await GetItemsAsync(lookupId);
-            return PartialView("TaskList", model);
+            var id = int.Parse(filterId);
+            FilterId = id;
+            MaxResults = 100;
+            var items = await GetItemsAsync(id, MaxResults);
+            Tasks = items.Select(t => t.Id).ToList();
+            return PartialView("TaskList", items);
         }
 
-        private async Task<IEnumerable<TaskNode>> GetItemsAsync(int id)
+        [HttpPost]
+        public async Task<ActionResult> GetNextTasks()
+        {
+            var items = await GetItemsAsync(FilterId, MaxResults += 100);
+            var tasks = new List<TaskNode>();
+            var ids = Tasks;
+            foreach (var item in items)
+            {
+                if (ids.Contains(item.Id))
+                    continue;
+
+                tasks.Add(item);
+                ids.Add(item.Id);
+            }
+            Tasks = ids;
+            return PartialView("TaskList", tasks);
+        }
+
+        private int MaxResults
+        {
+            get
+            {
+                return HttpContext.Session.GetSessionValues<int>("max_results");
+            }
+            set
+            {
+                HttpContext.Session.SetSessionValues<int>("max_results", value);
+            }
+        }
+
+        private int FilterId
+        {
+            get
+            {
+                return HttpContext.Session.GetSessionValues<int>("filter_id");
+            }
+            set
+            {
+                HttpContext.Session.SetSessionValues("filter_id", value);
+            }
+        }
+
+        private IList<Guid> Tasks
+        {
+            get
+            {
+                return HttpContext.Session.GetSessionValues<IList<Guid>>("tasks");
+            }
+            set
+            {
+                HttpContext.Session.SetSessionValues("tasks", value);
+            }
+        }
+
+        private async Task<IEnumerable<TaskNode>> GetItemsAsync(int id, int results)
         {
             var searchDefinition = new DSearchDefinition()
             {
                 Id = Guid.NewGuid(),
-                MaxResults = 20,
+                MaxResults = results,
                 SearchKind = (SearchKind)id,
                 Ascending = false,
                 SortFieldName = SystemAttributes.TASK_DATE_OF_ASSIGNMENT
