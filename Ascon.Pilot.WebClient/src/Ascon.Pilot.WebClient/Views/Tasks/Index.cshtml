@@ -28,19 +28,19 @@
 <div class="wrap">
     <div class="hidden-xs hidden-sm sidebar-left">
         <div class="list-group" id="ddlCategory">
-            <a href="#" onclick="loadTasks(6)" class="list-group-item noborder">Актуальные</a>
-            <a href="#" onclick="loadTasks(7)" class="list-group-item noborder">Выданные</a>
-            <a href="#" onclick="loadTasks(8)" class="list-group-item noborder">Полученные</a>
-            <a href="#" onclick="loadTasks(12)" class="list-group-item noborder">Вы в аудиторах</a>
-            <a href="#" onclick="loadTasks(9)" class="list-group-item noborder">Просроченные</a>
-            <a href="#" onclick="loadTasks(10)" class="list-group-item noborder">Выполненные</a>
-            <a href="#" onclick="loadTasks(11)" class="list-group-item noborder">Отозванные</a>
-            <a href="#" onclick="loadTasks(5)" class="list-group-item noborder">Все</a>
+            <a href="#" onclick="loadTasks(6, this)" class="list-group-item noborder active">Актуальные</a>
+            <a href="#" onclick="loadTasks(7, this)" class="list-group-item noborder">Выданные</a>
+            <a href="#" onclick="loadTasks(8, this)" class="list-group-item noborder">Полученные</a>
+            <a href="#" onclick="loadTasks(12, this)" class="list-group-item noborder">Вы в аудиторах</a>
+            <a href="#" onclick="loadTasks(9, this)" class="list-group-item noborder">Просроченные</a>
+            <a href="#" onclick="loadTasks(10, this)" class="list-group-item noborder">Выполненные</a>
+            <a href="#" onclick="loadTasks(11, this)" class="list-group-item noborder">Отозванные</a>
+            <a href="#" onclick="loadTasks(5, this)" class="list-group-item noborder">Все</a>
         </div>
     </div>
     
     <div class="main-content">
-            <div class="col-md-7">
+            <div class="col-md-7 col-xs-12 col-sm-12">
                 <div id="progress" class="text-center" style="display: none;">
                     <span class="glyphicon glyphicon-spin glyphicon-refresh"></span>
                 </div>

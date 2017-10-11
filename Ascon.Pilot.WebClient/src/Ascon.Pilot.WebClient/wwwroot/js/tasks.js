@@ -1,4 +1,4 @@
-﻿function loadTasks(filterId) {
+﻿function loadTasks(filterId, el) {
     $.ajax({
         url: '/Tasks/GetTasks',
         datatype: "json",
@@ -9,6 +9,12 @@
         beforeSend: function () {
             $("#taskList").empty();
             $("#progress").show();
+            if (el == null)
+                return;
+
+            $(".list-group-item").removeClass("active");
+            var item = $(el);
+            item.addClass("active");
         },
         success: function (data) {
             $("#taskList").html(data);
@@ -23,7 +29,7 @@
 }
 
 $(document).ready(function () {
-    loadTasks(6);
+    loadTasks(6, null);
 
     var win = $(window);
     var doc = $(document);
@@ -63,4 +69,29 @@ function addTasks() {
             ready = true; //Reset the flag here
         },
     });
+}
+
+function processTaskClick(el) {
+    $(".task-node").removeClass("active");
+    var task = $(el);
+    task.addClass("active");
+    /*
+    var id = card.data("id");
+    var name = card.data("name");
+    var size = card.data("size");
+    var ext = card.data("ext");
+    if (size === undefined) {
+        $("#downloadButton").hide();
+        return;
+    }
+
+    var query = jQuery.param({
+        id: id,
+        name: name.endsWith(ext) ? name : name + ext,
+        size: size
+    });
+    var downloadButton = $("#downloadButton");
+    downloadButton.prop("href", downloadUrl + "?" + query);
+    downloadButton.show();
+    */
 }

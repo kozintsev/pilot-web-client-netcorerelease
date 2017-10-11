@@ -6,7 +6,6 @@ html,body,.container {
 
 .body-content {
     padding-left: 0px;
-    margin-right: 15px;
     padding-top: 80px;
 }
 
@@ -90,23 +89,21 @@ html,body,.container {
     z-index : 4;
 }
 
-.well {
-    border-color: transparent;
-    background: white;
-}
-
 .row {
     margin-right: 0px;
     margin-left: 0px;
 }
 
+.list-group-item:first-child {
+  border-radius: 0px;
+}
+.list-group-item:last-child {
+  border-radius: 0px;
+}
+
 /* ---------- side menu -------- */
 .noborder {
   border: 1px solid #fff;
-}
-
-.active-item {
-    background: #428bca;
 }
 
 /* - - */
@@ -133,6 +130,10 @@ html,body,.container {
     top: 0;
     right: 0;
     border-left: 1px solid #DFE4E8;
+
+
+    width: -moz-calc(41% - 70px); /* Firefox 4+ */
+    width: calc(41% - 70px); /* IE9+ и будущие браузеры */ 
 }
 
 .main-content {
@@ -140,47 +141,12 @@ html,body,.container {
     overflow: auto;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 991px) {
   .main-content {
       margin-left: 0px;
   }
 }
 
-@media (min-width: 768px) and (max-width: 991px) {
-  .main-content {
-      margin-left: 0px;
-  }
-}
-
-@media (min-width: 991px) and (max-width: 1020px) {
-  .sidebar-right {
-      width : 34.5%;
-  }
-}
-
-@media (min-width: 1020px) and (max-width: 1160px) {
-  .sidebar-right {
-      width : 34%;
-  }
-}
-
-@media (min-width: 1160px) and (max-width: 1220px) {
-  .sidebar-right {
-      width : 35%;
-  }
-}
-
-@media (min-width: 1220px) and (max-width: 1462px) {
-  .sidebar-right {
-      width : 35%;
-  }
-}
-
-@media (min-width: 1462px) {
-  .sidebar-right {
-      width : 36%;
-  }
-}
 
 /* ---------- Navbar ------------*/
 .navbar-text {
@@ -209,20 +175,27 @@ a.navbar-brand {
 .task-node {
     display: block;
     height: 70px;
-    padding: 5px;
-    margin-bottom: 10px;
     background-color: transparent;
     border-bottom: 1px solid #DFE4E8;
     font-size: smaller;
     color: #626262; /*#5D687F;*/
 
-    margin-left: -5px;
+    margin-left: -15px;
+    padding-left: 10px;
     margin-right: -15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    cursor: pointer;
 }
 
 a.task-node {
     text-decoration: none;
     color: black;
+}
+
+.task-node.active {
+    background-color: #428bca;
+    color: white !important;
 }
 
 .col-fix-16 {
@@ -249,7 +222,9 @@ a.task-node {
 }
 
 .text-title {
-    color: #141414;/*#242D3E;*/
+    /*color: #141414;/*#242D3E;*/
+    font-weight:500;
+    font-size: small;
     white-space: nowrap;
 }
 

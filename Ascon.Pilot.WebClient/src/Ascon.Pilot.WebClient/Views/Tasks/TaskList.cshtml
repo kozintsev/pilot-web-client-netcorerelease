@@ -10,7 +10,7 @@ else
 {
     @foreach (var node in Model)
     {
-        <div class="task-node">
+        <div class="task-node" onclick="processTaskClick(this)">
             <div class="row">
                 @if (node.Kind == TaskKind.Agreement)
                 {
