@@ -1,35 +1,14 @@
-﻿function loadTasks(filterId, el) {
-    $.ajax({
-        url: '/Tasks/GetTasks',
-        datatype: "json",
-        data: { 'filterId': filterId },
-        type: "post",
-        contenttype: 'application/json; charset=utf-8',
-        async: true,
-        beforeSend: function () {
-            $("#taskList").empty();
-            $("#progress").show();
-            if (el == null)
-                return;
-
-            $(".list-group-item").removeClass("active");
-            var item = $(el);
-            item.addClass("active");
-        },
-        success: function (data) {
-            $("#taskList").html(data);
-        },
-        error: function (xhr) {
-            alert('error' + xhr);
-        },
-        complete: function () {
-            $("#progress").hide();
-        }
-    });
-}
-
-$(document).ready(function () {
-    loadTasks(6, null);
+﻿$(document).ready(function () {
+    
+    var filterId = getURLParameter('filterId');
+    var taskId = getURLParameter('taskId');
+    
+    if (filterId == undefined) {
+        loadTasks(6);
+    }
+    else {
+        loadTasks(filterId, taskId);
+    }
 
     var win = $(window);
     var doc = $(document);
@@ -46,8 +25,51 @@ $(document).ready(function () {
     });
 });
 
+function loadTasks(filterId, taskId) {
+    $.ajax({
+        url: '/Tasks/GetTasks',
+        datatype: "json",
+        data: { 'filterId': filterId },
+        type: "post",
+        contenttype: 'application/json; charset=utf-8',
+        async: true,
+        beforeSend: function () {
+            $("#taskList").empty();
+            $("#progress").show();
+            $(".list-group-item").removeClass("active");
+            var el = $("#f" + filterId);
+            if (el == undefined)
+                return;
+
+            var item = $(el);
+            item.addClass("active");
+        },
+        success: function (data) {
+            $("#taskList").html(data);
+
+            if (taskId == undefined)
+                return;
+
+            var task = $("#" + taskId);
+            if (!task.length) {
+                addTasks(taskId);
+                return;
+            }
+
+            processTaskClick(task);
+            scrollToElement("#" + taskId);
+        },
+        error: function (xhr) {
+            alert('error' + xhr);
+        },
+        complete: function () {
+            $("#progress").hide();
+        }
+    });
+}
+
 var ready = true; //Assign the flag here
-function addTasks() {
+function addTasks(taskId) {
     if (!ready)
         return;
 
@@ -59,7 +81,22 @@ function addTasks() {
         contenttype: 'application/json; charset=utf-8',
         async: true,
         success: function (data) {
+            if (data.indexOf("Нет данных для отображения") !== -1)
+                return;
             $("#taskList").append(data);
+
+            if (taskId == undefined)
+                return;
+
+            var task = $("#" + taskId);
+            if (!task.length) {
+                ready = true;
+                addTasks(taskId);
+                return;
+            }
+
+            processTaskClick(task);
+            scrollToElement("#" + taskId);
         },
         error: function (xhr) {
             alert('error' + xhr);
@@ -75,23 +112,23 @@ function processTaskClick(el) {
     $(".task-node").removeClass("active");
     var task = $(el);
     task.addClass("active");
-    /*
-    var id = card.data("id");
-    var name = card.data("name");
-    var size = card.data("size");
-    var ext = card.data("ext");
-    if (size === undefined) {
-        $("#downloadButton").hide();
-        return;
-    }
+}
 
-    var query = jQuery.param({
-        id: id,
-        name: name.endsWith(ext) ? name : name + ext,
-        size: size
-    });
-    var downloadButton = $("#downloadButton");
-    downloadButton.prop("href", downloadUrl + "?" + query);
-    downloadButton.show();
-    */
+function getURLParameter(sParam) {
+
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) {
+            return sParameterName[1];
+        }
+    }
+}
+
+function scrollToElement(elementId) {
+    $('html, body').animate({
+        scrollTop: $(elementId).offset().top - 100
+    }, 500);
 }

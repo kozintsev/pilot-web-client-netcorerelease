@@ -2,6 +2,7 @@
 html,body,.container {
     height:100%;
     background: #F8F9FB;
+    color: #636D84;
 }
 
 .body-content {
@@ -101,6 +102,16 @@ html,body,.container {
   border-radius: 0px;
 }
 
+.list-group-item.active {
+    background-color: #5E80D8;
+}
+
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+  background-color: #5E80D8;
+  border-color: #5E80D8;
+}
 /* ---------- side menu -------- */
 .noborder {
   border: 1px solid #fff;
@@ -132,8 +143,8 @@ html,body,.container {
     border-left: 1px solid #DFE4E8;
 
 
-    width: -moz-calc(41% - 70px); /* Firefox 4+ */
-    width: calc(41% - 70px); /* IE9+ и будущие браузеры */ 
+    width: -moz-calc(41% - 80px); /* Firefox 4+ */
+    width: calc(41% - 80px); /* IE9+ и будущие браузеры */ 
 }
 
 .main-content {
@@ -171,14 +182,12 @@ a.navbar-brand {
 
 
 /* ---------------------- tasks -------------------------------- */
-
 .task-node {
     display: block;
     height: 70px;
     background-color: transparent;
     border-bottom: 1px solid #DFE4E8;
     font-size: smaller;
-    color: #626262; /*#5D687F;*/
 
     margin-left: -15px;
     padding-left: 10px;
@@ -194,8 +203,8 @@ a.task-node {
 }
 
 .task-node.active {
-    background-color: #428bca;
-    color: white !important;
+    background-color: #5E80D8;
+    color: white;
 }
 
 .col-fix-16 {
@@ -213,7 +222,7 @@ a.task-node {
 
 .col-fix-145 {
   position: relative;
-  width: 160px;
+  width: 155px;
   float: left;
 }
 
