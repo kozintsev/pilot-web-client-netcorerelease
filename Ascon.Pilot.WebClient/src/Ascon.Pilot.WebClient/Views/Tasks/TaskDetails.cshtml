@@ -1,4 +1,5 @@
 ﻿@using Ascon.Pilot.WebClient.Models;
+@using Ascon.Pilot.Core;
 
 @model Ascon.Pilot.WebClient.ViewModels.TaskDetailsViewModel
 
@@ -15,14 +16,34 @@ else
         <br />
         <br />
         <p style="font-weight:100; font-size:large; color: #2A3344;">@Model.Title</p>
-        <p class="default-margin_top" style="border-bottom: 1px solid #EEF1F4;"></p>
         <p class="default-margin_top">@Model.Description</p>
+        <div class="default-margin_top">
+            @foreach (var attachment in Model.Attachments)
+            {
+                var href = Url.Action("GetTypeIcon", "Home", new { id = attachment.Type.Id });
+                <div class="task-attachment">
+                    @if (attachment.Type.IsProjectFile())
+                    {
+                        <img src="@href" class="task-attachment-image"/>
+                        <p class="truncate" style="color: #2A3344; margin-bottom: 0px;">@attachment.Title</p>
+                        <span>Файл @attachment.FileExtension</span>
+                    }
+                    else if (attachment.Type.IsProjectFolder() || attachment.Type.Children.Count > 0)
+                    {
+                        <img src="@href" class="task-attachment-image"/>
+                        <p class="truncate" style="color: #2A3344; margin-bottom: 0px;">@attachment.Title</p>
+                        <span>@attachment.Type.Title</span>
+                    }
+                    else
+                    {
+                        <img src="@href" class="task-attachment-image"/>
+                        <p class="truncate" style="color: #2A3344; margin-bottom: 0px;">@attachment.Title</p>
+                        <span>Документ</span>
+                    }
 
-        @foreach (var attachment in Model.Attachments)
-        {
-            <div class="task-attachment">
-                <p >@attachment.Title</p>
-            </div>
-        }
+                    
+                </div>
+            }
+        </div>
     </div>
 }

@@ -2,6 +2,7 @@
 using Ascon.Pilot.WebClient.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,9 +34,15 @@ namespace Ascon.Pilot.WebClient.ViewModels
         {
             var type = repository.GetType(obj.TypeId);
             Title = obj.GetTitle(type);
+            Type = type;
+            if (Type.IsProjectFile())
+            {
+                FileExtension = Path.GetExtension(Title);
+            }
         }
 
         public string Title { get; private set; }
         public string FileExtension { get; private set; }
+        public MType Type { get; private set; }
     }
 }

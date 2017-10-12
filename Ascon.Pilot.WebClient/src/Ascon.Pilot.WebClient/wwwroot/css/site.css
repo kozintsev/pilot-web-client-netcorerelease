@@ -259,12 +259,21 @@ a.task-node {
     font-weight: 100;
 }
 
-.task-attachment{
+.task-attachment {
     display: block;
     border-bottom: 1px solid #EEF1F4;
     border-top: 1px solid #EEF1F4;
     padding-top: 10px;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
+    height: 65px;
+}
+
+.task-attachment-image {
+    display: block;
+    float: left; 
+    margin-right:10px;
+    width: 40px;
+    height: 42px;
 }
 
 /*--------------------------------------Modal preview---------------------------*/
