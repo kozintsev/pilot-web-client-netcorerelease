@@ -8,16 +8,19 @@
     if (filterId == undefined && taskId == undefined)
     {
         loadTasks(6);
+        setHamburgerMenuItemActivated(6);
         return;
     }
 
     if (filterId == undefined && taskId != undefined)
     {
         loadTasks(5, taskId);
+        setHamburgerMenuItemActivated(5);
         return;
     }
 
     loadTasks(filterId, taskId);
+    setHamburgerMenuItemActivated(filterId);
 });
 
 function subscribeScroll() {
@@ -128,6 +131,12 @@ function processTaskClick(el) {
     var id = task.attr('id');
     showTaskDetails(id);
 
+}
+
+function setHamburgerMenuItemActivated(filterId) {
+    $(".sidenav-item").removeClass("active");
+    var item = $("#hf" + filterId);
+    item.addClass("active");
 }
 
 function getURLParameter(sParam) {

@@ -2,7 +2,10 @@
 var treeData;
 
 $(document).ready(function () {
-    $(function() {
+
+    setHamburgerMenuItemActivated();
+
+    $(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
 
@@ -36,6 +39,12 @@ $(document).ready(function () {
         $("#folderId").val(currentFolderId);
     });
 });
+
+function setHamburgerMenuItemActivated() {
+    $(".sidenav-item").removeClass("active");
+    var item = $("#files-page");
+    item.addClass("active");
+}
 
 function processCardClick(el) {
     $(".file-card").removeClass("active");

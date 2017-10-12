@@ -46,6 +46,20 @@ html,body,.container {
     padding-top: 10px;
 }
 
+#sidenav {
+    position: relative;
+    height: 100%;
+}
+
+#sidenav-bottom {
+    position: absolute;
+    bottom: 50px;
+    width: 250px;
+    left: 0px;
+    background: #111;
+}
+
+
 .sidenav a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
@@ -54,14 +68,16 @@ html,body,.container {
     font-size: medium;
 }
 
-.sidenav a:hover {
+.sidenav a:hover,
+.sidenav-submenu a.active,
+.sidenav a.active {
     color: #f1f1f1;
     background: #5e5e5e;
 }
 
-.sidenav-submenu {
+/*.sidenav-submenu {
     display: none;
-}
+}*/
 
 .sidenav-submenu a {
     padding-left: 50px;
@@ -71,6 +87,7 @@ html,body,.container {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
 }
+
 
 /* ------   owerride bootstrap styles -------- */
 .toolbar {
@@ -172,8 +189,11 @@ html,body,.container {
   .main-content {
       margin-left: 0px;
   }
-  .sidenav-submenu {
+  /*.sidenav-submenu {
       display: block;
+  }*/
+  .navbar-right {
+      display: none;
   }
 }
 

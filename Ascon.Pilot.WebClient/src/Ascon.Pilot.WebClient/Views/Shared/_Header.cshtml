@@ -6,29 +6,17 @@
 }
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#colapsedMenu" aria-expanded="true">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
         <div class="navbar-brand">
             <a class="glyphicon glyphicon-align-justify navbar-link" style="cursor:pointer;margin-right:15px; text-decoration:none" onclick="openNav()"></a>
             <a asp-controller="Home" asp-action="Index"><img src="@Url.Content("~/images/logo.png")" height="26" alt="Pilot-WEB"></a>
         </div>
     </div>
-    <div class="navbar-collapse collapse" id="colapsedMenu">
-        <ul class="nav navbar-nav navbar-right">
-            @if (User.Identity.IsAuthenticated)
+    <ul class="nav navbar-nav navbar-right">
+        @if (User.Identity.IsAuthenticated)
         {
-                <li><p class="navbar-text">@User.Identity.Name</p></li>
-                <li><a asp-controller="Account" asp-action="LogOff" style="margin-right:25px"><span class="glyphicon glyphicon-log-out"></span>&nbsp;Выйти</a></li>
+            <li><p class="navbar-text" style="margin-right:25px">@User.Identity.Name</p></li>
         }
-        else
-        {
-                <li><a asp-controller="Account" asp-action="LogIn" style="margin-right:25px"><span class="glyphicon glyphicon-log-in"></span>&nbsp;Авторизоваться</a></li>
-        }
-        </ul>
-    </div>
+    </ul>
 </div>  
 
 @if (User.Identity.IsAuthenticated && ViewContext.RouteData.Values["controller"].ToString() == "Files")
@@ -55,17 +43,32 @@
 }  
   
 <div id="mySidenav" class="sidenav">
-    <a asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
-    <a asp-controller="Tasks" asp-action="Index" onclick="openNav()">Задания</a>
-    <div class="sidenav-submenu">
-        <a href="/tasks?filterId=6" id="hf6" class="active">Актуальные</a>
-        <a href="/tasks?filterId=7" id="hf7">Выданные</a>
-        <a href="/tasks?filterId=8" id="hf8">Полученные</a>
-        <a href="/tasks?filterId=12" id="hf12">Вы в аудиторах</a>
-        <a href="/tasks?filterId=9" id="hf9">Просроченные</a>
-        <a href="/tasks?filterId=10" id="hf10">Выполненные</a>
-        <a href="/tasks?filterId=11" id="hf11">Отозванные</a>
-        <a href="/tasks?filterId=5" id="hf5">Все</a>
+    <div id="sidenav">
+        <a class="sidenav-item" id="files-page" asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
+        <a class="sidenav-item" id="tasks-page" asp-controller="Tasks" asp-action="Index" onclick="openNav()">Задания</a>
+        <div class="sidenav-submenu">
+            <a href="/tasks?filterId=6" id="hf6" class="sidenav-item active">Актуальные</a>
+            <a href="/tasks?filterId=7" id="hf7" class="sidenav-item">Выданные</a>
+            <a href="/tasks?filterId=8" id="hf8" class="sidenav-item">Полученные</a>
+            <a href="/tasks?filterId=12" id="hf12" class="sidenav-item">Вы в аудиторах</a>
+            <a href="/tasks?filterId=9" id="hf9" class="sidenav-item">Просроченные</a>
+            <a href="/tasks?filterId=10" id="hf10" class="sidenav-item">Выполненные</a>
+            <a href="/tasks?filterId=11" id="hf11" class="sidenav-item">Отозванные</a>
+            <a href="/tasks?filterId=5" id="hf5" class="sidenav-item">Все</a>
+        </div>
+
+        <div id="sidenav-bottom">
+            <div style="border-bottom: 1px solid #808080;"></div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a >@User.Identity.Name</a>
+                <a asp-controller="Account" asp-action="LogOff"><span class="glyphicon glyphicon-log-out"></span>&nbsp;Выйти</a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="LogIn"><span class="glyphicon glyphicon-log-in"></span>&nbsp;Авторизоваться</a>
+            }
+        </div>
     </div>
 </div>
 
@@ -77,6 +80,7 @@
             sidenav.style.display = "none";
             if (sidenav.classList.contains('active'))
                 sidenav.classList.toggle('active');
+            
         }
         else {
             document.getElementById("mySidenav").style.display = "block";
