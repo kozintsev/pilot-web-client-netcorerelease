@@ -59,6 +59,14 @@ html,body,.container {
     background: #5e5e5e;
 }
 
+.sidenav-submenu {
+    display: none;
+}
+
+.sidenav-submenu a {
+    padding-left: 50px;
+}
+
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
@@ -163,6 +171,9 @@ html,body,.container {
 @media (max-width: 991px) {
   .main-content {
       margin-left: 0px;
+  }
+  .sidenav-submenu {
+      display: block;
   }
 }
 

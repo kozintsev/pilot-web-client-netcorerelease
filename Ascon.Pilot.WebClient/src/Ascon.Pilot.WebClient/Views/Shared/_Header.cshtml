@@ -57,6 +57,16 @@
 <div id="mySidenav" class="sidenav">
     <a asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
     <a asp-controller="Tasks" asp-action="Index" onclick="openNav()">Задания</a>
+    <div class="sidenav-submenu">
+        <a href="/tasks?filterId=6" id="hf6" class="active">Актуальные</a>
+        <a href="/tasks?filterId=7" id="hf7">Выданные</a>
+        <a href="/tasks?filterId=8" id="hf8">Полученные</a>
+        <a href="/tasks?filterId=12" id="hf12">Вы в аудиторах</a>
+        <a href="/tasks?filterId=9" id="hf9">Просроченные</a>
+        <a href="/tasks?filterId=10" id="hf10">Выполненные</a>
+        <a href="/tasks?filterId=11" id="hf11">Отозванные</a>
+        <a href="/tasks?filterId=5" id="hf5">Все</a>
+    </div>
 </div>
 
   <script type="text/javascript">    
