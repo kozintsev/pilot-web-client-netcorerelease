@@ -14,6 +14,7 @@ namespace Ascon.Pilot.WebClient.Models
         DPerson GetPersonOnOrganisationUnit(int id);
         DOrganisationUnit GetOrganisationUnit(int id);
         DPerson CurrentPerson();
+        MType GetType(int id);
     }
 
     class Repository : IRepository, IRemoteStorageListener
@@ -23,6 +24,7 @@ namespace Ascon.Pilot.WebClient.Models
         private Dictionary<int, DOrganisationUnit> _organisationUnits = new Dictionary<int, DOrganisationUnit>();
         private TaskCompletionSource<DSearchResult> _searchCompletionSource;
         private DPerson _person;
+        private List<MType> _types;
 
         public Repository(IServerApi serverApi)
         {
@@ -34,6 +36,7 @@ namespace Ascon.Pilot.WebClient.Models
             _persons = _serverApi.LoadPeople().ToDictionary(x => x.Id, y => y);
             _organisationUnits = _serverApi.LoadOrganisationUnits().ToDictionary(x => x.Id, y => y);
             _person = _persons.First(p => p.Value.Login == currentLogin).Value;
+            _types = _serverApi.GetMetadata(0).Types;
         }
 
         public Task<DSearchResult> Search(DSearchDefinition searchDefinition)
@@ -61,6 +64,11 @@ namespace Ascon.Pilot.WebClient.Models
             if (!_organisationUnits.TryGetValue(id, out result))
                 return new DOrganisationUnit();
             return result;
+        }
+
+        public MType GetType(int id)
+        {
+            return _types.FirstOrDefault(t => t.Id == id);
         }
 
         public DPerson CurrentPerson()

@@ -27,6 +27,10 @@ html,body,.container {
     width: 100%;
 }
 
+.default-margin_top {
+    margin-top: 15px;
+}
+
 
 /* ------    SideNav ---------- */
 .sidenav {
@@ -112,6 +116,7 @@ html,body,.container {
   background-color: #5E80D8;
   border-color: #5E80D8;
 }
+
 /* ---------- side menu -------- */
 .noborder {
   border: 1px solid #fff;
@@ -132,6 +137,7 @@ html,body,.container {
     width: 200px;
     background-color: white;
     border-right: 1px solid #DFE4E8;
+    overflow: auto;
 }
 
 .sidebar-right{
@@ -141,7 +147,8 @@ html,body,.container {
     top: 0;
     right: 0;
     border-left: 1px solid #DFE4E8;
-
+    padding-top: 100px;
+    overflow: auto;
 
     width: -moz-calc(41% - 73px); /* Firefox 4+ */
     width: calc(41% - 73px); /* IE9+ и будущие браузеры */ 
@@ -242,6 +249,22 @@ a.task-node {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.task-details-content{
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-weight: 100;
+}
+
+.task-attachment{
+    display: block;
+    border-bottom: 1px solid #EEF1F4;
+    border-top: 1px solid #EEF1F4;
+    padding-top: 10px;
+    padding-bottom: 5px;
 }
 
 /*--------------------------------------Modal preview---------------------------*/

@@ -14,7 +14,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
         {
             var task = new DTask(obj, repository);
             Id = task.Id;
-            Name = task.DisplayTitle;
+            Title = task.DisplayTitle;
             Initiator = task.GetInitiatorDisplayName(repository);
             Executor = task.GetExecutorDisplayName(repository);
             State = task.State;
@@ -25,7 +25,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
         }
 
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
+        public string Title { get; private set; }
         public string Initiator { get; private set; }
         public string Executor { get; private set; }
         public TaskState State { get; private set; }

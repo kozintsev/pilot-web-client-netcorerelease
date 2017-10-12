@@ -3,13 +3,24 @@
     var filterId = getURLParameter('filterId');
     var taskId = getURLParameter('taskId');
     
-    if (filterId == undefined) {
+    subscribeScroll();
+
+    if (filterId == undefined && taskId == undefined)
+    {
         loadTasks(6);
-    }
-    else {
-        loadTasks(filterId, taskId);
+        return;
     }
 
+    if (filterId == undefined && taskId != undefined)
+    {
+        loadTasks(5, taskId);
+        return;
+    }
+
+    loadTasks(filterId, taskId);
+});
+
+function subscribeScroll() {
     var win = $(window);
     var doc = $(document);
 
@@ -18,12 +29,12 @@
         // Vertical end reached?
         var height = doc.height() - win.height();
         var pos = win.scrollTop();
-               
+
         if (pos >= height - 50 && pos <= height) {
             addTasks();
         }
     });
-});
+}
 
 function loadTasks(filterId, taskId) {
     $.ajax({
@@ -56,8 +67,8 @@ function loadTasks(filterId, taskId) {
                 return;
             }
 
-            processTaskClick(task);
             scrollToElement("#" + taskId);
+            processTaskClick(task);
         },
         error: function (xhr) {
             alert('error' + xhr);
@@ -95,8 +106,8 @@ function addTasks(taskId) {
                 return;
             }
 
-            processTaskClick(task);
             scrollToElement("#" + taskId);
+            processTaskClick(task);
         },
         error: function (xhr) {
             alert('error' + xhr);
@@ -112,6 +123,11 @@ function processTaskClick(el) {
     $(".task-node").removeClass("active");
     var task = $(el);
     task.addClass("active");
+
+    //show selected task
+    var id = task.attr('id');
+    showTaskDetails(id);
+
 }
 
 function getURLParameter(sParam) {
@@ -129,6 +145,29 @@ function getURLParameter(sParam) {
 
 function scrollToElement(elementId) {
     $('html, body').animate({
-        scrollTop: $(elementId).offset().top - 100
+        scrollTop: $(elementId).offset().top - 120
     }, 500);
+}
+
+function showTaskDetails(taskId) {
+    $.ajax({
+        url: '/Tasks/GetTaskDetails',
+        datatype: "json",
+        data: { 'taskId': taskId },
+        type: "post",
+        contenttype: 'application/json; charset=utf-8',
+        async: true,
+        beforeSend: function () {
+            $("#taskDetails").empty();
+        },
+        success: function (data) {
+            $("#taskDetails").html(data);
+        },
+        error: function (xhr) {
+            alert('error' + xhr);
+        },
+        complete: function () {
+            $("#progress").hide();
+        }
+    });
 }

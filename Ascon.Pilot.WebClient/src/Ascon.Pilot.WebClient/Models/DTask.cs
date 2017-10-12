@@ -2,6 +2,7 @@
 using Ascon.Pilot.WebClient.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -126,10 +127,10 @@ namespace Ascon.Pilot.WebClient.Models
         //    }
         //}
 
-        //public ReadOnlyCollection<Guid> InitiatorAttachments
-        //{
-        //    get { return new ReadOnlyCollection<Guid>(_source.Relations.Where(x => x.Type == RelationType.TaskInitiatorAttachments).Select(x => x.TargetId).ToList()); }
-        //}
+        public ReadOnlyCollection<Guid> InitiatorAttachments
+        {
+            get { return new ReadOnlyCollection<Guid>(_source.Relations.Where(x => x.Type == RelationType.TaskInitiatorAttachments).Select(x => x.TargetId).ToList()); }
+        }
 
         //public ReadOnlyCollection<Guid> ExecutorAttachments
         //{

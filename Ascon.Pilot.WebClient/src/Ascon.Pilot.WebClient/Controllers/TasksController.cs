@@ -64,6 +64,17 @@ namespace Ascon.Pilot.WebClient.Controllers
             return PartialView("TaskList", tasks);
         }
 
+        [HttpPost]
+        public async Task<ActionResult> GetTaskDetails(string taskId)
+        {
+            return await Task<ActionResult>.Factory.StartNew(() =>
+            {
+                var id = Guid.Parse(taskId);
+                var model = new TaskDetailsViewModel(id, _context.Repository);
+                return PartialView("TaskDetails", model);
+            });
+        }
+
         private int MaxResults
         {
             get

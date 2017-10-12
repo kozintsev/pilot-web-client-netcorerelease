@@ -1,0 +1,28 @@
+﻿@using Ascon.Pilot.WebClient.Models;
+
+@model Ascon.Pilot.WebClient.ViewModels.TaskDetailsViewModel
+
+@if (Model == null)
+{
+    <p>Нет данных для отображения</p>
+}
+else
+{
+    <div class="task-details-content">
+        <span style="font-weight:600; color: #2A3344;">@Model.Initiator</span>
+        <br />
+        <span>@Model.Executor</span>
+        <br />
+        <br />
+        <p style="font-weight:100; font-size:large; color: #2A3344;">@Model.Title</p>
+        <p class="default-margin_top" style="border-bottom: 1px solid #EEF1F4;"></p>
+        <p class="default-margin_top">@Model.Description</p>
+
+        @foreach (var attachment in Model.Attachments)
+        {
+            <div class="task-attachment">
+                <p >@attachment.Title</p>
+            </div>
+        }
+    </div>
+}
