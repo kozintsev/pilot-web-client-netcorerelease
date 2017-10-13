@@ -113,6 +113,7 @@ namespace Ascon.Pilot.WebClient.Controllers
 
         private async Task<IEnumerable<TaskNode>> GetItemsAsync(int id, int results)
         {
+            var context = _contextHolder.GetContext(HttpContext);
             var searchDefinition = new DSearchDefinition()
             {
                 Id = Guid.NewGuid(),
@@ -130,7 +131,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             }
 
             var objects = repo.GetObjects(searchResults.Found.ToArray());
-            var list = objects.Select(o => new TaskNode(o, _contextHolder.GetContext(HttpContext).Repository));
+            var list = objects.Select(o => new TaskNode(o, repo));
             return list;
         }
 

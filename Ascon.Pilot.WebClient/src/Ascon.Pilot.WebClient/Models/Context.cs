@@ -36,8 +36,7 @@ namespace Ascon.Pilot.WebClient.Models
             ServerApi = _client.GetServerApi(_serverCallback);
             var dbInfo = ServerApi.OpenDatabase(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth);
             http.SetClient(_client, credentials.Sid);
-            _repository = new Repository(ServerApi);
-            _serverCallback.SetCallbackListener(_repository);
+            _repository = new Repository(ServerApi, _serverCallback);
             _repository.Initialize(credentials.Username);
             IsInitialized = true;
             return dbInfo;
@@ -50,8 +49,7 @@ namespace Ascon.Pilot.WebClient.Models
 
             if (ServerApi == null)
                 ServerApi = http.GetServerApi(_serverCallback);
-            _repository = new Repository(ServerApi);
-            _serverCallback.SetCallbackListener(_repository);
+            _repository = new Repository(ServerApi, _serverCallback);
             var login = http.User.FindFirstValue(ClaimTypes.Name);
             _repository.Initialize(login);
             IsInitialized = true;

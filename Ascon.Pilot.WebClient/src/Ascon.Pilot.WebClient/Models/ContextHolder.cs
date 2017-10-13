@@ -16,7 +16,7 @@ namespace Ascon.Pilot.WebClient.Models
 
     public class ContextHolder : IContextHolder
     {
-        private static readonly Dictionary<Guid, IContext> _contexts = new Dictionary<Guid, IContext>();
+        private readonly Dictionary<Guid, IContext> _contexts = new Dictionary<Guid, IContext>();
 
         public IContext NewContext()
         {
@@ -26,6 +26,7 @@ namespace Ascon.Pilot.WebClient.Models
         public IContext GetContext(HttpContext httpContext)
         {
             var clientIdString = httpContext.User.FindFirstValue(ClaimTypes.Sid);
+            
             if (!string.IsNullOrEmpty(clientIdString))
             {
                 var clientId = Guid.Parse(clientIdString);
@@ -35,11 +36,14 @@ namespace Ascon.Pilot.WebClient.Models
                     if (client.IsInitialized)
                         return client;
                 }
+
+                var context = new Context();
+                context.Build(httpContext);
+                RegisterClient(context, clientId);
+                return context;
             }
 
-            var context = new Context();
-            context.Build(httpContext);
-            return context;
+            return null;
         }
 
         public void RegisterClient(IContext client, Guid clientId)

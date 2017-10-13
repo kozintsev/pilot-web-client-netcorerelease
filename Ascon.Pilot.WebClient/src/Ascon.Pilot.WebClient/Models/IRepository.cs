@@ -3,6 +3,7 @@ using Ascon.Pilot.Server.Api.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ascon.Pilot.WebClient.Models
@@ -26,9 +27,10 @@ namespace Ascon.Pilot.WebClient.Models
         private DPerson _person;
         private List<MType> _types;
 
-        public Repository(IServerApi serverApi)
+        public Repository(IServerApi serverApi, ServerCallback serverCallback)
         {
             _serverApi = serverApi;
+            serverCallback.SetCallbackListener(this);
         }
 
         public void Initialize(string currentLogin)

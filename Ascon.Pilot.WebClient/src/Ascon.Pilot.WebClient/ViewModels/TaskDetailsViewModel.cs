@@ -12,8 +12,11 @@ namespace Ascon.Pilot.WebClient.ViewModels
     {
         public TaskDetailsViewModel(Guid taskId, IRepository repository)
         {
-            var obj = repository.GetObjects(new[] { taskId });
-            var task = new DTask(obj.First(), repository);
+            var objs = repository.GetObjects(new[] { taskId });
+            if (!objs.Any())
+                return;
+
+            var task = new DTask(objs.First(), repository);
             Title = task.Title;
             Description = task.Description;
             Initiator = task.GetInitiatorDisplayName(repository);
@@ -25,7 +28,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
         public string Description { get; private set; }
         public string Initiator { get; private set; }
         public string Executor { get; private set; }
-        public IEnumerable<Attachment> Attachments { get; private set; }
+        public IEnumerable<Attachment> Attachments { get; private set; } = new List<Attachment>();
     }
 
     public class Attachment

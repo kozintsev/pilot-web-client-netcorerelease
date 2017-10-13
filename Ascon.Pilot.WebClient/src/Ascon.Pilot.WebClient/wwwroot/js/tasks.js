@@ -129,8 +129,14 @@ function processTaskClick(el) {
 
     //show selected task
     var id = task.attr('id');
-    showTaskDetails(id);
-
+    var win = $(window);
+    if (win.width() <= 992) {
+        var currentLocation = window.location.href;
+        window.location.href = "/taskdetails?id=" + id;
+    }
+    else {
+        showTaskDetails(id);
+    }
 }
 
 function setHamburgerMenuItemActivated(filterId) {
