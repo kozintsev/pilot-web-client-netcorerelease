@@ -30,13 +30,13 @@ namespace Ascon.Pilot.WebClient.Controllers
     {
         private readonly ILogger<FilesController> _logger;
         private readonly IHostingEnvironment _environment;
-        private readonly IContext _context;
+        private readonly IContextHolder _contextHolder;
 
-        public FilesController(ILogger<FilesController> logger, IHostingEnvironment environment, IContext context)
+        public FilesController(ILogger<FilesController> logger, IHostingEnvironment environment, IContextHolder contextHolder)
         {
             _logger = logger;
             _environment = environment;
-            _context = context;
+            _contextHolder = contextHolder;
         }
 
         public IActionResult ChangeFilesPanelType(string returnUrl, FilesPanelType type)
@@ -52,7 +52,7 @@ namespace Ascon.Pilot.WebClient.Controllers
 
         public IActionResult Index(Guid? id, bool isSource = false)
         {
-            _context.Build(HttpContext);
+            _contextHolder.GetContext(HttpContext).Build(HttpContext);
 
             var model = new UserPositionViewModel();
 
@@ -72,7 +72,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             {
                 dynamic[] childNodes;
 
-                var serverApi = _context.ServerApi;
+                var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
                     var node = serverApi.GetObjects(new[] { id }).First();
 
                     var types = HttpContext.Session.GetMetatypes();
@@ -135,7 +135,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         {
             byte[] fileChunk;
 
-                var serverApi = _context.ServerApi;
+                var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
                 fileChunk = serverApi.GetFileChunk(id, 0, size);
                 var fileDownloadName = string.IsNullOrWhiteSpace(name) ? id.ToString() : name;
                 if (Response.Headers.ContainsKey("Content-Disposition"))
@@ -149,7 +149,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             return await Task.Run(() =>
             {
                 {
-                    var serverApi = _context.ServerApi;
+                    var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
                     var fileChunk = serverApi.GetFileChunk(id, 0, size);
                     return new FileContentResult(fileChunk, "application/octet-stream")
                     {
@@ -165,7 +165,7 @@ namespace Ascon.Pilot.WebClient.Controllers
                 return NotFound();
             byte[] mstData;
 
-                var serverApi = _context.ServerApi;
+                var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
             var objects = serverApi.GetObjects(objectsIds);
 
                 var types = HttpContext.Session.GetMetatypes();
@@ -281,7 +281,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         public ActionResult Rename(Guid idToRename, string newName, Guid renameRootId)
         {
 
-            var api = _context.ServerApi;
+            var api = _contextHolder.GetContext(HttpContext).ServerApi;
             var objectToRename = api.GetObjects(new[] { idToRename })[0];
                 var newObject = objectToRename.Clone();
 

@@ -16,11 +16,11 @@ namespace Ascon.Pilot.WebClient.ViewComponents
     /// </summary>
     public class SidePanelViewComponent : ViewComponent
     {
-        private readonly IContext _context;
+        private readonly IContextHolder _contextHolder;
 
-        public SidePanelViewComponent(IContext context)
+        public SidePanelViewComponent(IContextHolder contextHolder)
         {
-            _context = context;
+            _contextHolder = contextHolder;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
         {
             id = id ?? DObject.RootId;
 
-            var serverApi = _context.ServerApi;
+            var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
             var rootObject = serverApi.GetObjects(new[] { id.Value }).First();
             var bRootObject = serverApi.GetObjects(new[] { DObject.RootId }).First();
             var mTypes = HttpContext.Session.GetMetatypes();

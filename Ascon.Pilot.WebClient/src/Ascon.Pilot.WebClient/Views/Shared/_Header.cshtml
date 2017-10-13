@@ -44,19 +44,20 @@
   
 <div id="mySidenav" class="sidenav">
     <div id="sidenav">
-        <a class="sidenav-item" id="files-page" asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
-        <a class="sidenav-item" id="tasks-page" asp-controller="Tasks" asp-action="Index" onclick="openNav()">Задания</a>
-        <div class="sidenav-submenu">
-            <a href="/tasks?filterId=6" id="hf6" class="sidenav-item active">Актуальные</a>
-            <a href="/tasks?filterId=7" id="hf7" class="sidenav-item">Выданные</a>
-            <a href="/tasks?filterId=8" id="hf8" class="sidenav-item">Полученные</a>
-            <a href="/tasks?filterId=12" id="hf12" class="sidenav-item">Вы в аудиторах</a>
-            <a href="/tasks?filterId=9" id="hf9" class="sidenav-item">Просроченные</a>
-            <a href="/tasks?filterId=10" id="hf10" class="sidenav-item">Выполненные</a>
-            <a href="/tasks?filterId=11" id="hf11" class="sidenav-item">Отозванные</a>
-            <a href="/tasks?filterId=5" id="hf5" class="sidenav-item">Все</a>
+        <div class="sidnav-scrollable">
+            <a class="sidenav-item" id="files-page" asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
+            <a class="sidenav-item" id="tasks-page" asp-controller="Tasks" asp-action="Index" onclick="openNav()">Задания</a>
+            <div class="sidenav-submenu">
+                <a href="/tasks?filterId=6" id="hf6" class="sidenav-item active">Актуальные</a>
+                <a href="/tasks?filterId=7" id="hf7" class="sidenav-item">Выданные</a>
+                <a href="/tasks?filterId=8" id="hf8" class="sidenav-item">Полученные</a>
+                <a href="/tasks?filterId=12" id="hf12" class="sidenav-item">Вы в аудиторах</a>
+                <a href="/tasks?filterId=9" id="hf9" class="sidenav-item">Просроченные</a>
+                <a href="/tasks?filterId=10" id="hf10" class="sidenav-item">Выполненные</a>
+                <a href="/tasks?filterId=11" id="hf11" class="sidenav-item">Отозванные</a>
+                <a href="/tasks?filterId=5" id="hf5" class="sidenav-item">Все</a>
+            </div>
         </div>
-
         <div id="sidenav-bottom">
             <div style="border-bottom: 1px solid #808080;"></div>
             @if (User.Identity.IsAuthenticated)

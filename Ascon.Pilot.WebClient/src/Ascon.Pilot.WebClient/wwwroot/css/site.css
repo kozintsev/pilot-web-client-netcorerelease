@@ -42,7 +42,6 @@ html,body,.container {
     top: 47px;
     left: 0;
     background-color: #111;
-    overflow-x: hidden;
     padding-top: 10px;
 }
 
@@ -75,9 +74,9 @@ html,body,.container {
     background: #5e5e5e;
 }
 
-/*.sidenav-submenu {
-    display: none;
-}*/
+.sidnav-scrollable {
+    overflow: auto;
+}
 
 .sidenav-submenu a {
     padding-left: 50px;

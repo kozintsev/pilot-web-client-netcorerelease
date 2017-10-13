@@ -19,12 +19,12 @@ namespace Ascon.Pilot.WebClient.ViewComponents
     public class FilesPanelViewComponent : ViewComponent
     {
         private readonly ILogger<FilesController> _logger;
-        private readonly IContext _context;
+        private readonly IContextHolder _contextHolder;
 
-        public FilesPanelViewComponent(ILogger<FilesController> logger, IContext context)
+        public FilesPanelViewComponent(ILogger<FilesController> logger, IContextHolder contextHolder)
         {
             _logger = logger;
-            _context = context;
+            _contextHolder = contextHolder;
         }
         /// <summary>
         /// Вызвать компонент панели файлов
@@ -42,7 +42,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     try
                     {
                         var types = HttpContext.Session.GetMetatypes();
-                        var serverApi = _context.ServerApi;
+                        var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
                         var folder = serverApi.GetObjects(new[] { folderId }).First();
 
                         if (folder.Children?.Any() != true)
@@ -76,7 +76,6 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     }
                     catch (Exception ex)
                     {
-
                         throw new Exception(ex.Message);
                     }
                     return View(panelType == FilesPanelType.List ? "List" : "Grid", model);

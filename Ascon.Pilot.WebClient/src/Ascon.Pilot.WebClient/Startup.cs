@@ -45,7 +45,7 @@ namespace Ascon.Pilot.WebClient
             services.AddMemoryCache();
             services.AddSession();
             //
-            services.AddSingleton<IContext, Context>();
+            services.AddSingleton<IContextHolder, ContextHolder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

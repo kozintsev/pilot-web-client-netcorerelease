@@ -22,12 +22,12 @@ namespace Ascon.Pilot.WebClient.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger<FilesController> _logger;
-        private readonly IContext _context;
+        private IContextHolder _contextHolder;
 
-        public AccountController(ILogger<FilesController> logger, IContext context)
+        public AccountController(ILogger<FilesController> logger, IContextHolder contextHolder)
         {
             _logger = logger;
-            _context = context;
+            _contextHolder = contextHolder;
         }
 
         [AllowAnonymous]
@@ -56,10 +56,11 @@ namespace Ascon.Pilot.WebClient.Controllers
             if (!ModelState.IsValid)
                 return View("LogIn");
 
+            var context = _contextHolder.GetContext(HttpContext);
             try
             {
                 var creds = Credentials.GetConnectionCredentials(model.DatabaseName, model.Login, model.Password, Guid.NewGuid());
-                var dbInfo = _context.Connect(HttpContext, creds);
+                var dbInfo = context.Connect(HttpContext, creds);
                 if (dbInfo == null)
                 {
                     ModelState.AddModelError("", "Авторизация не удалась, проверьте данные и повторите вход");
@@ -68,11 +69,12 @@ namespace Ascon.Pilot.WebClient.Controllers
 
                 await SignInAsync(dbInfo, creds.DatabaseName, creds.ProtectedPassword, creds.Sid, model.RememberMe);
 
-                var dMetadata = _context.ServerApi.GetMetadata(dbInfo.MetadataVersion);
+                var dMetadata = context.ServerApi.GetMetadata(dbInfo.MetadataVersion);
                 Debug.WriteLine(dMetadata.Types.ToString());
                 Debug.WriteLine(dMetadata.Version.ToString());
                 HttpContext.Session.SetSessionValues(SessionKeys.MetaTypes, dMetadata.Types.ToDictionary(x => x.Id, y => y));
-                _context.Build(HttpContext);
+                context.Build(HttpContext);
+                _contextHolder.RegisterClient(context, creds.Sid);
             }
             catch (Exception ex)
             {
@@ -104,7 +106,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         public async Task<IActionResult> LogOff()
         {
             await HttpContext.Authentication.SignOutAsync(ApplicationConst.PilotMiddlewareInstanceName);
-            _context.Dispose();
+            _contextHolder.Dispose();
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }

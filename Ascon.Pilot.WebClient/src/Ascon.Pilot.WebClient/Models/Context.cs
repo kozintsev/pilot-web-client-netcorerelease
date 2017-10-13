@@ -15,6 +15,7 @@ namespace Ascon.Pilot.WebClient.Models
         IServerApi ServerApi { get; }
         HttpPilotClient Client { get; }
         DDatabaseInfo Connect(HttpContext http, Credentials credentials);
+        bool IsInitialized { get; }
     }
 
     class Context : IContext
@@ -22,7 +23,6 @@ namespace Ascon.Pilot.WebClient.Models
         private Repository _repository;
         private HttpPilotClient _client;
         private ServerCallback _serverCallback;
-        bool _isInitialized;
 
         public Context()
         {
@@ -41,7 +41,7 @@ namespace Ascon.Pilot.WebClient.Models
 
         public void Build(HttpContext http)
         {
-            if (_isInitialized)
+            if (IsInitialized)
                 return;
 
             ServerApi = http.GetServerApi(_serverCallback);
@@ -49,7 +49,7 @@ namespace Ascon.Pilot.WebClient.Models
             _serverCallback.SetCallbackListener(_repository);
             var login = http.User.FindFirstValue(ClaimTypes.Name);
             _repository.Initialize(login);
-            _isInitialized = true;
+            IsInitialized = true;
         }
 
         public IRepository Repository
@@ -65,6 +65,11 @@ namespace Ascon.Pilot.WebClient.Models
         public HttpPilotClient Client
         {
             get { return _client; }
+        }
+
+        public bool IsInitialized
+        {
+            get; private set;
         }
 
         public void Dispose()

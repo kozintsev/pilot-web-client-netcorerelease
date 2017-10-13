@@ -17,11 +17,11 @@ namespace Ascon.Pilot.WebClient.Controllers
     [Authorize]
     public class TasksController : Controller
     {
-        private IContext _context;
+        private IContextHolder _contextHolder;
 
-        public TasksController(IContext context)
+        public TasksController(IContextHolder contextHolder)
         {
-            _context = context;
+            _contextHolder = contextHolder;
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             return await Task<ActionResult>.Factory.StartNew(() =>
             {
                 var id = Guid.Parse(taskId);
-                var model = new TaskDetailsViewModel(id, _context.Repository);
+                var model = new TaskDetailsViewModel(id, _contextHolder.GetContext(HttpContext).Repository);
                 return PartialView("TaskDetails", model);
             });
         }
@@ -122,7 +122,7 @@ namespace Ascon.Pilot.WebClient.Controllers
                 SortFieldName = SystemAttributes.TASK_DATE_OF_ASSIGNMENT
             };
 
-            var repo = _context.Repository;
+            var repo = _contextHolder.GetContext(HttpContext).Repository;
             var searchResults = await repo.Search(searchDefinition);
             if (searchResults.Found == null)
             {
@@ -130,7 +130,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             }
 
             var objects = repo.GetObjects(searchResults.Found.ToArray());
-            var list = objects.Select(o => new TaskNode(o, _context.Repository));
+            var list = objects.Select(o => new TaskNode(o, _contextHolder.GetContext(HttpContext).Repository));
             return list;
         }
 
