@@ -10,34 +10,34 @@
 else
 {
     <div class="task-details-content">
-        <span style="font-weight:600; color: #2A3344;">@Model.Initiator</span>
+        <span style="font-weight:600;">@Model.Initiator</span>
         <br />
         <span>@Model.Executor</span>
         <br />
         <br />
-        <p style="font-weight:100; font-size:large; color: #2A3344;">@Model.Title</p>
+        <p style="font-weight:200; font-size:large;">@Model.Title</p>
         <p class="default-margin_top">@Model.Description</p>
         <div class="default-margin_top">
             @foreach (var attachment in Model.Attachments)
             {
                 var href = Url.Action("GetTypeIcon", "Home", new { id = attachment.Type.Id });
-                <div class="task-attachment">
+                <div class="task-attachment" id="@attachment.Id">
                     @if (attachment.Type.IsProjectFile())
                     {
                         <img src="@href" class="task-attachment-image"/>
-                        <p class="truncate" style="color: #2A3344; margin-bottom: 0px;">@attachment.Title</p>
+                        <p class="truncate" style="margin-bottom: 0px;">@attachment.Title</p>
                         <span>Файл @attachment.FileExtension</span>
                     }
                     else if (attachment.Type.IsProjectFolder() || attachment.Type.Children.Count > 0)
                     {
                         <img src="@href" class="task-attachment-image"/>
-                        <p class="truncate" style="color: #2A3344; margin-bottom: 0px;">@attachment.Title</p>
+                        <p class="truncate" style="margin-bottom: 0px;">@attachment.Title</p>
                         <span>@attachment.Type.Title</span>
                     }
                     else
                     {
                         <img src="@href" class="task-attachment-image"/>
-                        <p class="truncate" style="color: #2A3344; margin-bottom: 0px;">@attachment.Title</p>
+                        <p class="truncate" style="margin-bottom: 0px;">@attachment.Title</p>
                         <span>Документ</span>
                     }
 
@@ -47,3 +47,6 @@ else
         </div>
     </div>
 }
+
+
+<script src="~/js/task-details.js"></script>

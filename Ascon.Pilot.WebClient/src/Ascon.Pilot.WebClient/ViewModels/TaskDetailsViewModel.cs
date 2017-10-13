@@ -35,6 +35,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
     {
         public Attachment(DObject obj, IRepository repository)
         {
+            Id = obj.Id;
             var type = repository.GetType(obj.TypeId);
             Title = obj.GetTitle(type);
             Type = type;
@@ -44,6 +45,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
             }
         }
 
+        public Guid Id { get; private set; }
         public string Title { get; private set; }
         public string FileExtension { get; private set; }
         public MType Type { get; private set; }
