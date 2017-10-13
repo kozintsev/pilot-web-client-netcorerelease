@@ -11,11 +11,17 @@ namespace Ascon.Pilot.WebClient.Models
     {
         IContext GetContext(HttpContext httpContext);
         void RegisterClient(IContext client, Guid clientId);
+        IContext NewContext();
     }
 
     public class ContextHolder : IContextHolder
     {
         private static readonly Dictionary<Guid, IContext> _contexts = new Dictionary<Guid, IContext>();
+
+        public IContext NewContext()
+        {
+            return new Context();
+        }
 
         public IContext GetContext(HttpContext httpContext)
         {
@@ -32,6 +38,7 @@ namespace Ascon.Pilot.WebClient.Models
             }
 
             var context = new Context();
+            context.Build(httpContext);
             return context;
         }
 

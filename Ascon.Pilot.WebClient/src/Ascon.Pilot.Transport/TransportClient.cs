@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NLog;
+using System.IO;
 
 namespace Ascon.Pilot.Transport
 {
@@ -153,20 +154,39 @@ namespace Ascon.Pilot.Transport
 
         private Exception ReadException(byte[] data)
         {
-            Exception exception;
-            try
+            using (var stream = new MemoryStream(data))
             {
-                string stringedData = Encoding.Unicode.GetString(data);
-                exception = JsonConvert.DeserializeObject<Exception>(stringedData);
-                if (exception == null)
-                    exception = new ArgumentException("Can not deserialize exception from server");
-                return exception;
+                var exceptionMess = ProtoBuf.Serializer.Deserialize<ProtoExceptionInfo>(stream);
+                if (exceptionMess == null)
+                    return new ArgumentException("Can not deserialize exception from server");
+
+                var type = exceptionMess.ExceptionType;
+                Exception instance;
+                try
+                {
+                    instance = Activator.CreateInstance(typeof(Exception), exceptionMess.ExceptionMessage) as Exception;
+                }
+                catch (MissingMethodException)
+                {
+                    instance = Activator.CreateInstance(type) as Exception;
+                }
+                return instance ?? new ArgumentException("Can not deserialize exception from server");
             }
-            catch (Exception)
-            {
-               exception = new ArgumentException("Can not deserialize exception from server");
-            }
-            return exception;
+
+            //Exception exception;
+            //try
+            //{
+            //    string stringedData = Encoding.Unicode.GetString(data);
+            //    exception = JsonConvert.DeserializeObject<Exception>(stringedData);
+            //    if (exception == null)
+            //        exception = new ArgumentException("Can not deserialize exception from server");
+            //    return exception;
+            //}
+            //catch (Exception)
+            //{
+            //   exception = new ArgumentException("Can not deserialize exception from server");
+            //}
+            //return exception;
         }
 
         private void CheckActive()

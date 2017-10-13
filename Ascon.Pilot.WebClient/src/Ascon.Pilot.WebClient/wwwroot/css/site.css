@@ -41,7 +41,7 @@ html,body,.container {
     z-index: 10;
     top: 47px;
     left: 0;
-    background-color: #111;
+    background-color: #282828;
     padding-top: 10px;
 }
 
@@ -55,9 +55,8 @@ html,body,.container {
     bottom: 50px;
     width: 250px;
     left: 0px;
-    background: #111;
+    background: #282828;
 }
-
 
 .sidenav a {
     padding: 8px 8px 8px 32px;
@@ -87,6 +86,9 @@ html,body,.container {
   .sidenav a {font-size: 18px;}
 }
 
+a.navbar-brand.active {
+    background: #282828;
+}
 
 /* ------   owerride bootstrap styles -------- */
 .toolbar {
@@ -198,6 +200,10 @@ html,body,.container {
 
 
 /* ---------- Navbar ------------*/
+.navbar {
+    border: 0px;
+}
+
 .navbar-text {
     margin-left: 15px;
 }
@@ -329,12 +335,20 @@ a.task-node {
     color: #a94442;
 }
 
+.field-validation-error li {
+    display: block;
+    list-style-type: none;
+}
+
 /*------------FILE CARD grid-------------------*/
 
 .file-grid .file-card {
     height: 150px;
     margin: 5px;
     padding: 5px;
+}
+.file-grid.center-block img {
+    height: 70px;
 }
 
 .file-grid .file-card {
@@ -359,8 +373,8 @@ a.task-node {
 
 .file-grid .file-card.with-thumbnail .file-card-icon img {
     border: 1px solid #eeeeee;
-    max-height: 70px;
-    max-width: 70px;
+    height: 70px;
+    width: 70px;
     display: block;
     margin: auto;
 }

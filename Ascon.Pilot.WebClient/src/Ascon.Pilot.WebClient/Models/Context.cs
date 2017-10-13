@@ -31,11 +31,15 @@ namespace Ascon.Pilot.WebClient.Models
 
         public DDatabaseInfo Connect(HttpContext http, Credentials credentials)
         {
-             _client = new HttpPilotClient();
+            _client = new HttpPilotClient();
             _client.Connect(ApplicationConst.PilotServerUrl);
             ServerApi = _client.GetServerApi(_serverCallback);
             var dbInfo = ServerApi.OpenDatabase(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth);
             http.SetClient(_client, credentials.Sid);
+            _repository = new Repository(ServerApi);
+            _serverCallback.SetCallbackListener(_repository);
+            _repository.Initialize(credentials.Username);
+            IsInitialized = true;
             return dbInfo;
         }
 
@@ -44,7 +48,8 @@ namespace Ascon.Pilot.WebClient.Models
             if (IsInitialized)
                 return;
 
-            ServerApi = http.GetServerApi(_serverCallback);
+            if (ServerApi == null)
+                ServerApi = http.GetServerApi(_serverCallback);
             _repository = new Repository(ServerApi);
             _serverCallback.SetCallbackListener(_repository);
             var login = http.User.FindFirstValue(ClaimTypes.Name);

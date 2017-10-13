@@ -7,7 +7,7 @@
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-header">
         <div class="navbar-brand">
-            <a class="glyphicon glyphicon-align-justify navbar-link" style="cursor:pointer;margin-right:15px; text-decoration:none" onclick="openNav()"></a>
+            <a id="vMenu" class="glyphicon glyphicon-align-justify navbar-link active" style="cursor:pointer;margin-right:15px; text-decoration:none" onclick="openNav()"></a>
             <a asp-controller="Home" asp-action="Index"><img src="@Url.Content("~/images/logo.png")" height="26" alt="Pilot-WEB"></a>
         </div>
     </div>
@@ -44,6 +44,8 @@
   
 <div id="mySidenav" class="sidenav">
     <div id="sidenav">
+    @if (User.Identity.IsAuthenticated)
+    {
         <div class="sidnav-scrollable">
             <a class="sidenav-item" id="files-page" asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
             <a class="sidenav-item" id="tasks-page" asp-controller="Tasks" asp-action="Index" onclick="openNav()">Задания</a>
@@ -58,6 +60,7 @@
                 <a href="/tasks?filterId=5" id="hf5" class="sidenav-item">Все</a>
             </div>
         </div>
+    }
         <div id="sidenav-bottom">
             <div style="border-bottom: 1px solid #808080;"></div>
             @if (User.Identity.IsAuthenticated)

@@ -5,53 +5,64 @@
 @{
     ViewBag.Title = "Войти";
 }
-
-@section title {
-    <h2>
-        @ViewBag.Title
-    </h2>
-    <br/>
-}
-
-@using (Html.BeginForm("LogIn", "Account", FormMethod.Post, new {@class = "form-horizontal"}))
+@section title
 {
-    @Html.ValidationSummary(true)
+    <div style="margin-left: 40px; margin-right:40px;">
+        <div class="col-xs-12 col-md-6 col-md-offset-3">
+            <h2 style="margin-left:-10px;">@ViewBag.Title</h2>
+            <br />
+        </div>
+}
+    
+
+@using (Html.BeginForm("LogIn", "Account", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @if (ViewContext.ViewData.ModelState.Where(x => x.Key == "").Any())
+    {
+        <div class="col-xs-12 col-md-6 col-md-offset-3 alert alert-danger">
+            @Html.ValidationSummary()
+        </div>
+    }
+
     <div class="form-group">
-        @Html.LabelFor(x => x.DatabaseName, new {@class = "control-label col-sm-3"})
-        <div class="col-sm-9">
-            @Html.TextBoxFor(x => x.DatabaseName, new {@class = "form-control"})
+        
+        <div class="col-xs-12 col-md-6 col-md-offset-3">
+            @Html.LabelFor(x => x.DatabaseName, new { @class = "control-label" })
+            @Html.TextBoxFor(x => x.DatabaseName, new { @class = "form-control" })
             <p class="help-block">@Html.ValidationMessageFor(x => x.DatabaseName)</p>
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(x => x.Login, new {@class = "control-label col-sm-3"})
-        <div class="col-sm-9">
-            @Html.TextBoxFor(x => x.Login, new {@class = "form-control"})
+        <div class="col-xs-12 col-md-6 col-md-offset-3">
+            @Html.LabelFor(x => x.Login, new { @class = "control-label" })
+            @Html.TextBoxFor(x => x.Login, new { @class = "form-control" })
             <p class="help-block">@Html.ValidationMessageFor(x => x.Login)</p>
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(x => x.Password, new {@class = "control-label col-sm-3"})
-        <div class="col-sm-9">
-            @Html.PasswordFor(x => x.Password, new {@class = "form-control"})
+        <div class="col-xs-12 col-md-6 col-md-offset-3">
+            @Html.LabelFor(x => x.Password, new { @class = "control-label" })
+            @Html.PasswordFor(x => x.Password, new { @class = "form-control" })
             <p class="help-block">@Html.ValidationMessageFor(x => x.Password)</p>
         </div>
     </div>
     <div class="form-group">
-        <div class="checkbox col-sm-offset-3 col-sm-9">
+        <div class="checkbox col-xs-12 col-md-6 col-md-offset-3">
             <label>
                 @Html.EditorFor(x => x.RememberMe) Запомнить меня
             </label>
         </div>
     </div>
     <div class="form-group">
-        <div class="col-sm-offset-3 col-sm-9">
+        <div class="col-xs-12 col-md-6 col-md-offset-3">
             <button type="submit" onclick="processLogin(this)" class="btn btn-primary">
                 <i id="loginProgress" style="display: none;" class="glyphicon glyphicon-spin glyphicon-refresh"></i>&nbsp;Войти
             </button>
         </div>
     </div>
 }
+
+</div>
 
 @section scripts {
     <script type="text/javascript" src="@Url.Content("~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js")"></script>

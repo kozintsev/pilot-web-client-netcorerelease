@@ -35,7 +35,7 @@ namespace Ascon.Pilot.WebClient.Models
         {
             _persons = _serverApi.LoadPeople().ToDictionary(x => x.Id, y => y);
             _organisationUnits = _serverApi.LoadOrganisationUnits().ToDictionary(x => x.Id, y => y);
-            _person = _persons.First(p => p.Value.Login == currentLogin).Value;
+            _person = _persons.First(p => p.Value.Login.Equals(currentLogin, StringComparison.OrdinalIgnoreCase)).Value;
             _types = _serverApi.GetMetadata(0).Types;
         }
 

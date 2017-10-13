@@ -33,7 +33,7 @@ function subscribeScroll() {
         var height = doc.height() - win.height();
         var pos = win.scrollTop();
 
-        if (pos >= height - 50 && pos <= height) {
+        if (pos >= height - 100 && pos <= height) {
             addTasks();
         }
     });

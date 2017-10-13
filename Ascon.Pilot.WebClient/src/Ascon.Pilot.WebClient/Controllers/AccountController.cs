@@ -5,9 +5,6 @@ using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Ascon.Pilot.Core;
-using Ascon.Pilot.Transport;
-using Ascon.Pilot.Server.Api;
-using Ascon.Pilot.Server.Api.Contracts;
 using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -56,7 +53,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             if (!ModelState.IsValid)
                 return View("LogIn");
 
-            var context = _contextHolder.GetContext(HttpContext);
+            var context = _contextHolder.NewContext();
             try
             {
                 var creds = Credentials.GetConnectionCredentials(model.DatabaseName, model.Login, model.Password, Guid.NewGuid());
@@ -73,13 +70,12 @@ namespace Ascon.Pilot.WebClient.Controllers
                 Debug.WriteLine(dMetadata.Types.ToString());
                 Debug.WriteLine(dMetadata.Version.ToString());
                 HttpContext.Session.SetSessionValues(SessionKeys.MetaTypes, dMetadata.Types.ToDictionary(x => x.Id, y => y));
-                context.Build(HttpContext);
                 _contextHolder.RegisterClient(context, creds.Sid);
             }
             catch (Exception ex)
             {
                 _logger.LogError(1, "Не удалось подключиться к серверу", ex);
-                ModelState.AddModelError("", "Сервер недоступен.");
+                ModelState.AddModelError("", ex.Message);
                 return View();
             }
 

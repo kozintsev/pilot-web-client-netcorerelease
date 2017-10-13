@@ -231,6 +231,7 @@ namespace Ascon.Pilot.Transport
             catch (Exception e)
             {
                 invocation.ReturnValue = null;
+                throw e;
             }
         }
 
