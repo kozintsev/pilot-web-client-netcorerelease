@@ -48,7 +48,7 @@
     {
         <div class="sidnav-scrollable">
             <a class="sidenav-item" id="files-page" asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
-            <a class="sidenav-item" id="tasks-page" asp-controller="Tasks" asp-action="Index" onclick="openNav()">Задания</a>
+            <a class="sidenav-item" id="tasks-page" href="/tasks?filterId=6" onclick="openNav()">Задания</a>
             <div class="sidenav-submenu">
                 <a href="/tasks?filterId=6" id="hf6" class="sidenav-item active">Актуальные</a>
                 <a href="/tasks?filterId=7" id="hf7" class="sidenav-item">Выданные</a>

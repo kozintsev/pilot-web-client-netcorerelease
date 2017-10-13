@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿var minWidth = 992;
+
+$(document).ready(function () {
     
     var filterId = getURLParameter('filterId');
     var taskId = getURLParameter('taskId');
@@ -71,7 +73,13 @@ function loadTasks(filterId, taskId) {
             }
 
             scrollToElement("#" + taskId);
-            processTaskClick(task);
+            var win = $(window);
+            if (win.width() <= minWidth) {
+                selectTask(task);
+            }
+            else {
+                processTaskClick(task);
+            }
         },
         error: function (xhr) {
             alert('error' + xhr);
@@ -110,7 +118,13 @@ function addTasks(taskId) {
             }
 
             scrollToElement("#" + taskId);
-            processTaskClick(task);
+            var win = $(window);
+            if (win.width() <= minWidth) {
+                selectTask(task);
+            }
+            else {
+                processTaskClick(task);
+            }
         },
         error: function (xhr) {
             alert('error' + xhr);
@@ -129,14 +143,22 @@ function processTaskClick(el) {
 
     //show selected task
     var id = task.attr('id');
+
+    pushHistory(id);
     var win = $(window);
-    if (win.width() <= 992) {
+    if (win.width() <= minWidth) {
         var currentLocation = window.location.href;
         window.location.href = "/taskdetails?id=" + id;
     }
     else {
         showTaskDetails(id);
     }
+}
+
+function selectTask(el) {
+    $(".task-node").removeClass("active");
+    var task = $(el);
+    task.addClass("active");
 }
 
 function setHamburgerMenuItemActivated(filterId) {
@@ -161,7 +183,7 @@ function getURLParameter(sParam) {
 function scrollToElement(elementId) {
     $('html, body').animate({
         scrollTop: $(elementId).offset().top - 120
-    }, 500);
+    }, 0);
 }
 
 function showTaskDetails(taskId) {
@@ -185,4 +207,9 @@ function showTaskDetails(taskId) {
             $("#progress").hide();
         }
     });
+}
+
+function pushHistory(id) {
+    var filterId = getURLParameter('filterId');
+    history.pushState(null, "", "/Tasks?filterId=" + filterId + "&taskId=" + id);
 }

@@ -114,6 +114,7 @@ a.navbar-brand.active {
 
 #toolbar {
     z-index: 1;
+    border-bottom: 1px solid #E7E7E7;
 }
 
 #colapsedMenu {
