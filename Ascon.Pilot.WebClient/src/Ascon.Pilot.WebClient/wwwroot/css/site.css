@@ -3,6 +3,7 @@ html,body,.container {
     height:100%;
     background: #F8F9FB;
     /*color: #636D84;*/
+    font-family: Segoe UI,Segoe UI Web,Segoe UI Symbol,Helvetica Neue,BBAlpha Sans,S60 Sans,Arial,sans-serif;
 }
 
 .body-content {
@@ -39,9 +40,9 @@ html,body,.container {
     width: 250px;
     position: fixed;
     z-index: 10;
-    top: 47px;
+    top: 40px;
     left: 0;
-    background-color: #282828;
+    background-color: #333333;
     padding-top: 10px;
 }
 
@@ -55,22 +56,23 @@ html,body,.container {
     bottom: 50px;
     width: 250px;
     left: 0px;
-    background: #282828;
+    background: #333333;
 }
 
 .sidenav a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
-    color: #818181;
+    color: #E8E8E8;
     display: block;
     font-size: medium;
+    font-weight: 300;
 }
 
 .sidenav a:hover,
 .sidenav-submenu a.active,
 .sidenav a.active {
-    color: #f1f1f1;
-    background: #5e5e5e;
+    color: #E8E8E8;
+    background: #404040;
 }
 
 .sidnav-scrollable {
@@ -210,14 +212,14 @@ a.navbar-brand {
 }
 
 .navbar-brand {
-    padding: 10px, 10px;
+    padding: 0px, 0px;
 }
 
 .icon-bar {
-    width: 25px;
-    height: 3px;
+    width: 17px;
+    height: 1px;
     background-color: #E2E2E2;
-    margin: 5px 0;
+    margin: 3px 0;
 }
 
 #vMenu {
@@ -225,8 +227,12 @@ a.navbar-brand {
     display: block;
     text-decoration: none;
     float: left;
-    padding: 12px 15px 0px 20px;
-} 
+    padding: 17px 15px 18px 15px;
+}
+
+#vMenu:hover {
+    background: #383838;
+}
 
 
 /* ---------- breadcrumbs ------------------ */
