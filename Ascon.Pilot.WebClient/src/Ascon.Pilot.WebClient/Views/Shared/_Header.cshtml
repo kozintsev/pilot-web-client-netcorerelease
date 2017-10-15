@@ -6,10 +6,16 @@
 }
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-header">
+       
+            <a id="vMenu" class="active" onclick="openNav()">
+                <div class="icon-bar"></div>
+                <div class="icon-bar"></div>
+                <div class="icon-bar"></div>
+            </a>
         <div class="navbar-brand">
-            <a id="vMenu" class="glyphicon glyphicon-align-justify navbar-link active" style="cursor:pointer;margin-right:15px; text-decoration:none" onclick="openNav()"></a>
             <a asp-controller="Home" asp-action="Index"><img src="@Url.Content("~/images/logo.png")" height="26" alt="Pilot-WEB"></a>
         </div>
+       
     </div>
     <ul class="nav navbar-nav navbar-right">
         @if (User.Identity.IsAuthenticated)
@@ -66,11 +72,11 @@
             @if (User.Identity.IsAuthenticated)
             {
                 <a >@User.Identity.Name</a>
-                <a asp-controller="Account" asp-action="LogOff"><span class="glyphicon glyphicon-log-out"></span>&nbsp;Выйти</a>
+                <a asp-controller="Account" asp-action="LogOff"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Выйти</a>
             }
             else
             {
-                <a asp-controller="Account" asp-action="LogIn"><span class="glyphicon glyphicon-log-in"></span>&nbsp;Авторизоваться</a>
+                <a asp-controller="Account" asp-action="LogIn"><span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Авторизоваться</a>
             }
         </div>
     </div>

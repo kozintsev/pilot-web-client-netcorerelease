@@ -133,12 +133,12 @@ a.navbar-brand.active {
   border-radius: 0px;
 }
 
-.list-group-item.active,
+/*.list-group-item.active,
 .list-group-item.active:hover,
 .list-group-item.active:focus {
   background-color: #5E80D8;
   border-color: #5E80D8;
-}
+}*/
 
 /* ---------- side menu -------- */
 .noborder {
@@ -209,6 +209,26 @@ a.navbar-brand {
     padding: 0px 0px;
 }
 
+.navbar-brand {
+    padding: 10px, 10px;
+}
+
+.icon-bar {
+    width: 25px;
+    height: 3px;
+    background-color: #E2E2E2;
+    margin: 5px 0;
+}
+
+#vMenu {
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    float: left;
+    padding: 12px 15px 0px 20px;
+} 
+
+
 /* ---------- breadcrumbs ------------------ */
 .breadcrumb li {
     max-width: 300px;
@@ -244,7 +264,8 @@ a.task-node {
 }
 
 .task-node.active {
-    background-color: #5E80D8;
+    /*background-color: #5E80D8;*/
+    background-color: #337AB7;
     color: white;
 }
 
