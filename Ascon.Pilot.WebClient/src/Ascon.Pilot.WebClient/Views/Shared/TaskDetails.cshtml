@@ -26,19 +26,19 @@ else
                     {
                         <img src="@href" class="task-attachment-image"/>
                         <p class="truncate" style="margin-bottom: 0px;">@attachment.Title</p>
-                        <span>Файл @attachment.FileExtension</span>
+                        <span style="color: #7D828D;">Файл @attachment.FileExtension</span>
                     }
                     else if (attachment.Type.IsProjectFolder() || attachment.Type.Children.Count > 0)
                     {
                         <img src="@href" class="task-attachment-image"/>
                         <p class="truncate" style="margin-bottom: 0px;">@attachment.Title</p>
-                        <span>@attachment.Type.Title</span>
+                        <span style="color: #7D828D;">@attachment.Type.Title</span>
                     }
                     else
                     {
                         <img src="@href" class="task-attachment-image"/>
                         <p class="truncate" style="margin-bottom: 0px;">@attachment.Title</p>
-                        <span>Документ</span>
+                        <span style="color: #7D828D;">Документ</span>
                     }
 
                     

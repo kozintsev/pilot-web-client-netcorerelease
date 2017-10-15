@@ -12,12 +12,12 @@ $(document).ready(function () {
     treeControl = createTreeView(treeData);
     setObjectIdsCheckCallback();
     
-    $("#sidePanel").on("hidden.bs.collapse", function () {
-        $("#filesPanelContainer").removeClass("col-md-8").addClass("col-md-12");
-    });
-    $("#sidePanel").on("show.bs.collapse", function () {
-        $("#filesPanelContainer").removeClass("col-md-12").addClass("col-md-8");
-    });
+    //$("#sidePanel").on("hidden.bs.collapse", function () {
+    //    $("#filesPanelContainer").removeClass("col-md-8").addClass("col-md-12");
+    //});
+    //$("#sidePanel").on("show.bs.collapse", function () {
+    //    $("#filesPanelContainer").removeClass("col-md-12").addClass("col-md-8");
+    //});
     $("#renameModal").on("show.bs.modal", function() {
         var activeFileCard = $(".file-card.active");
         var id = activeFileCard.data("id");

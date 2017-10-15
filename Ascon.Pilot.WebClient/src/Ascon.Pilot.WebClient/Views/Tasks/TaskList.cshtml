@@ -45,7 +45,7 @@ else
                         break;
                 }
                 <div class="col-md-6 col-sm-8 col-lg-8 text-title truncate">@node.Title</div>
-                <div class="col-fix-145 col-float-right hidden-xs">Выдано @node.DateOfAssignment.ToString("g")</div>
+                <div class="col-fix-145 col-float-right hidden-xs" style="font-size:small">Выдано @node.DateOfAssignment.ToString("g")</div>
             </div>
             <div class="row">
                 <div class="col-fix-16"></div>
@@ -57,7 +57,7 @@ else
                 }
                 else 
                 {
-                    <div class="col-fix-145 col-float-right hidden-xs">Срок @node.DeadlineDate.ToString("g")</div>
+                    <div class="col-fix-145 col-float-right hidden-xs" style="font-size:small">Срок @node.DeadlineDate.ToString("g")</div>
                 }
             </div>
             <div class="row">
@@ -68,7 +68,7 @@ else
                 }
                 else
                 {
-                    <div class="col-fix-145 col-float-right hidden-xs">Начало @node.DateOfStart?.ToString("g")</div>
+                    <div class="col-fix-145 col-float-right hidden-xs" style="font-size:small">Начало @node.DateOfStart?.ToString("g")</div>
                 }
             </div>
         </div>

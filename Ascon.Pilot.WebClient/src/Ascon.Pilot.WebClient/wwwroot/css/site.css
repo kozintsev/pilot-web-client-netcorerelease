@@ -99,7 +99,7 @@ a.navbar-brand.active {
     right: 0px;
     top: 50px;
     height: 50px;
-    background-color: #fafbfc;
+    background-color: #ffffff;
     border-radius: 0;
 }
 
@@ -126,6 +126,35 @@ a.navbar-brand.active {
 .row {
     margin-right: 0px;
     margin-left: 0px;
+}
+
+.treeview .list-group-item {
+    border: 0px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 45px;
+}
+
+.treeview .glyphicon {
+    color: #636363;
+}
+
+.treeview .glyphicon.glyphicon-plus:before {
+    content: "\e250";
+    font-size: small;
+}
+
+.treeview .glyphicon.glyphicon-minus:before {
+    content: "\e252";
+    font-size: small;
+}
+
+.treeview .badge {
+    font-weight: 400;
+    color: #333333;
+    white-space: nowrap;
+    background-color: #EAEAEA;
 }
 
 .list-group-item:first-child {
@@ -185,18 +214,37 @@ a.navbar-brand.active {
     overflow: auto;
 }
 
-@media (max-width: 991px) {
-  .main-content {
-      margin-left: 0px;
-  }
-  /*.sidenav-submenu {
-      display: block;
-  }*/
-  .navbar-right {
-      display: none;
-  }
+.files-content {
+    margin-left: calc(35% + 0px);
+    overflow: auto;
 }
 
+@media only screen and (max-width: 991px) {
+    .main-content {
+        margin-left: 0px;
+    }
+    /*.sidenav-submenu {
+        display: block;
+    }*/
+    .navbar-right {
+        display: none;
+    }
+
+    .files-content {
+        margin-left: 0px;
+    }
+}
+
+.sidePanel {
+    position: fixed;
+    top: 100px;
+    padding-bottom: 0; 
+    height: 100%;
+    width: 35%;
+    background-color: white;
+    border-right: 1px solid #DFE4E8;
+    overflow: auto;
+}
 
 /* ---------- Navbar ------------*/
 .navbar {
@@ -236,6 +284,10 @@ a.navbar-brand {
 
 
 /* ---------- breadcrumbs ------------------ */
+.breadcrumb {
+    background-color : transparent;
+}
+
 .breadcrumb li {
     max-width: 300px;
     white-space: nowrap;
@@ -247,6 +299,12 @@ a.navbar-brand {
     display: inline;
 }
 
+.breadcrumb > li + li:before {
+    padding: 0px 6px;
+    color: #ccc;
+    content: "\003e";
+
+}
 
 /* ---------------------- tasks -------------------------------- */
 .task-node {
@@ -254,7 +312,6 @@ a.navbar-brand {
     height: 70px;
     background-color: transparent;
     border-bottom: 1px solid #DFE4E8;
-    font-size: smaller;
 
     margin-left: -15px;
     padding-left: 10px;
@@ -301,7 +358,6 @@ a.task-node {
 .text-title {
     /*color: #141414;/*#242D3E;*/
     font-weight:500;
-    font-size: small;
     white-space: nowrap;
 }
 
@@ -316,8 +372,7 @@ a.task-node {
     padding-bottom: 15px;
     padding-left: 30px;
     padding-right: 30px;
-    font-weight: 100;
-    color: #5e5e5e;
+    font-weight: 400;
 }
 
 .task-attachment {
@@ -366,11 +421,15 @@ a.task-node {
 }
 
 /*------------FILE CARD grid-------------------*/
+.file-grid {
+    margin-right: 15px;
+    margin-left: 5px;
+}
 
 .file-grid .file-card {
-    height: 150px;
-    margin: 5px;
+    height: 140px;
     padding: 5px;
+    margin: 5px;
 }
 .file-grid.center-block img {
     height: 70px;
@@ -378,7 +437,7 @@ a.task-node {
 
 .file-grid .file-card {
     border-radius: 5px;
-    border: 1px solid #eeeeee;
+    border: 1px solid #DFE4E8;
 }
 
 .file-grid .file-card:hover {
@@ -397,7 +456,7 @@ a.task-node {
 }
 
 .file-grid .file-card.with-thumbnail .file-card-icon img {
-    border: 1px solid #eeeeee;
+    border: 1px solid #DFE4E8;
     height: 70px;
     width: 70px;
     display: block;
@@ -416,6 +475,11 @@ a.task-node {
     text-overflow: ellipsis;
     max-height: 3em;
     text-align: center;
+}
+
+.file-card-name a {
+    color: #777777;
+    text-decoration: none;
 }
 
 .file-grid .file-card.active {
@@ -444,10 +508,12 @@ a.task-node {
 /*-------------file-card for list-------------------*/
 
 .file-list .file-card {
-    border: 1px solid #eeeeee;
+    border: 1px solid #DFE4E8;
     border-bottom: none;
-    padding-left: 5px;
-    padding-right: 5px;
+    border-right: none;
+    border-left: none;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .file-list .file-card:hover {
@@ -455,14 +521,14 @@ a.task-node {
 }
 
 .file-list .file-card:first-child {
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }
 
 .file-list .file-card:last-child {
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom: 1px solid #DFE4E8;
 }
 
 .file-list .file-card.active {
@@ -475,7 +541,7 @@ a.task-node {
 }
 
 .file-list .file-card .file-card:hover {
-    border: 1px solid #eeeeee;
+    border: 1px solid #DFE4E8;
     border-radius: 5px;
 }
 
