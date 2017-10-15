@@ -357,7 +357,7 @@ a.task-node {
 
 .text-title {
     /*color: #141414;/*#242D3E;*/
-    font-weight:500;
+    font-weight:400;
     white-space: nowrap;
 }
 
@@ -390,6 +390,12 @@ a.task-node {
     margin-right:10px;
     width: 40px;
     height: 42px;
+}
+
+@media only screen and (max-width: 992px) {
+    .task-details-content {
+        margin-top: -40px;
+    }
 }
 
 /*--------------------------------------Modal preview---------------------------*/
