@@ -21,7 +21,10 @@ namespace Ascon.Pilot.WebClient.ViewModels
             Description = task.Description;
             Initiator = task.GetInitiatorDisplayName(repository);
             Executor = task.GetExecutorDisplayName(repository);
-            Attachments = repository.GetObjects(task.InitiatorAttachments.ToArray()).Select(a => new Attachment(a, repository));
+            if (task.InitiatorAttachments.Any())
+            {
+                Attachments = repository.GetObjects(task.InitiatorAttachments.ToArray()).Select(a => new Attachment(a, repository));
+            }
         }
 
         public string Title { get; private set; }

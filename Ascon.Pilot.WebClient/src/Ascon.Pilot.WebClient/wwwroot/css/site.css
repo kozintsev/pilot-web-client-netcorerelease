@@ -32,6 +32,14 @@ html,body,.container {
     margin-top: 15px;
 }
 
+.no-data-info {
+    margin-top: 100px;
+    text-align: center;
+    font-weight:200;
+    font-size: large;
+    color: #c0c0c0;
+}
+
 
 /* ------    SideNav ---------- */
 .sidenav {
@@ -204,9 +212,8 @@ a.navbar-brand.active {
     padding-top: 50px;
     overflow: auto;
 
-    width: -moz-calc(41% - 73px); /* Firefox 4+ */
-    width: calc(41% - 73px); /* IE9+ и будущие браузеры */ 
-    width: expression(80% - 73px);
+    width: -moz-calc(41% - 70px); /* Firefox 4+ */
+    width: calc(41% - 70px); /* IE9+ и будущие браузеры */ 
 }
 
 .main-content {
@@ -260,7 +267,7 @@ a.navbar-brand {
 }
 
 .navbar-brand {
-    padding: 0px, 0px;
+    padding: 14px 5px;
 }
 
 .icon-bar {
