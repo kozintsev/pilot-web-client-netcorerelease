@@ -16,6 +16,7 @@ namespace Ascon.Pilot.WebClient.Models
         DOrganisationUnit GetOrganisationUnit(int id);
         DPerson CurrentPerson();
         MType GetType(int id);
+        IEnumerable<MType> GetTypes();
     }
 
     class Repository : IRepository, IRemoteStorageListener
@@ -88,6 +89,11 @@ namespace Ascon.Pilot.WebClient.Models
             {
                 ;
             }
+        }
+
+        public IEnumerable<MType> GetTypes()
+        {
+            return _types;
         }
     }
 }

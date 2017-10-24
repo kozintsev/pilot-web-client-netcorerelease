@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Ascon.Pilot.WebClient.Models;
+using System.Linq;
 
 namespace Ascon.Pilot.WebClient.ViewComponents
 {
@@ -22,7 +22,8 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             Queue<KeyValuePair<string, string>> result = new Queue<KeyValuePair<string, string>>();
             try
             {
-                var types = HttpContext.Session.GetMetatypes();
+                var context = _contextHolder.GetContext(HttpContext);
+                var types = context.Repository.GetTypes().ToDictionary(x => x.Id, y => y);
                 var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
 
                 Guid parentId = id;

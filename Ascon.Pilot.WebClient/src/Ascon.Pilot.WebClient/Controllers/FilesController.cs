@@ -72,36 +72,35 @@ namespace Ascon.Pilot.WebClient.Controllers
             {
                 dynamic[] childNodes;
 
-                var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
-                    var node = serverApi.GetObjects(new[] { id }).First();
+                var context = _contextHolder.GetContext(HttpContext);
+                var serverApi = context.ServerApi;
+                var node = serverApi.GetObjects(new[] { id }).First();
+                var types = context.Repository.GetTypes().ToDictionary(x => x.Id, y => y);
+                var childIds = node.Children?
+                                    .Where(x => types[x.TypeId].Children?.Any() == true)
+                                    .Select(child => child.ObjectId).ToArray();
+                var nodeChilds = serverApi.GetObjects(childIds);
 
-                    var types = HttpContext.Session.GetMetatypes();
+                childNodes = nodeChilds.Where(t =>
+                {
+                    var mType = types[t.TypeId];
+                    return !mType.IsService;
 
-                    var childIds = node.Children?
-                                        .Where(x => types[x.TypeId].Children?.Any() == true)
-                                        .Select(child => child.ObjectId).ToArray();
-                    var nodeChilds = serverApi.GetObjects(childIds);
-
-                    childNodes = nodeChilds.Where(t =>
+                }).Select(x =>
                     {
-                        var mType = types[t.TypeId];
-                        return !mType.IsService;
+                        var mType = types[x.TypeId];
 
-                    }).Select(x =>
+
+                        var sidePanelItem = new SidePanelItem
                         {
-                            var mType = types[x.TypeId];
+                            DObject = x,
+                            Type = mType,
+                            SubItems = x.Children.Any(y => types[y.TypeId].Children.Any()) ? new List<SidePanelItem>() : null
+                        };
 
-
-                            var sidePanelItem = new SidePanelItem
-                            {
-                                DObject = x,
-                                Type = mType,
-                                SubItems = x.Children.Any(y => types[y.TypeId].Children.Any()) ? new List<SidePanelItem>() : null
-                            };
-
-                            return sidePanelItem.GetDynamic(id, types);
-                        })
-                        .ToArray();
+                        return sidePanelItem.GetDynamic(id, types);
+                    })
+                    .ToArray();
                 return Json(childNodes);
             });
         }
@@ -163,21 +162,21 @@ namespace Ascon.Pilot.WebClient.Controllers
         {
             if (objectsIds.Length == 0)
                 return NotFound();
-            byte[] mstData;
 
-                var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
+            byte[] mstData;
+            var context = _contextHolder.GetContext(HttpContext);
+            var serverApi = context.ServerApi;
+            var types = context.Repository.GetTypes().ToDictionary(x => x.Id, y => y);
             var objects = serverApi.GetObjects(objectsIds);
 
-                var types = HttpContext.Session.GetMetatypes();
-
-                using (var compressedFileStream = new MemoryStream())
+            using (var compressedFileStream = new MemoryStream())
+            {
+                using (var zipArchive = new ZipArchive(compressedFileStream, ZipArchiveMode.Update, true))
                 {
-                    using (var zipArchive = new ZipArchive(compressedFileStream, ZipArchiveMode.Update, true))
-                    {
-                        AddObjectsToArchive(serverApi, objects, zipArchive, types, "");
-                    }
-                    mstData = compressedFileStream.ToArray();
+                    AddObjectsToArchive(serverApi, objects, zipArchive, types, "");
                 }
+                mstData = compressedFileStream.ToArray();
+            }
             return new FileContentResult(mstData, "application/zip") { FileDownloadName = "archive.zip" };
         }
 

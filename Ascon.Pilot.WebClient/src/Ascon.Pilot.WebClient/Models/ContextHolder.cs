@@ -10,17 +10,18 @@ namespace Ascon.Pilot.WebClient.Models
     public interface IContextHolder : IDisposable
     {
         IContext GetContext(HttpContext httpContext);
-        void RegisterClient(IContext client, Guid clientId);
-        IContext NewContext();
+        IContext NewContext(Guid id);
     }
 
     public class ContextHolder : IContextHolder
     {
         private readonly Dictionary<Guid, IContext> _contexts = new Dictionary<Guid, IContext>();
 
-        public IContext NewContext()
+        public IContext NewContext(Guid id)
         {
-            return new Context();
+            var context = new Context();
+            RegisterClient(context, id);
+            return context;
         }
 
         public IContext GetContext(HttpContext httpContext)
@@ -37,18 +38,12 @@ namespace Ascon.Pilot.WebClient.Models
                         return client;
                 }
 
-                var context = new Context();
+                var context = NewContext(clientId);
                 context.Build(httpContext);
-                RegisterClient(context, clientId);
                 return context;
             }
 
             return null;
-        }
-
-        public void RegisterClient(IContext client, Guid clientId)
-        {
-            _contexts[clientId] = client;
         }
 
         public void Dispose()
@@ -60,5 +55,11 @@ namespace Ascon.Pilot.WebClient.Models
 
             _contexts.Clear();
         }
+
+        private void RegisterClient(IContext client, Guid clientId)
+        {
+            _contexts[clientId] = client;
+        }
+
     }
 }

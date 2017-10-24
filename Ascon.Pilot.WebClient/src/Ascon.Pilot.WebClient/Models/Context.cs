@@ -1,6 +1,7 @@
 ﻿using Ascon.Pilot.Core;
 using Ascon.Pilot.Server.Api;
 using Ascon.Pilot.Server.Api.Contracts;
+using Ascon.Pilot.Transport;
 using Ascon.Pilot.WebClient.Extensions;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -13,8 +14,7 @@ namespace Ascon.Pilot.WebClient.Models
         void Build(HttpContext http);
         IRepository Repository { get; }
         IServerApi ServerApi { get; }
-        HttpPilotClient Client { get; }
-        DDatabaseInfo Connect(HttpContext http, Credentials credentials);
+        DDatabaseInfo Connect(Credentials credentials);
         bool IsInitialized { get; }
     }
 
@@ -22,37 +22,45 @@ namespace Ascon.Pilot.WebClient.Models
     {
         private Repository _repository;
         private HttpPilotClient _client;
-        private ServerCallback _serverCallback;
+        private readonly ServerCallback _serverCallback;
 
         public Context()
         {
             _serverCallback = new ServerCallback();
         }
 
-        public DDatabaseInfo Connect(HttpContext http, Credentials credentials)
+        public DDatabaseInfo Connect(Credentials credentials)
         {
             _client = new HttpPilotClient();
             _client.Connect(ApplicationConst.PilotServerUrl);
             ServerApi = _client.GetServerApi(_serverCallback);
             var dbInfo = ServerApi.OpenDatabase(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth);
-            http.SetClient(_client, credentials.Sid);
             _repository = new Repository(ServerApi, _serverCallback);
             _repository.Initialize(credentials.Username);
             IsInitialized = true;
             return dbInfo;
         }
 
-        public void Build(HttpContext http)
+        public void Build(HttpContext context)
         {
             if (IsInitialized)
                 return;
 
-            if (ServerApi == null)
-                ServerApi = http.GetServerApi(_serverCallback);
-            _repository = new Repository(ServerApi, _serverCallback);
-            var login = http.User.FindFirstValue(ClaimTypes.Name);
-            _repository.Initialize(login);
-            IsInitialized = true;
+            //if (ServerApi == null)
+            //{
+                var dbName = context.User.FindFirstValue(ClaimTypes.Surname);
+                var login = context.User.FindFirstValue(ClaimTypes.Name);
+                var protectedPassword = context.User.FindFirstValue(ClaimTypes.UserData);
+                var clientIdString = context.User.FindFirstValue(ClaimTypes.Sid);
+                var creds = Credentials.GetConnectionCredentials(dbName, login, protectedPassword.DecryptAes());
+                Connect(creds);
+                //return;
+            //}
+
+            //_repository = new Repository(ServerApi, _serverCallback);
+            //var login = context.User.FindFirstValue(ClaimTypes.Name);
+            //_repository.Initialize(login);
+            //IsInitialized = true;
         }
 
         public IRepository Repository
@@ -63,11 +71,6 @@ namespace Ascon.Pilot.WebClient.Models
         public IServerApi ServerApi
         {
             get; private set;
-        }
-
-        public HttpPilotClient Client
-        {
-            get { return _client; }
         }
 
         public bool IsInitialized

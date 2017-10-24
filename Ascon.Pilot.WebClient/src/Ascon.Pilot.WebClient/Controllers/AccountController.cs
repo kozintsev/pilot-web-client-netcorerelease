@@ -53,24 +53,24 @@ namespace Ascon.Pilot.WebClient.Controllers
             if (!ModelState.IsValid)
                 return View("LogIn");
 
-            var context = _contextHolder.NewContext();
+            var clientId = Guid.NewGuid();
+            var context = _contextHolder.NewContext(clientId);
             try
             {
-                var creds = Credentials.GetConnectionCredentials(model.DatabaseName, model.Login, model.Password, Guid.NewGuid());
-                var dbInfo = context.Connect(HttpContext, creds);
+                var creds = Credentials.GetConnectionCredentials(model.DatabaseName, model.Login, model.Password);
+                var dbInfo = context.Connect(creds);
                 if (dbInfo == null)
                 {
                     ModelState.AddModelError("", "Авторизация не удалась, проверьте данные и повторите вход");
                     return View("LogIn", model);
                 }
 
-                await SignInAsync(dbInfo, creds.DatabaseName, creds.ProtectedPassword, creds.Sid, model.RememberMe);
+                await SignInAsync(dbInfo, creds.DatabaseName, creds.ProtectedPassword, clientId, model.RememberMe);
 
-                var dMetadata = context.ServerApi.GetMetadata(dbInfo.MetadataVersion);
-                Debug.WriteLine(dMetadata.Types.ToString());
-                Debug.WriteLine(dMetadata.Version.ToString());
-                HttpContext.Session.SetSessionValues(SessionKeys.MetaTypes, dMetadata.Types.ToDictionary(x => x.Id, y => y));
-                _contextHolder.RegisterClient(context, creds.Sid);
+                //var dMetadata = context.ServerApi.GetMetadata(dbInfo.MetadataVersion);
+                //Debug.WriteLine(dMetadata.Types.ToString());
+                //Debug.WriteLine(dMetadata.Version.ToString());
+                //HttpContext.Session.SetSessionValues(SessionKeys.MetaTypes, dMetadata.Types.ToDictionary(x => x.Id, y => y));
             }
             catch (Exception ex)
             {

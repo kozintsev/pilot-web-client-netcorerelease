@@ -41,8 +41,9 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     List<FileViewModel> model = new List<FileViewModel>();
                     try
                     {
-                        var types = HttpContext.Session.GetMetatypes();
-                        var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
+                        var context = _contextHolder.GetContext(HttpContext);
+                        var types = context.Repository.GetTypes().ToDictionary(x => x.Id, y => y);
+                        var serverApi = context.ServerApi;
                         var folder = serverApi.GetObjects(new[] { folderId }).First();
 
                         if (folder.Children?.Any() != true)

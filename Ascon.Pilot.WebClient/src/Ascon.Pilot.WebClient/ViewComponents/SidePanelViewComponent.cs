@@ -43,10 +43,12 @@ namespace Ascon.Pilot.WebClient.ViewComponents
         {
             id = id ?? DObject.RootId;
 
-            var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
+            var context = _contextHolder.GetContext(HttpContext);
+            var serverApi = context.ServerApi;
+            var repo = context.Repository;
             var rootObject = serverApi.GetObjects(new[] { id.Value }).First();
             var bRootObject = serverApi.GetObjects(new[] { DObject.RootId }).First();
-            var mTypes = HttpContext.Session.GetMetatypes();
+            var mTypes = repo.GetTypes().ToDictionary(x => x.Id, y => y);
             var model = new SidePanelViewModel
             {
                 ObjectId = id.Value,

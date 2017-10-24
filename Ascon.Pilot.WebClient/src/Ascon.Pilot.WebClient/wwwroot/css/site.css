@@ -319,13 +319,8 @@ a.navbar-brand {
     height: 70px;
     background-color: transparent;
     border-bottom: 1px solid #DFE4E8;
-
-    margin-left: -15px;
-    padding-left: 10px;
-    margin-right: -15px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-right: 10px;
+    margin: 0px -15px 0px -15px;
+    padding: 5px 10px 5px 10px;
     cursor: pointer;
 }
 
@@ -376,10 +371,7 @@ a.task-node {
 }
 
 .task-details-content{
-    padding-top: 15px;
-    padding-bottom: 15px;
-    padding-left: 30px;
-    padding-right: 30px;
+    padding: 15px 30px 15px 30px;
     font-weight: 400;
 }
 
