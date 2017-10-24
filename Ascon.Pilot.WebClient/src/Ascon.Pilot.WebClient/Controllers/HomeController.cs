@@ -1,4 +1,6 @@
-﻿using Ascon.Pilot.WebClient.Extensions;
+﻿using System.Linq;
+using Ascon.Pilot.WebClient.Extensions;
+using Ascon.Pilot.WebClient.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +12,13 @@ namespace Ascon.Pilot.WebClient.Controllers
     [Authorize]
     public class HomeController : Controller
     {
+        private readonly IContextHolder _contextHolder;
+
+        public HomeController(IContextHolder contextHolder)
+        {
+            _contextHolder = contextHolder;
+        }
+
         /// <summary>
         /// Представление Index
         /// </summary>
@@ -24,7 +33,9 @@ namespace Ascon.Pilot.WebClient.Controllers
         /// <returns>представление Types</returns>
         public IActionResult Types()
         {
-            return View(HttpContext.Session.GetMetatypes().Values);
+            var context = _contextHolder.GetContext(HttpContext);
+            var types = context.Repository.GetTypes();
+            return View(types);
         }
 
         /// <summary>
@@ -35,14 +46,15 @@ namespace Ascon.Pilot.WebClient.Controllers
         public IActionResult GetTypeIcon(int id)
         {
             const string svgContentType = "image/svg+xml";
-
-                var mTypes = HttpContext.Session.GetMetatypes();
-                if (mTypes.ContainsKey(id))
-                {
-                    var mType = mTypes[id];
-                    if (mType.Icon != null)
-                        return File(mType.Icon, svgContentType);
-                }
+            var context = _contextHolder.GetContext(HttpContext);
+            var types = context.Repository.GetTypes().ToList();
+            var type = types.FirstOrDefault(t => t.Id == id);
+            if (type != null)
+            {
+                if (type.Icon != null)
+                    return File(type.Icon, svgContentType);
+            }
+            
             return File(Url.Content("~/images/file.svg"), svgContentType);
         }
         /// <summary>

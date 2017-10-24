@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
 using System.Reflection;
+using Ascon.Pilot.WebClient.Models;
 
 namespace Ascon.Pilot.WebClient
 {
@@ -43,6 +44,8 @@ namespace Ascon.Pilot.WebClient
             });
             services.AddMemoryCache();
             services.AddSession();
+            //
+            services.AddSingleton<IContextHolder, ContextHolder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

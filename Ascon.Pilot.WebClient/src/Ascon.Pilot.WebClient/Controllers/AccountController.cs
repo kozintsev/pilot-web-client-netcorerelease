@@ -5,15 +5,13 @@ using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Ascon.Pilot.Core;
-using Ascon.Pilot.Transport;
-using Ascon.Pilot.Server.Api;
-using Ascon.Pilot.Server.Api.Contracts;
 using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Authentication;
+using Ascon.Pilot.WebClient.Models;
 
 namespace Ascon.Pilot.WebClient.Controllers
 {
@@ -21,10 +19,12 @@ namespace Ascon.Pilot.WebClient.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger<FilesController> _logger;
+        private IContextHolder _contextHolder;
 
-        public AccountController(ILogger<FilesController> logger)
+        public AccountController(ILogger<FilesController> logger, IContextHolder contextHolder)
         {
             _logger = logger;
+            _contextHolder = contextHolder;
         }
 
         [AllowAnonymous]
@@ -50,43 +50,34 @@ namespace Ascon.Pilot.WebClient.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LogIn(LogInViewModel model)
         {
-                if (!ModelState.IsValid)
-                    return View("LogIn");
+            if (!ModelState.IsValid)
+                return View("LogIn");
 
-                var client = HttpContext.GetClient() ?? new HttpPilotClient();
-
-                var serverUrl = ApplicationConst.PilotServerUrl;
-                try
-                {
-                    client.Connect(serverUrl);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(1, "Не удалось подключиться к серверу", ex);
-                    ModelState.AddModelError("", "Сервер недоступен.");
-                    return View();
-                }
-
-                var serviceCallbackProxy = CallbackFactory.Get<IServerCallback>();
-                var serverApi = client.GetServerApi(serviceCallbackProxy);
-
-                var protectedPassword = model.Password.EncryptAes();
-                var useWindowsAuth = model.Login.Contains('\\') || model.Login.Contains('/');
-                var dbInfo = serverApi.OpenDatabase(model.DatabaseName, model.Login, protectedPassword, useWindowsAuth);
+            var clientId = Guid.NewGuid();
+            var context = _contextHolder.NewContext(clientId);
+            try
+            {
+                var creds = Credentials.GetConnectionCredentials(model.DatabaseName, model.Login, model.Password);
+                var dbInfo = context.Connect(creds);
                 if (dbInfo == null)
                 {
                     ModelState.AddModelError("", "Авторизация не удалась, проверьте данные и повторите вход");
                     return View("LogIn", model);
                 }
-                var sid = Guid.NewGuid();
-                await SignInAsync(dbInfo, model.DatabaseName, protectedPassword, sid, model.RememberMe);
 
-                HttpContext.SetClient(client, sid);
-                DMetadata dMetadata = serverApi.GetMetadata(dbInfo.MetadataVersion);
-                //DMetadata dMetadata = serverApi.GetMetadata(0);
-                Debug.WriteLine(dMetadata.Types.ToString());
-                Debug.WriteLine(dMetadata.Version.ToString());
-                HttpContext.Session.SetSessionValues(SessionKeys.MetaTypes, dMetadata.Types.ToDictionary(x => x.Id, y => y));
+                await SignInAsync(dbInfo, creds.DatabaseName, creds.ProtectedPassword, clientId, model.RememberMe);
+
+                //var dMetadata = context.ServerApi.GetMetadata(dbInfo.MetadataVersion);
+                //Debug.WriteLine(dMetadata.Types.ToString());
+                //Debug.WriteLine(dMetadata.Version.ToString());
+                //HttpContext.Session.SetSessionValues(SessionKeys.MetaTypes, dMetadata.Types.ToDictionary(x => x.Id, y => y));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(1, "Не удалось подключиться к серверу", ex);
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
 
             return RedirectToAction("Index", "Files");
         }
@@ -111,7 +102,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         public async Task<IActionResult> LogOff()
         {
             await HttpContext.Authentication.SignOutAsync(ApplicationConst.PilotMiddlewareInstanceName);
-            HttpContext.GetClient()?.Dispose();
+            _contextHolder.Dispose();
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }

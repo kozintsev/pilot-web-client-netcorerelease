@@ -5,82 +5,97 @@
     FilesPanelType currentFilesPanelType = ViewBag.FilesPanelType ?? default(FilesPanelType);
 }
 <div class="navbar navbar-inverse navbar-fixed-top">
-    <div>
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Переключить навигацию</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
+    <div class="navbar-header">
+       
+            <a id="vMenu" class="active" onclick="openNav()">
+                <div class="icon-bar"></div>
+                <div class="icon-bar"></div>
+                <div class="icon-bar"></div>
+            </a>
+        <div class="navbar-brand">
+            <a asp-controller="Home" asp-action="Index"><img src="@Url.Content("~/images/logo.png")" height="22" alt="Pilot-WEB"></a>
+        </div>
+       
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <li><p class="navbar-text" style="margin-right:25px">@User.Identity.Name</p></li>
+        }
+    </ul>
+</div>  
+
+@if (User.Identity.IsAuthenticated && ViewContext.RouteData.Values["controller"].ToString() == "Files")
+{
+    <div class="navbar navbar-default toolbar" id="toolbar">
+        <div class="navbar-header pull-right">
             <div class="navbar-brand">
-                @*<a id="menuToggler" role="button" title="Меню" onclick="toggleMenu(this)"><span class="glyphicon glyphicon-menu-hamburger"></span></a>*@
-                <a asp-controller="Home" asp-action="Index" >
-                    <img src="@Url.Content("~/images/ascon_logo.png")" height="25" alt="АСКОН"/>
+                <a id="downloadButton" href="#" role="button" title="Скачать" style="display: none;" target="_blank">
+                    <span class="glyphicon glyphicon-download-alt"></span>&nbsp;
+                    <span class="hidden-xs">Скачать</span>
+                </a>
+                <a id="downloadArchiveButton" role="button" onclick="downloadArchive(this)" title="Скачать архивом" style="display: none;">
+                    <span class="glyphicon glyphicon-folder-close"></span>&nbsp;
+                    <span class="hidden-xs">Скачать&nbsp;архивом</span>
+                </a>
+                <a id="filesPanelToggler"
+                   href="@Url.Action("ChangeFilesPanelType", "Files", new {type = currentFilesPanelType == FilesPanelType.List ? FilesPanelType.Grid : FilesPanelType.List, returnUrl = Context.Request.GetDisplayUrl()})"
+                   title="Режим отображения: @(currentFilesPanelType == FilesPanelType.List ? "список" : "плитки")">
+                    <span class="glyphicon @(currentFilesPanelType == FilesPanelType.List ? "glyphicon-th-list" : "glyphicon-th")"></span>
                 </a>
             </div>
         </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right" style="margin-right: 0;">
-                <li></li>
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <li>
-                        <a>Вы в системе, <b>@User.Identity.Name</b></a>
-                    </li>
-                    <li>
-                        <a asp-controller="Account" asp-action="LogOff">Выйти</a>
-                    </li>
-                }
-                else
-                {
-                    <li>
-                        <a asp-controller="Account" asp-action="LogIn">Авторизоваться</a>
-                    </li>
-                }
-            </ul>
+    </div>
+}  
+  
+<div id="mySidenav" class="sidenav">
+    <div id="sidenav">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="sidnav-scrollable">
+            <a class="sidenav-item" id="files-page" asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
+            <a class="sidenav-item" id="tasks-page" href="/tasks?filterId=6" onclick="openNav()">Задания</a>
+            <div class="sidenav-submenu">
+                <a href="/tasks?filterId=6" id="hf6" class="sidenav-item active">Актуальные</a>
+                <a href="/tasks?filterId=7" id="hf7" class="sidenav-item">Выданные</a>
+                <a href="/tasks?filterId=8" id="hf8" class="sidenav-item">Полученные</a>
+                <a href="/tasks?filterId=12" id="hf12" class="sidenav-item">Вы в аудиторах</a>
+                <a href="/tasks?filterId=9" id="hf9" class="sidenav-item">Просроченные</a>
+                <a href="/tasks?filterId=10" id="hf10" class="sidenav-item">Выполненные</a>
+                <a href="/tasks?filterId=11" id="hf11" class="sidenav-item">Отозванные</a>
+                <a href="/tasks?filterId=5" id="hf5" class="sidenav-item">Все</a>
+            </div>
+        </div>
+    }
+        <div id="sidenav-bottom">
+            <div style="border-bottom: 1px solid #808080;"></div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a >@User.Identity.Name</a>
+                <a asp-controller="Account" asp-action="LogOff"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Выйти</a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="LogIn"><span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Авторизоваться</a>
+            }
         </div>
     </div>
 </div>
 
-@if (User.Identity.IsAuthenticated && ViewContext.RouteData.Values["controller"].ToString() == "Files")
-{
-    <div class="navbar navbar-inverse toolbar">
-        <div>
-            <div class="navbar-header pull-right">
-                <div class="navbar-brand">
-                    <a id="downloadButton" href="#" role="button" title="Скачать" style="display: none;" target="_blank">
-                        <span class="glyphicon glyphicon-download-alt"></span>&nbsp;
-                        <span class="hidden-xs">Скачать</span>
-                    </a>
-                    <a id="downloadArchiveButton" role="button" onclick="downloadArchive(this)" title="Скачать архивом" style="display: none;">
-                        <span class="glyphicon glyphicon-folder-close"></span>&nbsp;
-                        <span class="hidden-xs">Скачать&nbsp;архивом</span>
-                    </a>
-                    <a id="filesPanelToggler"
-                       href="@Url.Action("ChangeFilesPanelType", "Files", new {type = currentFilesPanelType == FilesPanelType.List ? FilesPanelType.Grid : FilesPanelType.List, returnUrl = Context.Request.GetDisplayUrl()})"
-                       title="Режим отображения: @(currentFilesPanelType == FilesPanelType.List ? "список" : "плитки")">
-                        <span class="glyphicon @(currentFilesPanelType == FilesPanelType.List ? "glyphicon-th-list" : "glyphicon-th")"></span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+  <script type="text/javascript">    
 
-<script type="text/javascript">    
-    function toggleMenu(el) {        
-        var menu = $("#menu");
-        if (menu.hasClass("menu-slide-in")) {
-            menu.toggleClass("menu-slide-in menu-slide-out");
-            menu.show();
-        } else if (menu.hasClass("menu-slide-out")) {
-            menu.show();
-            menu.toggleClass("menu-slide-in menu-slide-out");
+      function openNav() {
+        var sidenav = document.getElementById("mySidenav");
+        if (sidenav.style.display == "block") {
+            sidenav.style.display = "none";
+            if (sidenav.classList.contains('active'))
+                sidenav.classList.toggle('active');
+            
+        }
+        else {
+            document.getElementById("mySidenav").style.display = "block";
+            sidenav.classList.remove('active');
         }
     }
-    
-    function hideMenu() {
-        $("#menu").removeClass("menu-slide-in").addClass("menu-slide-out");
-    }
+
 </script>

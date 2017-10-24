@@ -25,26 +25,8 @@
 </head>
 <body>
 @Html.Partial("_Header")
-<div id="menu" style="display: none;" class="menu-slide-out">
-    <ul>
-        <li>
-            <a href="@Url.Action("Index", "Files", new {})">
-                <i class="glyphicon glyphicon-file"></i>&nbsp;Документы
-            </a>
-        </li>
-        <li>
-            <a href="@Url.Action("Index", "Home")">
-                <i class="glyphicon glyphicon-tasks"></i>&nbsp;Задания
-            </a>
-        </li>
-        <li>
-            <a href="@Url.Action("Index", "Home")">
-                <i class="glyphicon glyphicon-list-alt"></i>&nbsp;Отчеты
-            </a>
-        </li>
-    </ul>
-</div>
-<div class="body-content" onclick="hideMenu()">
+
+<div class="body-content">
     <br/>
     @RenderBody()
 </div>
@@ -70,7 +52,6 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 </environment>
 
-@*<script type="text/javascript" src="~/js/dropzone.js"></script>*@
 @RenderSection("scripts", false)
 </body>
 </html>

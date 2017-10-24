@@ -18,11 +18,13 @@ namespace Ascon.Pilot.WebClient.ViewComponents
     /// </summary>
     public class FilesPanelViewComponent : ViewComponent
     {
-        private ILogger<FilesController> _logger;
+        private readonly ILogger<FilesController> _logger;
+        private readonly IContextHolder _contextHolder;
 
-        public FilesPanelViewComponent(ILogger<FilesController> logger)
+        public FilesPanelViewComponent(ILogger<FilesController> logger, IContextHolder contextHolder)
         {
             _logger = logger;
+            _contextHolder = contextHolder;
         }
         /// <summary>
         /// Вызвать компонент панели файлов
@@ -39,15 +41,16 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     List<FileViewModel> model = new List<FileViewModel>();
                     try
                     {
-                        var types = HttpContext.Session.GetMetatypes();
-                        var serverApi = HttpContext.GetServerApi();
-                        var folder = serverApi.GetObjects(new[] { folderId }).First();
+                        var context = _contextHolder.GetContext(HttpContext);
+                        var repository = context.Repository;
+                        var types = repository.GetTypes().ToDictionary(x => x.Id, y => y);
+                        var folder = repository.GetObjects(new[] { folderId }).First();
 
                         if (folder.Children?.Any() != true)
                             return View(panelType == FilesPanelType.List ? "List" : "Grid", new FileViewModel[] { });
 
                         var childrenIds = folder.Children.Select(x => x.ObjectId).ToArray();
-                        var childrens = serverApi.GetObjects(childrenIds);
+                        var childrens = repository.GetObjects(childrenIds);
 
                         var folderType = types[folder.TypeId];
                         if (folderType.IsMountable && !(ViewBag.IsSource ?? false))
@@ -74,7 +77,6 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     }
                     catch (Exception ex)
                     {
-
                         throw new Exception(ex.Message);
                     }
                     return View(panelType == FilesPanelType.List ? "List" : "Grid", model);

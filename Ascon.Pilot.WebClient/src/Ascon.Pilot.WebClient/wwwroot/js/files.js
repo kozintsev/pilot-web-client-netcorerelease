@@ -2,19 +2,22 @@
 var treeData;
 
 $(document).ready(function () {
-    $(function() {
+
+    setHamburgerMenuItemActivated();
+
+    $(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
 
     treeControl = createTreeView(treeData);
     setObjectIdsCheckCallback();
     
-    $("#sidePanel").on("hidden.bs.collapse", function () {
-        $("#filesPanelContainer").removeClass("col-md-8").addClass("col-md-12");
-    });
-    $("#sidePanel").on("show.bs.collapse", function () {
-        $("#filesPanelContainer").removeClass("col-md-12").addClass("col-md-8");
-    });
+    //$("#sidePanel").on("hidden.bs.collapse", function () {
+    //    $("#filesPanelContainer").removeClass("col-md-8").addClass("col-md-12");
+    //});
+    //$("#sidePanel").on("show.bs.collapse", function () {
+    //    $("#filesPanelContainer").removeClass("col-md-12").addClass("col-md-8");
+    //});
     $("#renameModal").on("show.bs.modal", function() {
         var activeFileCard = $(".file-card.active");
         var id = activeFileCard.data("id");
@@ -36,6 +39,12 @@ $(document).ready(function () {
         $("#folderId").val(currentFolderId);
     });
 });
+
+function setHamburgerMenuItemActivated() {
+    $(".sidenav-item").removeClass("active");
+    var item = $("#files-page");
+    item.addClass("active");
+}
 
 function processCardClick(el) {
     $(".file-card").removeClass("active");

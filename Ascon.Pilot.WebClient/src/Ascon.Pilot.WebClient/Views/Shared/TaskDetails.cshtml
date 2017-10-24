@@ -1,0 +1,52 @@
+﻿@using Ascon.Pilot.WebClient.Models;
+@using Ascon.Pilot.Core;
+
+@model Ascon.Pilot.WebClient.ViewModels.TaskDetailsViewModel
+
+@if (Model == null)
+{
+    <p class="no-data-info">Нет данных для отображения</p>
+}
+else
+{
+    <div class="task-details-content">
+        <span style="font-weight:600;">@Model.Initiator</span>
+        <br />
+        <span>@Model.Executor</span>
+        <br />
+        <br />
+        <p style="font-weight:200; font-size:large;">@Model.Title</p>
+        <p class="default-margin_top">@Model.Description</p>
+        <div class="default-margin_top">
+            @foreach (var attachment in Model.Attachments)
+            {
+                var href = Url.Action("GetTypeIcon", "Home", new { id = attachment.Type.Id });
+                <div class="task-attachment" id="@attachment.Id">
+                    @if (attachment.Type.IsProjectFile())
+                    {
+                        <img src="@href" class="task-attachment-image"/>
+                        <p class="truncate" style="margin-bottom: 0px;">@attachment.Title</p>
+                        <span style="color: #7D828D;">Файл @attachment.FileExtension</span>
+                    }
+                    else if (attachment.Type.IsProjectFolder() || attachment.Type.Children.Count > 0)
+                    {
+                        <img src="@href" class="task-attachment-image"/>
+                        <p class="truncate" style="margin-bottom: 0px;">@attachment.Title</p>
+                        <span style="color: #7D828D;">@attachment.Type.Title</span>
+                    }
+                    else
+                    {
+                        <img src="@href" class="task-attachment-image"/>
+                        <p class="truncate" style="margin-bottom: 0px;">@attachment.Title</p>
+                        <span style="color: #7D828D;">Документ</span>
+                    }
+
+                    
+                </div>
+            }
+        </div>
+    </div>
+}
+
+
+<script src="~/js/task-details.js"></script>

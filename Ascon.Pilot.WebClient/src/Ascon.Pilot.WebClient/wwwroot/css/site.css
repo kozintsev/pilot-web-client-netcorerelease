@@ -1,10 +1,298 @@
-﻿html, body,
+﻿/* ------ Body ---------*/
+html,body,.container {
+    height:100%;
+    background: #F8F9FB;
+    /*color: #636D84;*/
+    font-family: Segoe UI,Segoe UI Web,Segoe UI Symbol,Helvetica Neue,BBAlpha Sans,S60 Sans,Arial,sans-serif;
+}
+
 .body-content {
+    padding-left: 0px;
+    padding-top: 80px;
+}
+
+.glyphicon-spin {
+    -webkit-animation: spin 1000ms infinite linear;
+    animation: spin 1000ms infinite linear;
+    overflow: hidden;
+}
+
+.container {
+    width: 100% !important;
+    padding: 0 !important; /*set left/right padding according to needs*/
+    box-sizing: border-box;
+}
+
+.col-overflow {
+    overflow: auto;
+    width: 100%;
+}
+
+.default-margin_top {
+    margin-top: 15px;
+}
+
+.no-data-info {
+    margin-top: 100px;
+    text-align: center;
+    font-weight:200;
+    font-size: large;
+    color: #c0c0c0;
+}
+
+
+/* ------    SideNav ---------- */
+.sidenav {
+    display: none;
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    z-index: 10;
+    top: 40px;
+    left: 0;
+    background-color: #333333;
+    padding-top: 10px;
+}
+
+#sidenav {
+    position: relative;
     height: 100%;
 }
 
-body {
-    padding-top: 100px;
+#sidenav-bottom {
+    position: absolute;
+    bottom: 50px;
+    width: 250px;
+    left: 0px;
+    background: #333333;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    color: #E8E8E8;
+    display: block;
+    font-size: medium;
+    font-weight: 300;
+}
+
+.sidenav a:hover,
+.sidenav-submenu a.active,
+.sidenav a.active {
+    color: #E8E8E8;
+    background: #404040;
+}
+
+.sidnav-scrollable {
+    overflow: auto;
+}
+
+.sidenav-submenu a {
+    padding-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+a.navbar-brand.active {
+    background: #282828;
+}
+
+/* ------   owerride bootstrap styles -------- */
+.toolbar {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    top: 50px;
+    height: 50px;
+    background-color: #ffffff;
+    border-radius: 0;
+}
+
+.toolbar a {
+    color: #9d9d9d;
+    text-decoration: none;
+    padding: 5px 10px;
+    font-size: 16px;
+}
+
+.toolbar a:hover {
+    color: #5e5e5e;
+}
+
+#toolbar {
+    z-index: 1;
+    border-bottom: 1px solid #E7E7E7;
+}
+
+#colapsedMenu {
+    z-index : 4;
+}
+
+.row {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.treeview .list-group-item {
+    border: 0px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 45px;
+}
+
+.treeview .glyphicon {
+    color: #636363;
+}
+
+.treeview .glyphicon.glyphicon-plus:before {
+    content: "\e250";
+    font-size: small;
+}
+
+.treeview .glyphicon.glyphicon-minus:before {
+    content: "\e252";
+    font-size: small;
+}
+
+.treeview .badge {
+    font-weight: 400;
+    color: #333333;
+    white-space: nowrap;
+    background-color: #EAEAEA;
+}
+
+.list-group-item:first-child {
+  border-radius: 0px;
+}
+.list-group-item:last-child {
+  border-radius: 0px;
+}
+
+/*.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+  background-color: #5E80D8;
+  border-color: #5E80D8;
+}*/
+
+/* ---------- side menu -------- */
+.noborder {
+  border: 1px solid #fff;
+}
+
+/* - - */
+.wrap {
+    min-height: 100%;
+    position: relative;
+}
+
+.sidebar-left {
+    position: fixed;
+    top: 0;
+    padding-top: 50px;
+    padding-bottom: 0; 
+    height: 100%;
+    width: 200px;
+    background-color: white;
+    border-right: 1px solid #DFE4E8;
+    overflow: auto;
+}
+
+.sidebar-right{
+    background-color:#fff;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    border-left: 1px solid #DFE4E8;
+    padding-top: 50px;
+    overflow: auto;
+
+    width: -moz-calc(41% - 70px); /* Firefox 4+ */
+    width: calc(41% - 70px); /* IE9+ и будущие браузеры */ 
+}
+
+.main-content {
+    margin-left: 200px;
+    overflow: auto;
+}
+
+.files-content {
+    margin-left: calc(35% + 0px);
+    overflow: auto;
+}
+
+@media only screen and (max-width: 991px) {
+    .main-content {
+        margin-left: 0px;
+    }
+    /*.sidenav-submenu {
+        display: block;
+    }*/
+    .navbar-right {
+        display: none;
+    }
+
+    .files-content {
+        margin-left: 0px;
+    }
+}
+
+.sidePanel {
+    position: fixed;
+    top: 100px;
+    padding-bottom: 0; 
+    height: 100%;
+    width: 35%;
+    background-color: white;
+    border-right: 1px solid #DFE4E8;
+    overflow: auto;
+}
+
+/* ---------- Navbar ------------*/
+.navbar {
+    border: 0px;
+}
+
+.navbar-text {
+    margin-left: 15px;
+}
+
+a.navbar-brand {
+    padding: 0px 0px;
+}
+
+.navbar-brand {
+    padding: 14px 5px;
+}
+
+.icon-bar {
+    width: 17px;
+    height: 1px;
+    background-color: #E2E2E2;
+    margin: 3px 0;
+}
+
+#vMenu {
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    float: left;
+    padding: 17px 15px 18px 15px;
+}
+
+#vMenu:hover {
+    background: #383838;
+}
+
+
+/* ---------- breadcrumbs ------------------ */
+.breadcrumb {
+    background-color : transparent;
 }
 
 .breadcrumb li {
@@ -18,155 +306,96 @@ body {
     display: inline;
 }
 
-.toolbar {
-    position: fixed;
-    left: 0px;
-    right: 0px;
-    top: 50px;
-    height: 50px;
-    background-color: #2f2f2f;
-    border-radius: 0;
-    z-index: 1030;
+.breadcrumb > li + li:before {
+    padding: 0px 6px;
+    color: #ccc;
+    content: "\003e";
+
 }
 
-.toolbar a {
-    color: #9d9d9d;
+/* ---------------------- tasks -------------------------------- */
+.task-node {
+    display: block;
+    height: 70px;
+    background-color: transparent;
+    border-bottom: 1px solid #DFE4E8;
+    margin: 0px -15px 0px -15px;
+    padding: 5px 10px 5px 10px;
+    cursor: pointer;
+}
+
+a.task-node {
     text-decoration: none;
-    padding: 5px 10px;
-    font-size: 16px;
+    color: black;
 }
 
-.toolbar a:hover {
-    color: #fff;
+.task-node.active {
+    /*background-color: #5E80D8;*/
+    background-color: #337AB7;
+    color: white;
 }
 
-@media(max-width: 767px) {
-    .toolbar span.glyphicon {
-        font-size: 20px;
-    }
+.col-fix-16 {
+  position: relative;
+  height: 16px;
+  width: 16px;
+  float: left;
+  margin-right: 5px;
 }
 
-/* Wrapping element */
-/* Set some basic padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+.col-fix-16>img{
+    width: 16px;
+    height: 16px;
 }
 
-.body-content > footer {
-    text-align: center;
+.col-fix-145 {
+  position: relative;
+  width: 160px;
+  float: left;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #f5f5f5;
+.col-float-right{
+  float: right;
 }
 
-body > .container {
-  padding: 60px 15px 0;
-}
-
-.footer > .container {
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-/*prevent buttons from wrapping*/
-.btn-group {
+.text-title {
+    /*color: #141414;/*#242D3E;*/
+    font-weight:400;
     white-space: nowrap;
 }
-.btn-group > .btn {
-    float: inherit;
-}
-.btn-group > .btn + .btn {
-    margin-left: -4px;
-}
 
-/* Set widths on the form inputs since otherwise they're 100% wide */
-/*input,
-select,
-textarea {
-    max-width: 280px;
-}*/
-
-.glyphicon-spin {
-    -webkit-animation: spin 1000ms infinite linear;
-    animation: spin 1000ms infinite linear;
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-@keyframes spin {
-    from {transform:rotate(0deg);}
-    to {transform:rotate(360deg);}
+.task-details-content{
+    padding: 15px 30px 15px 30px;
+    font-weight: 400;
 }
 
-/*------------Menu-------------------*/
-
-a#menuToggler {
-    color: #9d9d9d;
-    padding-right: 10px;
-}
-
-a#menuToggler:hover {
-    color: white;
-}
-
-#menu {
-    position:absolute;    
-    top: 51px;
-    bottom: 0px;
-    left: -200px;    
-    background-color: #2f2f2f;
-    color: #9d9d9d;
-    z-index: 1030;
-    width: 200px;
-    border-right: 1px solid black;
-}
-
-#menu.menu-slide-in {
-    left: 0;
-    animation: menu-slide-in 0.3s forwards;    
-}
-
-#menu.menu-slide-out {
-    left: -200px;
-    animation: menu-slide-out 0.3s forwards;    
-}
-
-@keyframes menu-slide-in {
-    0% { left: -200px; }
-    100% { left: 0; }
-}
-   
-@keyframes menu-slide-out {
-    0% { left: 0; }
-    100% { left: -200px; }
-}
-
-#menu ul {
+.task-attachment {
     display: block;
-    list-style: none;
-    margin: 0;    
-    padding: 0;
-    font-size: 1.2em;
+    border-bottom: 1px solid #EEF1F4;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: 65px;
+    cursor: pointer;
 }
 
-#menu ul li {
+.task-attachment-image {
     display: block;
-    padding: 10px;
+    float: left; 
+    margin-right:10px;
+    width: 40px;
+    height: 42px;
 }
 
-#menu ul li a {
-    color: #9d9d9d;
-    text-decoration: none;
-}
-
-#menu ul li:hover {    
-    background-color: #3f3f3f;
-    color: white;
+@media only screen and (max-width: 992px) {
+    .task-details-content {
+        margin-top: -40px;
+    }
 }
 
 /*--------------------------------------Modal preview---------------------------*/
@@ -192,17 +421,29 @@ a#menuToggler:hover {
     color: #a94442;
 }
 
+.field-validation-error li {
+    display: block;
+    list-style-type: none;
+}
+
 /*------------FILE CARD grid-------------------*/
+.file-grid {
+    margin-right: 15px;
+    margin-left: 5px;
+}
 
 .file-grid .file-card {
-    height: 150px;
-    margin: 5px;
+    height: 140px;
     padding: 5px;
+    margin: 5px;
+}
+.file-grid.center-block img {
+    height: 70px;
 }
 
 .file-grid .file-card {
     border-radius: 5px;
-    border: 1px solid #eeeeee;
+    border: 1px solid #DFE4E8;
 }
 
 .file-grid .file-card:hover {
@@ -221,9 +462,9 @@ a#menuToggler:hover {
 }
 
 .file-grid .file-card.with-thumbnail .file-card-icon img {
-    border: 1px solid #eeeeee;
-    max-height: 70px;
-    max-width: 70px;
+    border: 1px solid #DFE4E8;
+    height: 70px;
+    width: 70px;
     display: block;
     margin: auto;
 }
@@ -240,6 +481,11 @@ a#menuToggler:hover {
     text-overflow: ellipsis;
     max-height: 3em;
     text-align: center;
+}
+
+.file-card-name a {
+    color: #777777;
+    text-decoration: none;
 }
 
 .file-grid .file-card.active {
@@ -268,10 +514,12 @@ a#menuToggler:hover {
 /*-------------file-card for list-------------------*/
 
 .file-list .file-card {
-    border: 1px solid #eeeeee;
+    border: 1px solid #DFE4E8;
     border-bottom: none;
-    padding-left: 5px;
-    padding-right: 5px;
+    border-right: none;
+    border-left: none;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .file-list .file-card:hover {
@@ -279,14 +527,14 @@ a#menuToggler:hover {
 }
 
 .file-list .file-card:first-child {
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }
 
 .file-list .file-card:last-child {
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom: 1px solid #DFE4E8;
 }
 
 .file-list .file-card.active {
@@ -299,7 +547,7 @@ a#menuToggler:hover {
 }
 
 .file-list .file-card .file-card:hover {
-    border: 1px solid #eeeeee;
+    border: 1px solid #DFE4E8;
     border-radius: 5px;
 }
 
@@ -342,7 +590,6 @@ a#menuToggler:hover {
 
 .file-list .file-card .file-card-icon div {
     display: block;
-    vertical-align: middle;
     height: 50px;
     width: 50px;
 }
