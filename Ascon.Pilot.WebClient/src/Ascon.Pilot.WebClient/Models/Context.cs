@@ -1,8 +1,6 @@
 ﻿using Ascon.Pilot.Core;
 using Ascon.Pilot.Server.Api;
 using Ascon.Pilot.Server.Api.Contracts;
-using Ascon.Pilot.Transport;
-using Ascon.Pilot.WebClient.Extensions;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Security.Claims;
@@ -13,7 +11,6 @@ namespace Ascon.Pilot.WebClient.Models
     {
         void Build(HttpContext http);
         IRepository Repository { get; }
-        IServerApi ServerApi { get; }
         DDatabaseInfo Connect(Credentials credentials);
         bool IsInitialized { get; }
     }
@@ -33,9 +30,9 @@ namespace Ascon.Pilot.WebClient.Models
         {
             _client = new HttpPilotClient();
             _client.Connect(ApplicationConst.PilotServerUrl);
-            ServerApi = _client.GetServerApi(_serverCallback);
-            var dbInfo = ServerApi.OpenDatabase(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth);
-            _repository = new Repository(ServerApi, _serverCallback);
+            var serverApi = _client.GetServerApi(_serverCallback);
+            var dbInfo = serverApi.OpenDatabase(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth);
+            _repository = new Repository(serverApi, _serverCallback);
             _repository.Initialize(credentials.Username);
             IsInitialized = true;
             return dbInfo;
@@ -46,31 +43,17 @@ namespace Ascon.Pilot.WebClient.Models
             if (IsInitialized)
                 return;
 
-            //if (ServerApi == null)
-            //{
-                var dbName = context.User.FindFirstValue(ClaimTypes.Surname);
-                var login = context.User.FindFirstValue(ClaimTypes.Name);
-                var protectedPassword = context.User.FindFirstValue(ClaimTypes.UserData);
-                var clientIdString = context.User.FindFirstValue(ClaimTypes.Sid);
-                var creds = Credentials.GetConnectionCredentials(dbName, login, protectedPassword.DecryptAes());
-                Connect(creds);
-                //return;
-            //}
-
-            //_repository = new Repository(ServerApi, _serverCallback);
-            //var login = context.User.FindFirstValue(ClaimTypes.Name);
-            //_repository.Initialize(login);
-            //IsInitialized = true;
+            var dbName = context.User.FindFirstValue(ClaimTypes.Surname);
+            var login = context.User.FindFirstValue(ClaimTypes.Name);
+            var protectedPassword = context.User.FindFirstValue(ClaimTypes.UserData);
+            var clientIdString = context.User.FindFirstValue(ClaimTypes.Sid);
+            var creds = Credentials.GetConnectionCredentials(dbName, login, protectedPassword.DecryptAes());
+            Connect(creds);
         }
 
         public IRepository Repository
         {
             get { return _repository; }
-        }
-
-        public IServerApi ServerApi
-        {
-            get; private set;
         }
 
         public bool IsInitialized

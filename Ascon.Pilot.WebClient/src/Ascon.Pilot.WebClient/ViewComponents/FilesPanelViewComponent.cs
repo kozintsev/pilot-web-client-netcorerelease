@@ -42,15 +42,15 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     try
                     {
                         var context = _contextHolder.GetContext(HttpContext);
-                        var types = context.Repository.GetTypes().ToDictionary(x => x.Id, y => y);
-                        var serverApi = context.ServerApi;
-                        var folder = serverApi.GetObjects(new[] { folderId }).First();
+                        var repository = context.Repository;
+                        var types = repository.GetTypes().ToDictionary(x => x.Id, y => y);
+                        var folder = repository.GetObjects(new[] { folderId }).First();
 
                         if (folder.Children?.Any() != true)
                             return View(panelType == FilesPanelType.List ? "List" : "Grid", new FileViewModel[] { });
 
                         var childrenIds = folder.Children.Select(x => x.ObjectId).ToArray();
-                        var childrens = serverApi.GetObjects(childrenIds);
+                        var childrens = repository.GetObjects(childrenIds);
 
                         var folderType = types[folder.TypeId];
                         if (folderType.IsMountable && !(ViewBag.IsSource ?? false))

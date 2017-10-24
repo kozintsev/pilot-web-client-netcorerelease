@@ -73,13 +73,13 @@ namespace Ascon.Pilot.WebClient.Controllers
                 dynamic[] childNodes;
 
                 var context = _contextHolder.GetContext(HttpContext);
-                var serverApi = context.ServerApi;
-                var node = serverApi.GetObjects(new[] { id }).First();
+                var repo = context.Repository;
+                var node = repo.GetObjects(new[] { id }).First();
                 var types = context.Repository.GetTypes().ToDictionary(x => x.Id, y => y);
                 var childIds = node.Children?
                                     .Where(x => types[x.TypeId].Children?.Any() == true)
                                     .Select(child => child.ObjectId).ToArray();
-                var nodeChilds = serverApi.GetObjects(childIds);
+                var nodeChilds = repo.GetObjects(childIds);
 
                 childNodes = nodeChilds.Where(t =>
                 {
@@ -134,8 +134,8 @@ namespace Ascon.Pilot.WebClient.Controllers
         {
             byte[] fileChunk;
 
-                var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
-                fileChunk = serverApi.GetFileChunk(id, 0, size);
+                var repository = _contextHolder.GetContext(HttpContext).Repository;
+                fileChunk = repository.GetFileChunk(id, 0, size);
                 var fileDownloadName = string.IsNullOrWhiteSpace(name) ? id.ToString() : name;
                 if (Response.Headers.ContainsKey("Content-Disposition"))
                     Response.Headers.Remove("Content-Disposition");
@@ -148,8 +148,8 @@ namespace Ascon.Pilot.WebClient.Controllers
             return await Task.Run(() =>
             {
                 {
-                    var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
-                    var fileChunk = serverApi.GetFileChunk(id, 0, size);
+                    var repository = _contextHolder.GetContext(HttpContext).Repository;
+                    var fileChunk = repository.GetFileChunk(id, 0, size);
                     return new FileContentResult(fileChunk, "application/octet-stream")
                     {
                         FileDownloadName = string.IsNullOrWhiteSpace(name) ? id.ToString() : name
@@ -165,22 +165,22 @@ namespace Ascon.Pilot.WebClient.Controllers
 
             byte[] mstData;
             var context = _contextHolder.GetContext(HttpContext);
-            var serverApi = context.ServerApi;
-            var types = context.Repository.GetTypes().ToDictionary(x => x.Id, y => y);
-            var objects = serverApi.GetObjects(objectsIds);
+            var repo = context.Repository;
+            var types = repo.GetTypes().ToDictionary(x => x.Id, y => y);
+            var objects = repo.GetObjects(objectsIds);
 
             using (var compressedFileStream = new MemoryStream())
             {
                 using (var zipArchive = new ZipArchive(compressedFileStream, ZipArchiveMode.Update, true))
                 {
-                    AddObjectsToArchive(serverApi, objects, zipArchive, types, "");
+                    AddObjectsToArchive(repo, objects, zipArchive, types, "");
                 }
                 mstData = compressedFileStream.ToArray();
             }
             return new FileContentResult(mstData, "application/zip") { FileDownloadName = "archive.zip" };
         }
 
-        private void AddObjectsToArchive(IServerApi serverApi, List<DObject> objects, ZipArchive archive, IDictionary<int, MType> types, string currentPath)
+        private void AddObjectsToArchive(IRepository repository, List<DObject> objects, ZipArchive archive, IDictionary<int, MType> types, string currentPath)
         {
             foreach (var obj in objects)
             {
@@ -192,7 +192,7 @@ namespace Ascon.Pilot.WebClient.Controllers
 
                     var fileId = dFile.Body.Id;
                     var fileSize = dFile.Body.Size;
-                    var fileBody = serverApi.GetFileChunk(fileId, 0, (int)fileSize);
+                    var fileBody = repository.GetFileChunk(fileId, 0, (int)fileSize);
 
                     if (archive.Entries.Any(x => x.Name == dFile.Name))
                         dFile.Name += " Conflicted";
@@ -214,8 +214,8 @@ namespace Ascon.Pilot.WebClient.Controllers
                     if (!objChildrenIds.Any())
                         continue;
 
-                    var objChildren = serverApi.GetObjects(objChildrenIds);
-                    AddObjectsToArchive(serverApi, objChildren, archive, types, directoryPath);
+                    var objChildren = repository.GetObjects(objChildrenIds);
+                    AddObjectsToArchive(repository, objChildren, archive, types, directoryPath);
                 }
             }
         }
@@ -234,8 +234,8 @@ namespace Ascon.Pilot.WebClient.Controllers
             if (size >= 10 * 1024 * 1024)
                 return virtualFileResult;
 
-            var serverApi = HttpContext.GetServerApi();
-            var file = serverApi.GetFileChunk(id, 0, size);
+            var repository = HttpContext.GetServerApi();
+            var file = repository.GetFileChunk(id, 0, size);
             try
             {
                 if (file != null)
@@ -280,7 +280,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         public ActionResult Rename(Guid idToRename, string newName, Guid renameRootId)
         {
 
-            var api = _contextHolder.GetContext(HttpContext).ServerApi;
+            var api = _contextHolder.GetContext(HttpContext).Repository;
             var objectToRename = api.GetObjects(new[] { idToRename })[0];
                 var newObject = objectToRename.Clone();
 

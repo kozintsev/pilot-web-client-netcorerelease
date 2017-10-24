@@ -24,13 +24,13 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             {
                 var context = _contextHolder.GetContext(HttpContext);
                 var types = context.Repository.GetTypes().ToDictionary(x => x.Id, y => y);
-                var serverApi = _contextHolder.GetContext(HttpContext).ServerApi;
+                var repository = _contextHolder.GetContext(HttpContext).Repository;
 
                 Guid parentId = id;
                 bool isSource = ViewBag.IsSource ?? false;
                 while (parentId != DObject.RootId)
                 {
-                    var obj = serverApi.GetObjects(new[] { parentId })[0];
+                    var obj = repository.GetObjects(new[] { parentId })[0];
                     var mType = types[obj.TypeId];
                     result.Enqueue(new KeyValuePair<string, string>(Url.Action("Index", "Files", new { id = obj.Id, isSource }), obj.GetTitle(mType)));
                     if (mType.IsMountable)

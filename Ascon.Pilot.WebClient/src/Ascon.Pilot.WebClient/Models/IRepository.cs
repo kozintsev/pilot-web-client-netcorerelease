@@ -17,6 +17,7 @@ namespace Ascon.Pilot.WebClient.Models
         DPerson CurrentPerson();
         MType GetType(int id);
         IEnumerable<MType> GetTypes();
+        byte[] GetFileChunk(Guid id, long pos, int count);
     }
 
     class Repository : IRepository, IRemoteStorageListener
@@ -94,6 +95,11 @@ namespace Ascon.Pilot.WebClient.Models
         public IEnumerable<MType> GetTypes()
         {
             return _types;
+        }
+
+        public byte[] GetFileChunk(Guid id, long pos, int count)
+        {
+            return _serverApi.GetFileChunk(id, pos, count);
         }
     }
 }

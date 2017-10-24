@@ -44,10 +44,9 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             id = id ?? DObject.RootId;
 
             var context = _contextHolder.GetContext(HttpContext);
-            var serverApi = context.ServerApi;
             var repo = context.Repository;
-            var rootObject = serverApi.GetObjects(new[] { id.Value }).First();
-            var bRootObject = serverApi.GetObjects(new[] { DObject.RootId }).First();
+            var rootObject = repo.GetObjects(new[] { id.Value }).First();
+            var bRootObject = repo.GetObjects(new[] { DObject.RootId }).First();
             var mTypes = repo.GetTypes().ToDictionary(x => x.Id, y => y);
             var model = new SidePanelViewModel
             {
@@ -60,13 +59,13 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             var parentId = rootObject.Id;
             do
             {
-                var parentObject = serverApi.GetObjects(new[] { parentId }).First();
+                var parentObject = repo.GetObjects(new[] { parentId }).First();
                 var parentChildsIds = parentObject.Children
                                         .Where(x => mTypes[x.TypeId].IsService == false)
                                         .Select(x => x.ObjectId).ToArray();
                 if (parentChildsIds.Length != 0)
                 {
-                    var parentChilds = serverApi.GetObjects(parentChildsIds);
+                    var parentChilds = repo.GetObjects(parentChildsIds);
                     var subtree = model.Items;
                     model.Items = new List<SidePanelItem>(parentChilds.Count);
                     foreach (var parentChild in parentChilds)
