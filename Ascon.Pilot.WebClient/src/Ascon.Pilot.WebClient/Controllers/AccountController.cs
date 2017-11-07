@@ -35,13 +35,13 @@ namespace Ascon.Pilot.WebClient.Controllers
             ViewData["ReturnUrl"] = returnUrl;
 
 #if (DEBUG)
-                //DatabaseName = "3d-storage_ru",
-                //Login = "admin",
-                //Password = "123456"
-                logInViewModel.DatabaseName = "pilot-ice_ru";
-                logInViewModel.Login = "pavlenko";
-                logInViewModel.Password = "123456";
-    #endif
+            //DatabaseName = "3d-storage_ru",
+            //Login = "admin",
+            //Password = "123456"
+            //logInViewModel.DatabaseName = "pilot-ice_ru";
+            logInViewModel.Login = "pavlenko";
+            logInViewModel.Password = "123456";
+#endif
 
             return View(logInViewModel);
         }
@@ -57,7 +57,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             var context = _contextHolder.NewContext(clientId);
             try
             {
-                var creds = Credentials.GetConnectionCredentials(model.DatabaseName, model.Login, model.Password);
+                var creds = Credentials.GetConnectionCredentials(ApplicationConst.Database, model.Login, model.Password);
                 var dbInfo = context.Connect(creds);
                 if (dbInfo == null)
                 {
