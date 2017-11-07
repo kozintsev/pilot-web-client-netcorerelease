@@ -20,10 +20,13 @@ namespace Ascon.Pilot.WebClient
             builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             Configuration = builder.Build();
             var pilotServer = Configuration.GetValue<string>("PilotServer:Url", "http://localhost:5545");
+            var database = Configuration.GetValue<string>("PilotServer:Database", "pilot-ice_ru");
             PilotServerUrl = pilotServer;
+            Database = database;
         }
 
         public static readonly string PilotServerUrl;
+        public static readonly string Database;
         public static readonly string PilotMiddlewareInstanceName = "AsconPilotMiddlewareInstance";
 
         public static readonly string HttpSchemeName = "http";

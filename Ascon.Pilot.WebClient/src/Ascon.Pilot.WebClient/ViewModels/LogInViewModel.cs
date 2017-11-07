@@ -9,13 +9,6 @@ namespace Ascon.Pilot.WebClient.ViewModels
     public class LogInViewModel
     {
         /// <summary>
-        /// Название баззы данных .
-        /// </summary>
-        [Required]
-        [Display(Name = "Название базы данных")]
-        public string DatabaseName { get; set; }
-
-        /// <summary>
         ///Имя пользвоателя для входа в систему.
         /// </summary>
         [Required]
