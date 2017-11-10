@@ -5,13 +5,13 @@
 }
 
 <div class="col-lg-2 col-md-3 col-sm-3 col-xs-12 file-card @(isThumbnail ? "with-thumbnail" : "")" onclick="processCardClick(this)"
-     data-id="@Model.Id" data-name="@Html.Raw(name)" data-size="@Model.Size" data-ext="@Model.Extension" data-typeid="@Model.ObjectTypeId">
+     data-id="@Model.FileId" data-name="@Html.Raw(name)" data-size="@Model.Size" data-ext="@Model.Extension" data-typeid="@Model.ObjectTypeId">
     <div class="file-card-icon">
         @{
             var href = Url.Action("GetTypeIcon", "Home", new { id = Model.ObjectTypeId });
             if (isThumbnail)
             {
-                href = Url.Action("Image", "Files", new { id = Model.Id, size = Model.Size, extension = Model.Extension, typeId = Model.ObjectTypeId });
+                href = Url.Action("Image", "Files", new { id = Model.FileId, size = Model.Size, extension = Model.Extension, typeId = Model.ObjectTypeId });
             }
         }
         <div class="center-block">
@@ -20,9 +20,7 @@
         <input name="objectsIds" type="checkbox" value="@Model.ObjectId" />
     </div>
     <div class="file-card-name">
-        <a onclick="processFileCardClick(this)" role="button">
-            @name
-        </a>
+        <a href="@Url.Action("Index", "Files", new { id = Model.ObjectId })">@name</a>
     </div>
 </div>
 

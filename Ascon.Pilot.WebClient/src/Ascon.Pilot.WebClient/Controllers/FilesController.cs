@@ -50,6 +50,9 @@ namespace Ascon.Pilot.WebClient.Controllers
         public IActionResult Index(Guid? id, bool isSource = false)
         {
             _contextHolder.GetContext(HttpContext).Build(HttpContext);
+            var versionInput = HttpContext.Request.Query["version"].ToString();
+            long version;
+            long.TryParse(versionInput, out version);
 
             var model = new UserPositionViewModel();
 
@@ -59,7 +62,19 @@ namespace Ascon.Pilot.WebClient.Controllers
             model.FilesPanelType = type;
             ViewBag.FilesPanelType = type;
             ViewBag.IsSource = isSource;
-
+            
+            var context = _contextHolder.GetContext(HttpContext);
+            var repo = context.Repository;
+            var node = repo.GetObjects(new[] { id.Value }).FirstOrDefault();
+            if (node != null)
+            {
+                if (node.Children?.Any() == false)
+                {
+                    model.Version = version;
+                    model.IsFile = true;
+                }
+            }
+            
             return View(model);
         }
 
@@ -110,6 +125,16 @@ namespace Ascon.Pilot.WebClient.Controllers
         public IActionResult GetObject(Guid id, bool isSource = false)
         {
             var filesPanelType = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
+            var context = _contextHolder.GetContext(HttpContext);
+            var repo = context.Repository;
+            var node = repo.GetObjects(new[] { id }).FirstOrDefault();
+            if (node != null)
+            {
+                if (node.Children?.Any() == false)
+                {
+                    return ViewComponent(typeof(FileDetailsViewComponent), new { docId = id, panelType = filesPanelType });
+                }
+            }
 
             return ViewComponent(typeof(FilesPanelViewComponent), new { folderId = id, panelType = filesPanelType, onlySource = isSource });
         }

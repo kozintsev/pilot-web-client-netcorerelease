@@ -26,6 +26,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
             _logger = logger;
             _contextHolder = contextHolder;
         }
+
         /// <summary>
         /// Вызвать компонент панели файлов
         /// </summary>
@@ -57,7 +58,6 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                             model.Add(new FileViewModel
                             {
                                 IsFolder = true,
-                                Id = folder.Id,
                                 ObjectId = folder.Id,
                                 ObjectName = "Исходные файлы",
                                 ObjectTypeName = "Папка с исходными файлами",
@@ -98,7 +98,6 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                 if (mType.Children.Any())
                     model.Add(new FileViewModel
                     {
-                        Id = dObject.Id,
                         IsFolder = true,
                         ObjectId = dObject.Id,
                         ObjectTypeId = mType.Id,
@@ -114,7 +113,8 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     var file = dObject.ActualFileSnapshot.Files.First();
                     model.Add(new FileViewModel
                     {
-                        Id = file.Body.Id,
+                        FileId = file.Body.Id,
+                        Version = dObject.ActualFileSnapshot.Created.Ticks,
                         IsFolder = false,
                         ObjectId = dObject.Id,
                         ObjectTypeId = mType.Id,
@@ -130,7 +130,6 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     model.Add(new FileViewModel
                     {
                         IsFolder = true,
-                        Id = dObject.Id,
                         ObjectName = dObject.GetTitle(mType),
                         ChildrenCount = dObject.Children.Count(x => !types[x.TypeId].IsProjectFileOrFolder()),
                         ObjectId = dObject.Id,
@@ -150,7 +149,6 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                 if (mType.IsProjectFolder())
                     model.Add(new FileViewModel
                     {
-                        Id = dObject.Id,
                         IsFolder = true,
                         ObjectId = dObject.Id,
                         ObjectTypeId = mType.Id,
@@ -166,7 +164,8 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                     var file = dObject.ActualFileSnapshot.Files.First();
                     model.Add(new FileViewModel
                     {
-                        Id = file.Body.Id,
+                        FileId = file.Body.Id,
+                        Version = dObject.ActualFileSnapshot.Created.Ticks,
                         IsFolder = false,
                         ObjectId = dObject.Id,
                         ObjectTypeId = mType.Id,

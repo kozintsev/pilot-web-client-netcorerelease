@@ -17,7 +17,14 @@
                 @await Component.InvokeAsync("Breadcrumbs", new { id = Model.CurrentFolderId })
             </div>
             <div id="filesPanel" style="padding-bottom: 15px;">
-                @await Component.InvokeAsync("FilesPanel", new { folderId = Model.CurrentFolderId, panelType = Model.FilesPanelType, onlySource = ViewBag.IsSource ?? false })
+                @if (Model.IsFile)
+                {
+                    @await Component.InvokeAsync("FileDetails", new { docId = Model.CurrentFolderId, panelType = Model.FilesPanelType, version = Model.Version })
+                }
+                else
+                {
+                    @await Component.InvokeAsync("FilesPanel", new { folderId = Model.CurrentFolderId, panelType = Model.FilesPanelType, onlySource = ViewBag.IsSource ?? false })
+                }
             </div>
         </div>
     </div>
@@ -26,31 +33,6 @@
 @await Html.PartialAsync("_RenameModal")
 @await Html.PartialAsync("_RemoveModal")
 @await Html.PartialAsync("_UploadModal")
-
-<div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="viewModalLabel">Просмотр</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-8 col-sm-12" id="viewModalContent"></div>
-                    <div class="col-md-4 col-sm-12" id="viewModalInfo"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a class="btn btn-default" id="modalDownloadButton">
-                    <i class="glyphicon glyphicon-download-alt"></i>&nbsp;Скачать
-                </a>
-                <a id="previewButton" class="btn btn-default" target="_blank" href="#" style="display: none">
-                    <i class="glyphicon glyphicon-eye-open"></i>&nbsp;Просмотр
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 
 @section scripts
 {

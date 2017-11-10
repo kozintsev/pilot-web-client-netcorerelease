@@ -1,0 +1,48 @@
+﻿@using Ascon.Pilot.WebClient.Models;
+@using Ascon.Pilot.Core;
+
+@model Ascon.Pilot.WebClient.ViewModels.FilesDetailsViewModel
+
+<div class="details">
+
+    @if (Model == null || Model.File == null)
+    {
+        <p class="no-data-info">Нет данных для отображения</p>
+    }
+    else
+    {
+        <div class="file-details-content">
+            <div class="file-details-header">
+                <h4 class="modal-title" id="viewModalLabel">@Model.Name</h4>
+            </div>
+            <div class="file-details-body">
+                <div class="row">
+                    <div class="col-md-8 col-sm-12" id="fileDetailsContent">
+                        @{
+                            var href = Url.Action("Image", "Files", new { id = Model.FileId, size = Model.Size, extension = Model.Extension, typeId = Model.ObjectTypeId });
+                        }
+                        <img class="img-responsive center-block" src="@href" alt="@Model.Name"/>'
+                    </div>
+                    <div class="col-md-4 col-sm-12" id="fileDetailsInfo">
+                        <h4><i class="glyphicon glyphicon-info-sign"></i>&nbsp;Информация</h4>
+                        <dl>
+                            <dt>Размер</dt><dd>@Model.SizeStr</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="ile-details-footer">
+                @{
+                    var name = Model.Name;
+                    var fileDownloadRouteValues = new { id = Model.FileId, size = Model.Size, name = name.EndsWith(Model.Extension) ? name : $"{name}{Model.Extension}" };
+                }
+                <a class="btn btn-default" id="modalDownloadButton" href="@Url.Action("Download", "Files", fileDownloadRouteValues)">
+                    <i class="glyphicon glyphicon-download-alt"></i>&nbsp;Скачать
+                </a>
+                <a id="previewButton" class="btn btn-default" target="_blank" href="#" style="display: none">
+                    <i class="glyphicon glyphicon-eye-open"></i>&nbsp;Просмотр
+                </a>
+            </div>
+        </div>
+    }
+</div>
