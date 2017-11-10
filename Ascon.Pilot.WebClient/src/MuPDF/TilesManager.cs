@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -14,7 +13,8 @@ namespace MuPDF
     {
         private readonly object _locker = new object();
         private NativeXps _nativeXps;
-
+        private GCHandle _dataHandle;
+        
         public TilesManager(Stream xpsStream)
         {
             if (xpsStream == null)
@@ -22,7 +22,7 @@ namespace MuPDF
             var errorBuffer = new byte[256];
             var errorHandle = GCHandle.Alloc(errorBuffer, GCHandleType.Pinned);
             var dataBuffer = StreamToByteArray(xpsStream);
-            var dataHandle = GCHandle.Alloc(dataBuffer, GCHandleType.Pinned);
+            _dataHandle = GCHandle.Alloc(dataBuffer, GCHandleType.Pinned);
             try
             {
                 lock (_locker)
@@ -32,7 +32,7 @@ namespace MuPDF
 
                     var pageCount = 0;
                     var xpsNativePtr = RenderLibrary.open_xps_with_stream(
-                        dataHandle.AddrOfPinnedObject(),
+                        _dataHandle.AddrOfPinnedObject(),
                         dataBuffer.Length,
                         ref pageCount,
                         errorHandle.AddrOfPinnedObject(),
@@ -47,18 +47,18 @@ namespace MuPDF
                     if (pageCount == 0)
                         throw new Exception("Initialization failed");
 
-                    _nativeXps = new NativeXps(xpsNativePtr, pageCount, dataHandle);
+                    _nativeXps = new NativeXps(xpsNativePtr, pageCount, _dataHandle);
                 }
             }
             catch (RenderException)
             {
-                dataHandle.Free();
+                _dataHandle.Free();
                 _nativeXps = null;
                 throw;
             }
             catch (Exception e)
             {
-                dataHandle.Free();
+                _dataHandle.Free();
                 _nativeXps = null;
                 throw new RenderException("Initialization failed");
             }
@@ -108,6 +108,7 @@ namespace MuPDF
         }
 
         private bool _canBeDisposed = true;
+
         public bool CanDispose
         {
             get
@@ -231,6 +232,7 @@ namespace MuPDF
                         {
                             _nativeXps.Dispose();
                             _nativeXps = null;
+                            _dataHandle.Free();
                         }
                         catch
                         {

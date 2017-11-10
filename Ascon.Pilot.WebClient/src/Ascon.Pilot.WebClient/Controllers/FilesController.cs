@@ -237,21 +237,20 @@ namespace Ascon.Pilot.WebClient.Controllers
             {
                 if (file != null)
                 {
-                    int page = 1;
-                    int dpi = 150;
-                    //var RenderType = RenderType.;
-                    bool rotateAuto = false;
-                    string password = "";
-
-                    var fileName = $"{id}{extension}";
-                    var directory = "tmp/";
-                    if (!Directory.Exists(directory))
-                        Directory.CreateDirectory(directory);
-                    using (var fileStream = System.IO.File.Create(directory + fileName))
-                        fileStream.Write(file, 0, file.Length);
-
                     if (extension.Contains("xps"))
                     {
+                        int page = 1;
+                        int dpi = 150;
+                        //var RenderType = RenderType.;
+                        bool rotateAuto = false;
+                        string password = "";
+
+                        var fileName = $"{id}{extension}";
+                        var directory = "tmp/";
+                        if (!Directory.Exists(directory))
+                            Directory.CreateDirectory(directory);
+                        using (var fileStream = System.IO.File.Create(directory + fileName))
+                            fileStream.Write(file, 0, file.Length);
                         lock (_lockObj)
                         {
                             byte[] thumbnailContent = _mu.RenderFirstPageInBytes(directory + fileName);
