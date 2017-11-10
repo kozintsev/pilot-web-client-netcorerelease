@@ -10,18 +10,12 @@ using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.Models;
 using Ascon.Pilot.WebClient.ViewComponents;
 using Ascon.Pilot.WebClient.ViewModels;
-using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using MuPDF;
 
-#if DNX451
-using MuPDFLib;
-using System.Drawing;
-using System.Drawing.Imaging;
-#endif
 
 namespace Ascon.Pilot.WebClient.Controllers
 {
@@ -31,12 +25,15 @@ namespace Ascon.Pilot.WebClient.Controllers
         private readonly ILogger<FilesController> _logger;
         private readonly IHostingEnvironment _environment;
         private readonly IContextHolder _contextHolder;
+        private readonly MuPdf _mu;
+        private static object _lockObj = new object();
 
         public FilesController(ILogger<FilesController> logger, IHostingEnvironment environment, IContextHolder contextHolder)
         {
             _logger = logger;
             _environment = environment;
             _contextHolder = contextHolder;
+            _mu = new MuPdf();
         }
 
         public IActionResult ChangeFilesPanelType(string returnUrl, FilesPanelType type)
@@ -56,16 +53,16 @@ namespace Ascon.Pilot.WebClient.Controllers
 
             var model = new UserPositionViewModel();
 
-                id = id ?? DObject.RootId;
-                FilesPanelType type = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
-                model.CurrentFolderId = id.Value;
-                model.FilesPanelType = type;
-                ViewBag.FilesPanelType = type;
-                ViewBag.IsSource = isSource;
+            id = id ?? DObject.RootId;
+            FilesPanelType type = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
+            model.CurrentFolderId = id.Value;
+            model.FilesPanelType = type;
+            ViewBag.FilesPanelType = type;
+            ViewBag.IsSource = isSource;
 
             return View(model);
         }
-        
+
         public async Task<IActionResult> GetNodeChilds(Guid id)
         {
             return await Task.Run(() =>
@@ -87,19 +84,19 @@ namespace Ascon.Pilot.WebClient.Controllers
                     return !mType.IsService;
 
                 }).Select(x =>
+                {
+                    var mType = types[x.TypeId];
+
+
+                    var sidePanelItem = new SidePanelItem
                     {
-                        var mType = types[x.TypeId];
+                        DObject = x,
+                        Type = mType,
+                        SubItems = x.Children.Any(y => types[y.TypeId].Children.Any()) ? new List<SidePanelItem>() : null
+                    };
 
-
-                        var sidePanelItem = new SidePanelItem
-                        {
-                            DObject = x,
-                            Type = mType,
-                            SubItems = x.Children.Any(y => types[y.TypeId].Children.Any()) ? new List<SidePanelItem>() : null
-                        };
-
-                        return sidePanelItem.GetDynamic(id, types);
-                    })
+                    return sidePanelItem.GetDynamic(id, types);
+                })
                     .ToArray();
                 return Json(childNodes);
             });
@@ -107,7 +104,7 @@ namespace Ascon.Pilot.WebClient.Controllers
 
         public IActionResult SidePanel(Guid? id)
         {
-            return ViewComponent(typeof (SidePanelViewComponent), id);
+            return ViewComponent(typeof(SidePanelViewComponent), id);
         }
 
         public IActionResult GetObject(Guid id, bool isSource = false)
@@ -134,12 +131,12 @@ namespace Ascon.Pilot.WebClient.Controllers
         {
             byte[] fileChunk;
 
-                var repository = _contextHolder.GetContext(HttpContext).Repository;
-                fileChunk = repository.GetFileChunk(id, 0, size);
-                var fileDownloadName = string.IsNullOrWhiteSpace(name) ? id.ToString() : name;
-                if (Response.Headers.ContainsKey("Content-Disposition"))
-                    Response.Headers.Remove("Content-Disposition");
-                Response.Headers.Add("Content-Disposition", $"inline; filename={fileDownloadName}");
+            var repository = _contextHolder.GetContext(HttpContext).Repository;
+            fileChunk = repository.GetFileChunk(id, 0, size);
+            var fileDownloadName = string.IsNullOrWhiteSpace(name) ? id.ToString() : name;
+            if (Response.Headers.ContainsKey("Content-Disposition"))
+                Response.Headers.Remove("Content-Disposition");
+            Response.Headers.Add("Content-Disposition", $"inline; filename={fileDownloadName}");
             return new FileContentResult(fileChunk, "application/pdf");
         }
 
@@ -230,49 +227,43 @@ namespace Ascon.Pilot.WebClient.Controllers
             const string pngContentType = "image/png";
             const string svgContentType = "image/svg+xml";
             var virtualFileResult = File(Url.Content("~/images/file.svg"), svgContentType);
-#if DNX451
+
             if (size >= 10 * 1024 * 1024)
                 return virtualFileResult;
-
-            var repository = HttpContext.GetServerApi();
+            var repository = _contextHolder.GetContext(HttpContext).Repository;
             var file = repository.GetFileChunk(id, 0, size);
+
             try
             {
                 if (file != null)
                 {
-                    int page = 1;
-                    int dpi = 150;
-                    RenderType RenderType = RenderType.RGB;
-                    bool rotateAuto = false;
-                    string password = "";
-
-                    var fileName = $"tmp/{id}{extension}";
-                    using (var fileStream = System.IO.File.Create(fileName))
-                        fileStream.Write(file, 0, file.Length);
-
-                    byte[] thumbnailContent;
-                    using (MuPDF pdfDoc = new MuPDF(fileName, password))
+                    if (extension.Contains("xps"))
                     {
-                        pdfDoc.Page = page;
-                        Bitmap bm = pdfDoc.GetBitmap(0, 0, dpi, dpi, 0, RenderType, rotateAuto, false, 0);
-                        HttpContext.Response.ContentType = pngContentType;
-                        using (var ms = new MemoryStream())
+                        int page = 1;
+                        int dpi = 150;
+                        //var RenderType = RenderType.;
+                        bool rotateAuto = false;
+                        string password = "";
+
+                        var fileName = $"{id}{extension}";
+                        var directory = "tmp/";
+                        if (!Directory.Exists(directory))
+                            Directory.CreateDirectory(directory);
+                        using (var fileStream = System.IO.File.Create(directory + fileName))
+                            fileStream.Write(file, 0, file.Length);
+                        lock (_lockObj)
                         {
-                            bm.Save(ms, ImageFormat.Png);
-                            thumbnailContent = ms.ToArray();
+                            byte[] thumbnailContent = _mu.RenderFirstPageInBytes(directory + fileName);
+                            System.IO.File.Delete(directory + fileName);
+                            return File(thumbnailContent, pngContentType, $"{id}.png");
                         }
                     }
-
-                    System.IO.File.Delete(fileName);
-
-                    return File(thumbnailContent, pngContentType, $"{id}.png");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(1, "Unable to generate thumbnail for file", ex);
             }
-#endif
             return virtualFileResult;
         }
 
@@ -282,20 +273,20 @@ namespace Ascon.Pilot.WebClient.Controllers
 
             var api = _contextHolder.GetContext(HttpContext).Repository;
             var objectToRename = api.GetObjects(new[] { idToRename })[0];
-                var newObject = objectToRename.Clone();
+            var newObject = objectToRename.Clone();
 
-                /*api.Change(new DChangesetData()
+            /*api.Change(new DChangesetData()
+            {
+                Changes = new List<DChange>
                 {
-                    Changes = new List<DChange>
+                    new DChange()
                     {
-                        new DChange()
-                        {
-                            New = newObject,
-                            Old = objectToRename
-                        }
+                        New = newObject,
+                        Old = objectToRename
                     }
-                });*/
-            return RedirectToAction("Index", new {id = renameRootId });
+                }
+            });*/
+            return RedirectToAction("Index", new { id = renameRootId });
         }
 
         [HttpPost]
@@ -303,7 +294,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         {
             return RedirectToAction("Index", new { id = removeRootId });
         }
-        
+
         //[HttpPost]
         //public async Task<RedirectToActionResult> Upload(Guid folderId, IFormFile file)
         //{

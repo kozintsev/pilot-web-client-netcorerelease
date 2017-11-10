@@ -1,11 +1,13 @@
-﻿{
+{
   "version": "1.0.0-*",
   "description": "MuPDF Class Library",
 
-  "dependencies": {
-    "NETStandard.Library": "1.6.1",
-    "System.Runtime": "4.3.0"
-  },
+    "dependencies": {
+        "CoreCompat.System.Drawing": "1.0.0-beta006",
+        "NETStandard.Library": "1.6.1",
+        "System.Drawing.Primitives": "4.3.0",
+        "System.Runtime": "4.3.0"
+    },
 
   "frameworks": {
     "netstandard1.6": {
