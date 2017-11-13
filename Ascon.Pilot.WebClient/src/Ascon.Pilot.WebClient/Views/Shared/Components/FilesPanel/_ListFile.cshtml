@@ -3,12 +3,12 @@
 @model Ascon.Pilot.WebClient.ViewModels.FileViewModel
 @{
     var name = Model.Name;
-    var fileDownloadRouteValues = new { id = Model.Id, size = Model.Size, name = name.EndsWith(Model.Extension) ? name : $"{name}{Model.Extension}" };
+    var fileDownloadRouteValues = new { id = Model.FileId, size = Model.Size, name = name.EndsWith(Model.Extension) ? name : $"{name}{Model.Extension}" };
     string href;
     var isThumbnail = false;
     if (isThumbnail)
     {
-        href = Url.Action("Thumbnail", "Files", new { id = Model.Id, size = Model.Size, extension = Model.Extension, typeId = Model.ObjectTypeId });
+        href = Url.Action("Thumbnail", "Files", new { id = Model.FileId, size = Model.Size, extension = Model.Extension, typeId = Model.ObjectTypeId });
     }
     else
     {
@@ -17,7 +17,7 @@
 }
 
 <div class="file-card @(isThumbnail ? "with-thumbnail" : "")" onclick="processCardClick(this)" 
-     data-id="@Model.Id" data-name="@Html.Raw(name)" data-size="@Model.Size" data-ext="@Model.Extension" data-typeid="@Model.ObjectTypeId">
+     data-id="@Model.ObjectId" data-name="@Html.Raw(name)" data-size="@Model.Size" data-ext="@Model.Extension" data-typeid="@Model.ObjectTypeId">
     <div class="file-card-icon">
         <div>
             <img src="@href" alt="@name"/>
@@ -25,9 +25,8 @@
         <input name="objectsIds" type="checkbox" value="@Model.ObjectId" />
     </div>
     <div class="file-card-name">
-        <a onclick="processFileCardClick(this)" role="button">
-            @name
-        </a>
+        <a href="@Url.Action("Index", "Files", new { id = Model.ObjectId })">@name</a>
+
     </div>
     <div class="file-card-info">
         <span class="pull-right text-right hidden-xs hidden-sm">

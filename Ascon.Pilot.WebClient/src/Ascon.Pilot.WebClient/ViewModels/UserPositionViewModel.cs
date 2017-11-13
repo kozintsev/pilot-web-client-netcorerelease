@@ -11,9 +11,12 @@ namespace Ascon.Pilot.WebClient.ViewModels
     public class UserPositionViewModel
     {
         /// <summary>
-        /// Id  ntreotq gfgrb
+        /// Id current object id
         /// </summary>
         public Guid CurrentFolderId { get; set; }
+
+        public bool IsFile { get; set; }
+        public long Version { get; set; }
 
         /// <summary>
         /// Тип панели управления файлами

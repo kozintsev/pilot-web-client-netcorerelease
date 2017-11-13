@@ -5,7 +5,8 @@ namespace Ascon.Pilot.WebClient.ViewModels
 {
     public class FileViewModel
     {
-        public Guid Id { get; set; }
+        public Guid FileId { get; set; }
+        public long Version { get; set; }
 
         public int ObjectTypeId { get; set; }
         public string ObjectTypeName { get; set; }
