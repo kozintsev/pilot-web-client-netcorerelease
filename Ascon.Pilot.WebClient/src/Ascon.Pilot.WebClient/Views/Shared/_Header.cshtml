@@ -24,29 +24,6 @@
         }
     </ul>
 </div>  
-
-@if (User.Identity.IsAuthenticated && ViewContext.RouteData.Values["controller"].ToString() == "Files")
-{
-    <div class="navbar navbar-default toolbar" id="toolbar">
-        <div class="navbar-header pull-right">
-            <div class="navbar-brand">
-                <a id="downloadButton" href="#" role="button" title="Скачать" style="display: none;" target="_blank">
-                    <span class="glyphicon glyphicon-download-alt"></span>&nbsp;
-                    <span class="hidden-xs">Скачать</span>
-                </a>
-                <a id="downloadArchiveButton" role="button" onclick="downloadArchive(this)" title="Скачать архивом" style="display: none;">
-                    <span class="glyphicon glyphicon-folder-close"></span>&nbsp;
-                    <span class="hidden-xs">Скачать&nbsp;архивом</span>
-                </a>
-                <a id="filesPanelToggler"
-                   href="@Url.Action("ChangeFilesPanelType", "Files", new {type = currentFilesPanelType == FilesPanelType.List ? FilesPanelType.Grid : FilesPanelType.List, returnUrl = Context.Request.GetDisplayUrl()})"
-                   title="Режим отображения: @(currentFilesPanelType == FilesPanelType.List ? "список" : "плитки")">
-                    <span class="glyphicon @(currentFilesPanelType == FilesPanelType.List ? "glyphicon-th-list" : "glyphicon-th")"></span>
-                </a>
-            </div>
-        </div>
-    </div>
-}  
   
 <div id="mySidenav" class="sidenav">
     <div id="sidenav">

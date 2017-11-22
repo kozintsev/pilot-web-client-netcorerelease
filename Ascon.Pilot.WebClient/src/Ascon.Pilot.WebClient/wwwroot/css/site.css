@@ -1,14 +1,14 @@
 ﻿/* ------ Body ---------*/
 html,body,.container {
     height:100%;
-    background: #F8F9FB;
+    background: transparent;
     /*color: #636D84;*/
     font-family: Segoe UI,Segoe UI Web,Segoe UI Symbol,Helvetica Neue,BBAlpha Sans,S60 Sans,Arial,sans-serif;
 }
 
 .body-content {
     padding-left: 0px;
-    padding-top: 80px;
+    padding-top: 50px;
 }
 
 .glyphicon-spin {
@@ -181,7 +181,7 @@ a.navbar-brand.active {
 
 /* ---------- side menu -------- */
 .noborder {
-  border: 1px solid #fff;
+  border: 1px solid transparent;
 }
 
 /* - - */
@@ -197,7 +197,7 @@ a.navbar-brand.active {
     padding-bottom: 0; 
     height: 100%;
     width: 200px;
-    background-color: white;
+    background-color: #F8F9FB;
     border-right: 1px solid #DFE4E8;
     overflow: auto;
 }
@@ -244,11 +244,11 @@ a.navbar-brand.active {
 
 .sidePanel {
     position: fixed;
-    top: 100px;
+    top: 50px;
     padding-bottom: 0; 
     height: 100%;
     width: 35%;
-    background-color: white;
+    background-color: #F8F9FB;
     border-right: 1px solid #DFE4E8;
     overflow: auto;
 }
@@ -292,7 +292,7 @@ a.navbar-brand {
 
 /* ---------- breadcrumbs ------------------ */
 .breadcrumb {
-    background-color : transparent;
+    background-color : #F8F9FB;
 }
 
 .breadcrumb li {
@@ -390,13 +390,11 @@ a.task-node {
     width: 40px;
     height: 42px;
 }
-
 @media only screen and (max-width: 992px) {
     .task-details-content {
-        margin-top: -40px;
+        margin-top: -20px;
     }
 }
-
 /*--------------------------------------Modal preview---------------------------*/
 
 @media (min-width: 992px) {
@@ -638,4 +636,23 @@ a.task-node {
 
 .file-list .file-card-icon input[type="checkbox"] {
     top: 5px;
+}
+
+.list-group-item {
+    background: transparent;
+}
+
+.info-note {
+    background-color: #ffffcc;
+    border-left: 6px solid #ffeb3b;
+}
+
+.info-panel {
+    margin-bottom: 16px;
+}
+
+.info-panel.info-note p {
+    padding-top: 16px;
+    padding-bottom: 8px;
+    padding-left: 16px;
 }

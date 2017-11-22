@@ -9,13 +9,17 @@ namespace Ascon.Pilot.WebClient.ViewModels
 {
     public class FilesDetailsViewModel
     {
+        private IRepository _repository;
         public FilesDetailsViewModel(Guid objId, long version, IRepository repository, FilesPanelType type)
         {
+            IsActual = true;
             Version = version;
             FilesPanelType = type;
+            _repository = repository;
             var objs = repository.GetObjects(new[] { objId });
             if (!objs.Any())
                 return;
+
             var types = repository.GetTypes().ToDictionary(x => x.Id, y => y);
 
             var obj = objs.First();
@@ -40,6 +44,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
         public Guid Id { get; private set; }
         public Guid FileId { get; private set; }
         public long Version { get; private set; }
+        public DateTime VersionTime { get; private set; }
         public string FileName { get; private set; }
         public string SizeStr { get; private set; }
         public int Size { get; private set; }
@@ -48,16 +53,31 @@ namespace Ascon.Pilot.WebClient.ViewModels
         public string ObjectTypeName { get; private set; }
         public DFile File { get; private set; }
         public string Extension { get { return Path.GetExtension(FileName); } }
+        public bool IsActual { get; private set; }
+        public string VersionReason { get; private set; }
+        public string Author { get; private set; }
 
         public FilesPanelType FilesPanelType { get; private set; }
 
         private DFile GetFile(long version, DObject obj)
         {
-            if (obj.ActualFileSnapshot.Created.Ticks.Equals(version) || version == 0)
+            var versionUniversalTime = new DateTime(version).ToUniversalTime();
+            if (obj.ActualFileSnapshot.Created.Equals(versionUniversalTime) || version == 0)
+            {
+                VersionTime = obj.ActualFileSnapshot.Created.ToLocalTime();
+                Author = _repository.GetPerson(obj.ActualFileSnapshot.CreatorId).DisplayName;
                 return obj.ActualFileSnapshot.Files.FirstOrDefault();
-            var snapshot = obj.PreviousFileSnapshots.FirstOrDefault(o => o.Created.Ticks.Equals(version));
+            }
+            var snapshot = obj.PreviousFileSnapshots.FirstOrDefault(o => o.Created.Equals(versionUniversalTime));
             if (snapshot != null)
+            {
+                IsActual = false;
+                if (!string.IsNullOrEmpty(snapshot.Reason))
+                    VersionReason = string.Format("\"{0}\"",snapshot.Reason);
+                VersionTime = snapshot.Created.ToLocalTime();
+                Author = _repository.GetPerson(snapshot.CreatorId).DisplayName;
                 return snapshot.Files.FirstOrDefault();
+            }
             return null;
         }
 
