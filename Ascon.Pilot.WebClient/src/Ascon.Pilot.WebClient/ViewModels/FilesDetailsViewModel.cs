@@ -28,7 +28,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
             Id = objId;
             ObjectTypeId = mType.Id;
             ObjectTypeName = mType.Name;
-
+            ObjectTypeTitle = mType.Title;
             File = GetFile(version, obj);
             if (File != null)
             {
@@ -37,6 +37,15 @@ namespace Ascon.Pilot.WebClient.ViewModels
                 LastModifiedDate = File.Body.Modified;
                 Size = (int)File.Body.Size;
                 SizeStr = GetSizeString(Size);
+            }
+
+            Attributes = new SortedList<string, string>();
+            var visibleAttrs = GetVisibleAttributes(mType);
+            foreach (var attr in visibleAttrs)
+            {
+                var value = GetAttrValue(obj, attr.Name);
+                if (!string.IsNullOrEmpty(value))
+                    Attributes.Add(attr.Title, value);
             }
         }
 
@@ -51,32 +60,50 @@ namespace Ascon.Pilot.WebClient.ViewModels
         public DateTime LastModifiedDate { get; private set; }
         public int ObjectTypeId { get; private set; }
         public string ObjectTypeName { get; private set; }
+        public string ObjectTypeTitle { get; private set; }
         public DFile File { get; private set; }
         public string Extension { get { return Path.GetExtension(FileName); } }
         public bool IsActual { get; private set; }
         public string VersionReason { get; private set; }
         public string Author { get; private set; }
+        public SortedList<string, string> Attributes { get; private set; }
 
         public FilesPanelType FilesPanelType { get; private set; }
+
+        private static string GetAttrValue(DObject obj, string attrName)
+        {
+            DValue value;
+            if (!obj.Attributes.TryGetValue(attrName, out value))
+                return null;
+            return value.StrValue;
+        }
 
         private DFile GetFile(long version, DObject obj)
         {
             var versionUniversalTime = new DateTime(version).ToUniversalTime();
             if (obj.ActualFileSnapshot.Created.Equals(versionUniversalTime) || version == 0)
             {
-                VersionTime = obj.ActualFileSnapshot.Created.ToLocalTime();
-                Author = _repository.GetPerson(obj.ActualFileSnapshot.CreatorId).DisplayName;
-                return obj.ActualFileSnapshot.Files.FirstOrDefault();
+                var file = obj.ActualFileSnapshot.Files.FirstOrDefault();
+                if (file != null)
+                {
+                    VersionTime = obj.ActualFileSnapshot.Created.ToLocalTime();
+                    Author = _repository.GetPerson(obj.ActualFileSnapshot.CreatorId).DisplayName;
+                }
+                return file;
             }
             var snapshot = obj.PreviousFileSnapshots.FirstOrDefault(o => o.Created.Equals(versionUniversalTime));
             if (snapshot != null)
             {
                 IsActual = false;
-                if (!string.IsNullOrEmpty(snapshot.Reason))
-                    VersionReason = string.Format("\"{0}\"",snapshot.Reason);
-                VersionTime = snapshot.Created.ToLocalTime();
-                Author = _repository.GetPerson(snapshot.CreatorId).DisplayName;
-                return snapshot.Files.FirstOrDefault();
+                var file = snapshot.Files.FirstOrDefault();
+                if (file != null)
+                {
+                    if (!string.IsNullOrEmpty(snapshot.Reason))
+                        VersionReason = string.Format("\"{0}\"", snapshot.Reason);
+                    VersionTime = snapshot.Created.ToLocalTime();
+                    Author = _repository.GetPerson(snapshot.CreatorId).DisplayName;
+                }
+                return file;
             }
             return null;
         }
@@ -92,6 +119,11 @@ namespace Ascon.Pilot.WebClient.ViewModels
                 len = len/1024;
             }
             return $"{len:0.##} {sizes[order]}";
+        }
+
+        private MAttribute[] GetVisibleAttributes(MType type)
+        {
+            return type.Attributes.OrderBy(u => u.DisplaySortOrder).Where(a => a.IsService == false).ToArray();
         }
     }
 }

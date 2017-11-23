@@ -71,41 +71,6 @@ function processCardClick(el) {
     downloadButton.show();    
 }
 
-function processFileCardClick(el) {
-    var fileCard = $(el).closest(".file-card");
-    var id = fileCard.data("id");
-    var name = fileCard.data("name");
-    var size = fileCard.data("size");
-    var ext = fileCard.data("ext");
-    var typeid = fileCard.data("typeid");
-    var query = jQuery.param({
-        id: id,
-        name: name + ext,
-        size: size
-    });
-    var previewButton = $("#previewButton");
-    if (ext === ".pdf" || ext === ".xps") {
-        if (ext === ".pdf") {
-            previewButton.prop("href", "/Files/Preview?" + query);
-            previewButton.show();
-        }
-        var url = "/Files/Image/" + id + "?size=" + size + "&extension=" + ext;
-        $("#viewModalContent").html('<img class="img-responsive center-block" src="' + url + '" alt="' + name + '"/>');
-    } else {
-        $("#viewModalContent").html('<img class="img-responsive center-block" src="/Home/GetTypeIcon/' + typeid + '"/>');
-        previewButton.hide();
-    }
-
-    $("#viewModalInfo")
-        .html(objectToDlist({
-            "Название": name,
-            "Размер": size + " байт"
-        }));
-
-    $("#modalDownloadButton").prop("href", downloadUrl + "?" + query);
-    $("#viewModal").modal();
-}
-
 function objectToDlist(obj) {
     var html = '<h4><i class="glyphicon glyphicon-info-sign"></i>&nbsp;Информация</h4><dl>';
     $.each(obj,
@@ -238,6 +203,11 @@ function recieveFiles(node) {
         },
         success: function (data) {
             filesPanel.html(data);
+            if (filesPanel.find("div.file-details").length > 0)
+                $("#docInfoLink").show();
+            else {
+                $("#docInfoLink").hide();
+            }
             pushHistory(folderId);
             $("#breadcrumbs").html(createHtmlForBreadcrumbs(treeControl.getSelected()[0]));
             setObjectIdsCheckCallback();
@@ -270,4 +240,17 @@ function createHtmlForBreadcrumbs(selectedNode) {
             html += '<li class="active"><a data-toggle="tooltip" data-placement="auto left" title="' + breadcrumbs[i].text + '" href="' + baseFilesUrl + breadcrumbs[i].id + '">' + breadcrumbs[i].text + "</a></li>";
     }
     return html;
+}
+
+
+function openDocInfo() {
+    // If this isn't already active
+    if (!$("#docInfoLink").hasClass("active")) {
+        // And make this active
+        $("#docInfoLink").addClass("active");
+        $("#docInfoModal").modal();
+    } else {
+        $("#docInfoLink").removeClass("active");
+        $("#docInfoModal").modal('toggle');
+    }
 }

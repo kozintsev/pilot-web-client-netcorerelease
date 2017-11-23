@@ -1,49 +1,83 @@
 ﻿@using System.Threading.Tasks
 @using Ascon.Pilot.WebClient.Models
+@using Ascon.Pilot.WebClient.ViewModels
 @using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.AspNetCore.Mvc.ModelBinding
 @{
     FilesPanelType currentFilesPanelType = ViewBag.FilesPanelType ?? default(FilesPanelType);
 }
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-header">
-       
-            <a id="vMenu" class="active" onclick="openNav()">
-                <div class="icon-bar"></div>
-                <div class="icon-bar"></div>
-                <div class="icon-bar"></div>
-            </a>
+        <a id="vMenu" class="active" onclick="openNav()">
+            <div class="icon-bar"></div>
+            <div class="icon-bar"></div>
+            <div class="icon-bar"></div>
+        </a>
         <div class="navbar-brand">
             <a asp-controller="Home" asp-action="Index"><img src="@Url.Content("~/images/logo.png")" height="22" alt="Pilot-WEB"></a>
         </div>
-       
     </div>
-    <ul class="nav navbar-nav navbar-right">
+
+    <ul class="nav navbar-nav navbar-right pilot-navbar pull-right">
         @if (User.Identity.IsAuthenticated)
         {
-            <li><p class="navbar-text" style="margin-right:25px">@User.Identity.Name</p></li>
+            if (Model is UserPositionViewModel)
+            {
+                if (ViewContext.RouteData.Values["controller"].ToString() == "Files")
+                {
+                    <li>
+                        <a id="downloadButton" href="#" role="button" title="Скачать" style="display: none;" target="_blank">
+                            <span class="glyphicon glyphicon-download"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="downloadArchiveButton" role="button" onclick="downloadArchive(this)" title="Скачать архивом" style="display: none;">
+                            <span class="glyphicon glyphicon-folder-close"></span>&nbsp;
+                            <span class="hidden-xs">Скачать&nbsp;архивом</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="filesPanelToggler"
+                           href="@Url.Action("ChangeFilesPanelType", "Files", new {type = currentFilesPanelType == FilesPanelType.List ? FilesPanelType.Grid : FilesPanelType.List, returnUrl = Context.Request.GetDisplayUrl()})"
+                           title="Режим отображения: @(currentFilesPanelType == FilesPanelType.List ? "список" : "плитки")">
+                            <span class="glyphicon @(currentFilesPanelType == FilesPanelType.List ? "glyphicon-th-list" : "glyphicon-th")"></span>
+                        </a>
+                    </li>
+                    if (Model.IsFile)
+                    {
+                        <li><a id="docInfoLink" onclick="openDocInfo()" style="display:inherit;" title="Информация о документе"><span class="glyphicon glyphicon-info-sign"></span></a></li>
+                    }
+                    else
+                    {
+                        <li><a id="docInfoLink" onclick="openDocInfo()" style="display:none;" title="Информация о документе"><span class="glyphicon glyphicon-info-sign"></span></a></li>
+                    }
+                }
+            }
+            <li><a id="userProfileLink"onclick="openUserProfile()" title="Учетная запись"><span class="glyphicon glyphicon-user"></span></a></li>
         }
     </ul>
-</div>  
-  
+
+</div>
+
 <div id="mySidenav" class="sidenav">
     <div id="sidenav">
-    @if (User.Identity.IsAuthenticated)
-    {
-        <div class="sidnav-scrollable">
-            <a class="sidenav-item" id="files-page" asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
-            <a class="sidenav-item" id="tasks-page" href="/tasks?filterId=6" onclick="openNav()">Задания</a>
-            <div class="sidenav-submenu">
-                <a href="/tasks?filterId=6" id="hf6" class="sidenav-item active">Актуальные</a>
-                <a href="/tasks?filterId=7" id="hf7" class="sidenav-item">Выданные</a>
-                <a href="/tasks?filterId=8" id="hf8" class="sidenav-item">Полученные</a>
-                <a href="/tasks?filterId=12" id="hf12" class="sidenav-item">Вы в аудиторах</a>
-                <a href="/tasks?filterId=9" id="hf9" class="sidenav-item">Просроченные</a>
-                <a href="/tasks?filterId=10" id="hf10" class="sidenav-item">Выполненные</a>
-                <a href="/tasks?filterId=11" id="hf11" class="sidenav-item">Отозванные</a>
-                <a href="/tasks?filterId=5" id="hf5" class="sidenav-item">Все</a>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="sidnav-scrollable">
+                <a class="sidenav-item" id="files-page" asp-controller="Files" asp-action="Index" onclick="openNav()">Проекты и документы</a>
+                <a class="sidenav-item" id="tasks-page" href="/tasks?filterId=6" onclick="openNav()">Задания</a>
+                <div class="sidenav-submenu">
+                    <a href="/tasks?filterId=6" id="hf6" class="sidenav-item active">Актуальные</a>
+                    <a href="/tasks?filterId=7" id="hf7" class="sidenav-item">Выданные</a>
+                    <a href="/tasks?filterId=8" id="hf8" class="sidenav-item">Полученные</a>
+                    <a href="/tasks?filterId=12" id="hf12" class="sidenav-item">Вы в аудиторах</a>
+                    <a href="/tasks?filterId=9" id="hf9" class="sidenav-item">Просроченные</a>
+                    <a href="/tasks?filterId=10" id="hf10" class="sidenav-item">Выполненные</a>
+                    <a href="/tasks?filterId=11" id="hf11" class="sidenav-item">Отозванные</a>
+                    <a href="/tasks?filterId=5" id="hf5" class="sidenav-item">Все</a>
+                </div>
             </div>
-        </div>
-    }
+        }
         <div id="sidenav-bottom">
             <div style="border-bottom: 1px solid #808080;"></div>
             @if (User.Identity.IsAuthenticated)
@@ -59,7 +93,41 @@
     </div>
 </div>
 
-  <script type="text/javascript">    
+<div id="userProfileModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="openUserProfile()" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Учетная запись</h4>
+            </div>
+            <div class="modal-body">
+                <p>@User.Identity.Name</p>
+                @{
+                    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+
+                    if (claimsIdentity != null)
+                    {
+                        var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.GivenName);
+
+                        if (c != null)
+                        {
+                            <p>
+                                @c.Value
+                            </p>
+                        }
+                    }
+                }
+            </div>
+            <div class="modal-footer">
+                <a asp-controller="Account" asp-action="LogOff"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Выйти</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">    
 
       function openNav() {
         var sidenav = document.getElementById("mySidenav");
@@ -74,5 +142,17 @@
             sidenav.classList.remove('active');
         }
     }
+
+      function openUserProfile() {
+          // If this isn't already active
+          if (!$("#userProfileLink").hasClass("active")) {
+              // And make this active
+              $("#userProfileLink").addClass("active");
+              $("#userProfileModal").modal();
+          } else {
+              $("#userProfileLink").removeClass("active");
+              $("#userProfileModal").modal('toggle');
+          }
+      }
 
 </script>

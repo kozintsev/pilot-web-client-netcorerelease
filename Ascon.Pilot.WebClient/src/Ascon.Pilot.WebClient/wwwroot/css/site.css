@@ -233,9 +233,9 @@ a.navbar-brand.active {
     /*.sidenav-submenu {
         display: block;
     }*/
-    .navbar-right {
+    /*.navbar-right {
         display: none;
-    }
+    }*/
 
     .files-content {
         margin-left: 0px;
@@ -268,6 +268,67 @@ a.navbar-brand {
 
 .navbar-brand {
     padding: 14px 5px;
+}
+
+.pilot-navbar {
+  position: absolute;
+  right: 15px;
+  top: 0px;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: white;
+}
+
+.pilot-navbar a.active {
+    background-color:#6b6b6b !important;
+}
+
+.pilot-navbar a:hover{
+    background-color:#383838 !important;
+}
+
+.pilot-navbar > li {
+  display: inline-block;
+  vertical-align: text-top;
+  float: left;
+}
+
+.modal-dialog {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding-top: 50px;
+}
+
+.modal-content {
+  height: auto;
+  min-height: 100%;
+  border-radius: 0;
+}
+
+@media only screen and (max-width: 768px) {
+  .pilot-navbar {
+    text-align: right;
+    margin-top: 0;
+  }
+  .navbar-nav .open .dropdown-menu {
+    border: 1px solid #ccc;
+    margin-top: 2px;
+    background: white;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    
+    /** Fix position **/
+    position: absolute;
+    left: auto;
+    right: 0;
+  }
+
+  .navbar-nav > li > a {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
 }
 
 .icon-bar {
