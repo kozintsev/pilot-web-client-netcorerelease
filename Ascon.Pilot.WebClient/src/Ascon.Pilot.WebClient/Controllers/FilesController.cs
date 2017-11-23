@@ -70,8 +70,12 @@ namespace Ascon.Pilot.WebClient.Controllers
             {
                 if (node.Children?.Any() == false)
                 {
-                    model.Version = version;
-                    model.IsFile = true;
+                    var nodeType = repo.GetType(node.TypeId);
+                    if (nodeType.HasFiles)
+                    {
+                        model.Version = version;
+                        model.IsFile = true;
+                    }
                 }
             }
             
@@ -132,7 +136,11 @@ namespace Ascon.Pilot.WebClient.Controllers
             {
                 if (node.Children?.Any() == false)
                 {
-                    return ViewComponent(typeof(FileDetailsViewComponent), new { docId = id, panelType = filesPanelType });
+                    var type = repo.GetType(node.TypeId);
+                    if (type.HasFiles)
+                    {
+                        return ViewComponent(typeof(FileDetailsViewComponent), new { docId = id, panelType = filesPanelType });
+                    }
                 }
             }
 
