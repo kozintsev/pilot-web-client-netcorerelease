@@ -25,6 +25,22 @@
             {
                 if (ViewContext.RouteData.Values["controller"].ToString() == "Files")
                 {
+                    if (Model.IsFile)
+                    {
+                        <li>
+                            <a id="versionsButton" onclick="openDocVersions()" role="button" title="Версии" style="display: inherit;" target="_blank">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a id="versionsButton" onclick="openDocVersions()" role="button" title="Версии" style="display: none;" target="_blank">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a>
+                        </li>
+                    }
                     <li>
                         <a id="downloadButton" href="#" role="button" title="Скачать" style="display: none;" target="_blank">
                             <span class="glyphicon glyphicon-download"></span>
@@ -36,13 +52,7 @@
                             <span class="hidden-xs">Скачать&nbsp;архивом</span>
                         </a>
                     </li>
-                    <li>
-                        <a id="filesPanelToggler"
-                           href="@Url.Action("ChangeFilesPanelType", "Files", new {type = currentFilesPanelType == FilesPanelType.List ? FilesPanelType.Grid : FilesPanelType.List, returnUrl = Context.Request.GetDisplayUrl()})"
-                           title="Режим отображения: @(currentFilesPanelType == FilesPanelType.List ? "список" : "плитки")">
-                            <span class="glyphicon @(currentFilesPanelType == FilesPanelType.List ? "glyphicon-th-list" : "glyphicon-th")"></span>
-                        </a>
-                    </li>
+                
                     if (Model.IsFile)
                     {
                         <li><a id="docInfoLink" onclick="openDocInfo()" style="display:inherit;" title="Информация о документе"><span class="glyphicon glyphicon-info-sign"></span></a></li>
@@ -51,6 +61,14 @@
                     {
                         <li><a id="docInfoLink" onclick="openDocInfo()" style="display:none;" title="Информация о документе"><span class="glyphicon glyphicon-info-sign"></span></a></li>
                     }
+
+                    <li>
+                        <a id="filesPanelToggler"
+                           href="@Url.Action("ChangeFilesPanelType", "Files", new {type = currentFilesPanelType == FilesPanelType.List ? FilesPanelType.Grid : FilesPanelType.List, returnUrl = Context.Request.GetDisplayUrl()})"
+                           title="Режим отображения: @(currentFilesPanelType == FilesPanelType.List ? "список" : "плитки")">
+                            <span class="glyphicon @(currentFilesPanelType == FilesPanelType.List ? "glyphicon-th-list" : "glyphicon-th")"></span>
+                        </a>
+                    </li>
                 }
             }
             <li><a id="userProfileLink"onclick="openUserProfile()" title="Учетная запись"><span class="glyphicon glyphicon-user"></span></a></li>

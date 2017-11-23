@@ -203,10 +203,13 @@ function recieveFiles(node) {
         },
         success: function (data) {
             filesPanel.html(data);
-            if (filesPanel.find("div.file-details").length > 0)
+            if (filesPanel.find("div.file-details").length > 0) {
                 $("#docInfoLink").show();
+                $("#versionsButton").show();
+            }
             else {
                 $("#docInfoLink").hide();
+                $("#versionsButton").hide();
             }
             pushHistory(folderId);
             $("#breadcrumbs").html(createHtmlForBreadcrumbs(treeControl.getSelected()[0]));
@@ -252,5 +255,17 @@ function openDocInfo() {
     } else {
         $("#docInfoLink").removeClass("active");
         $("#docInfoModal").modal('toggle');
+    }
+}
+
+function openDocVersions() {
+    // If this isn't already active
+    if (!$("#versionsButton").hasClass("active")) {
+        // And make this active
+        $("#versionsButton").addClass("active");
+        $("#docVersionsModal").modal();
+    } else {
+        $("#versionsButton").removeClass("active");
+        $("#docVersionsModal").modal('toggle');
     }
 }

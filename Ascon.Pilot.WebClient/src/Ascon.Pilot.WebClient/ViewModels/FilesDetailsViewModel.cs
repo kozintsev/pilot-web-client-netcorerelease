@@ -47,6 +47,13 @@ namespace Ascon.Pilot.WebClient.ViewModels
                 if (!string.IsNullOrEmpty(value))
                     Attributes.Add(attr.Title, value);
             }
+
+            Snapshots = new List<DFilesSnapshot>();
+            Snapshots.Add(obj.ActualFileSnapshot);
+            foreach (var previousFileSnapshot in obj.PreviousFileSnapshots)
+            {
+                Snapshots.Add(previousFileSnapshot);
+            }
         }
 
         public string Name { get; private set; }
@@ -67,6 +74,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
         public string VersionReason { get; private set; }
         public string Author { get; private set; }
         public SortedList<string, string> Attributes { get; private set; }
+        public List<DFilesSnapshot> Snapshots { get; private set; }
 
         public FilesPanelType FilesPanelType { get; private set; }
 
@@ -101,11 +109,16 @@ namespace Ascon.Pilot.WebClient.ViewModels
                     if (!string.IsNullOrEmpty(snapshot.Reason))
                         VersionReason = string.Format("\"{0}\"", snapshot.Reason);
                     VersionTime = snapshot.Created.ToLocalTime();
-                    Author = _repository.GetPerson(snapshot.CreatorId).DisplayName;
+                    Author = GetPersonDisplayName(snapshot.CreatorId);
                 }
                 return file;
             }
             return null;
+        }
+
+        public string GetPersonDisplayName(int personId)
+        {
+           return _repository.GetPerson(personId).DisplayName;
         }
 
         private string GetSizeString(int size)
@@ -120,6 +133,8 @@ namespace Ascon.Pilot.WebClient.ViewModels
             }
             return $"{len:0.##} {sizes[order]}";
         }
+
+
 
         private MAttribute[] GetVisibleAttributes(MType type)
         {
