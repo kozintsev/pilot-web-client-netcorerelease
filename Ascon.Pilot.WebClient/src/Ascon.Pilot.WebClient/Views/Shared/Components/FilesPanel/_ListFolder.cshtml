@@ -4,12 +4,12 @@
     var name = Model.Name;
 }
 
-<div class="file-card" onclick="processCardClick(this)" data-id="@Model.FileId" data-name="@Model.Name">
+<div class="file-card" onclick="processCardClick(this)" data-id="@Model.ObjectId" data-name="@Model.Name">
     <div class="file-card-icon">
         <div>
             <img src="@Url.Action("GetTypeIcon", "Home", new {id = Model.ObjectTypeId})" alt="@Model.ObjectTypeName" style="margin-left: 10px; padding-left: 10px"/>
         </div>
-        <input name="objectsIds" type="checkbox" value="@Model.FileId" />
+        <input name="objectsIds" type="checkbox" value="@Model.ObjectId" />
     </div>
     <div class="file-card-name" style="width: 100%; padding-left: 10px">
         <a href="@Url.Action("Index", "Files", new {id = Model.ObjectId, isSource = Model.ObjectTypeId == ApplicationConst.SourcefolderTypeid || ViewBag.IsSource})">@name</a>

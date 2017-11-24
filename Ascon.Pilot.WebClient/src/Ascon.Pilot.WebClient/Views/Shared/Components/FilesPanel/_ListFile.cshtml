@@ -17,7 +17,7 @@
 }
 
 <div class="file-card @(isThumbnail ? "with-thumbnail" : "")" onclick="processCardClick(this)" 
-     data-id="@Model.ObjectId" data-name="@Html.Raw(name)" data-size="@Model.Size" data-ext="@Model.Extension" data-typeid="@Model.ObjectTypeId">
+     data-id="@Model.FileId" data-name="@Html.Raw(name)" data-size="@Model.Size" data-ext="@Model.Extension" data-typeid="@Model.ObjectTypeId">
     <div class="file-card-icon">
         <div>
             <img src="@href" alt="@name" style="margin-left: 10px; padding-left: 10px;"/>
