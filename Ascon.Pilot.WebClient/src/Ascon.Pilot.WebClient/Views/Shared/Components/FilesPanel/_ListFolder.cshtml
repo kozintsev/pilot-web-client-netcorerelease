@@ -7,7 +7,7 @@
 <div class="file-card" onclick="processCardClick(this)" data-id="@Model.FileId" data-name="@Model.Name">
     <div class="file-card-icon">
         <div>
-            <img src="@Url.Action("GetTypeIcon", "Home", new {id = Model.ObjectTypeId})" alt="@Model.ObjectTypeName"/>
+            <img src="@Url.Action("GetTypeIcon", "Home", new {id = Model.ObjectTypeId})" alt="@Model.ObjectTypeName" style="margin-left: 10px;"/>
         </div>
         <input name="objectsIds" type="checkbox" value="@Model.FileId" />
     </div>
