@@ -71,7 +71,7 @@
                     </li>
                 }
             }
-            <li><a id="userProfileLink"onclick="openUserProfile()" title="Учетная запись"><span class="glyphicon glyphicon-user"></span></a></li>
+            <li><a id="userProfileLink" onclick="openUserProfile()" title="Учетная запись"><span class="glyphicon glyphicon-user"></span></a></li>
         }
     </ul>
 
@@ -115,7 +115,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" onclick="openUserProfile()" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Учетная запись</h4>
             </div>
             <div class="modal-body">
@@ -160,17 +160,4 @@
             sidenav.classList.remove('active');
         }
     }
-
-      function openUserProfile() {
-          // If this isn't already active
-          if (!$("#userProfileLink").hasClass("active")) {
-              // And make this active
-              $("#userProfileLink").addClass("active");
-              $("#userProfileModal").modal();
-          } else {
-              $("#userProfileLink").removeClass("active");
-              $("#userProfileModal").modal('toggle');
-          }
-      }
-
 </script>

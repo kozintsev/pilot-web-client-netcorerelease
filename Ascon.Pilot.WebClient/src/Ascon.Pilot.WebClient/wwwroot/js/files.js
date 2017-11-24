@@ -247,25 +247,27 @@ function createHtmlForBreadcrumbs(selectedNode) {
 
 
 function openDocInfo() {
-    // If this isn't already active
-    if (!$("#docInfoLink").hasClass("active")) {
-        // And make this active
-        $("#docInfoLink").addClass("active");
-        $("#docInfoModal").modal();
-    } else {
-        $("#docInfoLink").removeClass("active");
-        $("#docInfoModal").modal('toggle');
-    }
+    $("#docInfoModal").modal();
 }
 
 function openDocVersions() {
-    // If this isn't already active
-    if (!$("#versionsButton").hasClass("active")) {
-        // And make this active
-        $("#versionsButton").addClass("active");
-        $("#docVersionsModal").modal();
-    } else {
-        $("#versionsButton").removeClass("active");
-        $("#docVersionsModal").modal('toggle');
-    }
+    $("#docVersionsModal").modal();
 }
+
+$(document).ready(function() {
+    $("#docInfoModal").on('shown.bs.modal', function(e) {
+        $("#docInfoLink").addClass("active");
+    });
+
+    $("#docInfoModal").on('hidden.bs.modal', function(e) {
+        $("#docInfoLink").removeClass("active");
+    });
+
+    $("#docVersionsModal").on('shown.bs.modal', function(e) {
+        $("#versionsButton").addClass("active");
+    });
+
+    $("#docVersionsModal").on('hidden.bs.modal', function(e) {
+        $("#versionsButton").removeClass("active");
+    });
+});
