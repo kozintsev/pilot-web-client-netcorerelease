@@ -20,11 +20,11 @@
      data-id="@Model.ObjectId" data-name="@Html.Raw(name)" data-size="@Model.Size" data-ext="@Model.Extension" data-typeid="@Model.ObjectTypeId">
     <div class="file-card-icon">
         <div>
-            <img src="@href" alt="@name" style="margin-left: 10px;"/>
+            <img src="@href" alt="@name" style="margin-left: 10px; padding-left: 10px;"/>
         </div>
         <input name="objectsIds" type="checkbox" value="@Model.ObjectId" />
     </div>
-    <div class="file-card-name">
+    <div class="file-card-name" style="padding-left: 10px;">
         <a href="@Url.Action("Index", "Files", new { id = Model.ObjectId })">@name</a>
 
     </div>
