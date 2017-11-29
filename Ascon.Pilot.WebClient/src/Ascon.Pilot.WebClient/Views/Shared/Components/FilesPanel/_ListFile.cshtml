@@ -22,7 +22,7 @@
         <div>
             <img src="@href" alt="@name" style="margin-left: 10px; padding-left: 10px;"/>
         </div>
-        <input name="objectsIds" type="checkbox" value="@Model.ObjectId" />
+        <input name="objectsIds" type="checkbox" value="@Model.ObjectId" onclick="processCheckboxClick(this);event.cancelBubble=true;"/>
     </div>
     <div class="file-card-name" style="padding-left: 10px;">
         <a href="@Url.Action("Index", "Files", new { id = Model.ObjectId })">@name</a>

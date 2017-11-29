@@ -10,14 +10,6 @@ $(document).ready(function () {
     });
 
     treeControl = createTreeView(treeData);
-    setObjectIdsCheckCallback();
-    
-    //$("#sidePanel").on("hidden.bs.collapse", function () {
-    //    $("#filesPanelContainer").removeClass("col-md-8").addClass("col-md-12");
-    //});
-    //$("#sidePanel").on("show.bs.collapse", function () {
-    //    $("#filesPanelContainer").removeClass("col-md-12").addClass("col-md-8");
-    //});
     $("#renameModal").on("show.bs.modal", function() {
         var activeFileCard = $(".file-card.active");
         var id = activeFileCard.data("id");
@@ -47,20 +39,42 @@ function setHamburgerMenuItemActivated() {
 }
 
 function processCardClick(el) {
-    $(".file-card").removeClass("active");
     var card = $(el);
-    card.addClass("active");    
+    $(".file-card").removeClass("active");
+    $("[name=objectsIds]").prop("checked", false);
+    var checkbox = card.find("input");
+    if (!card.hasClass("active")) {
+        checkbox.prop("checked", true);
+        $("#downloadArchiveButton").show();
+    }
 
+    activateCard(card);
+}
+
+function processCheckboxClick(el) {
+    var checkbox = $(el);
+    var card = checkbox.parent().parent();
+    if (checkbox.prop("checked")) {
+        $("#downloadArchiveButton").show();
+        activateCard(card);
+    }
+    else {
+        if ($("[name=objectsIds]:checked").length === 0)
+            $("#downloadArchiveButton").hide();
+        card.removeClass("active");
+    }
+}
+
+function activateCard(card) {
+    card.addClass("active");
     var id = card.data("id");
     var name = card.data("name");
     var size = card.data("size");
     var ext = card.data("ext");
-    if (size === undefined)
-    {
+    if (size === undefined) {
         $("#downloadButton").hide();
         return;
-    }       
-
+    }
     var query = jQuery.param({
         id: id,
         name: name.endsWith(ext) ? name : name + ext,
@@ -68,7 +82,7 @@ function processCardClick(el) {
     });
     var downloadButton = $("#downloadButton");
     downloadButton.prop("href", downloadUrl + "?" + query);
-    downloadButton.show();    
+    downloadButton.show();
 }
 
 function objectToDlist(obj) {
@@ -83,18 +97,6 @@ function objectToDlist(obj) {
 
 function downloadArchive(el) {
     $("form#downloadArchiveForm").submit();
-}
-
-function setObjectIdsCheckCallback() {
-    $('input[name="objectsIds"]')
-        .on("click",
-            function () {
-                var btn = $("#downloadArchiveButton");
-                if ($('input[name="objectsIds"]:checked').length === 0)
-                    btn.hide();
-                else
-                    btn.show();
-            });
 }
 
 var recursiveFind = function (keyObj, tData) {
@@ -150,12 +152,6 @@ function createTreeView(data) {
 function getChilds(node) {
     var idWithChilds = node["id"];
 
-    /*$.each($('#tree ul li'), function (i, e) {
-        var el = $(e);
-        if (el.data("nodeid") === node['nodeId'])
-            el.append('<span class="glyphicon glyphicon-refresh glyphicon-spin pull-right"></span>');
-    });*/
-
     $.ajax(getChildsUrl,
     {
         data: {
@@ -169,18 +165,13 @@ function getChilds(node) {
             nodeToAppendChilds["nodes"] = data;
 
             var expandedNodes = treeControl.getExpanded();
-            var selectedNode = treeControl.getSelected()[0];
             treeControl.remove();
             treeControl = createTreeView(treeData);
 
-            //var nodeId = node['nodeId'];
-            //treeControl.revealNode(nodeId, { silent: true });
             $.each(expandedNodes,
                 function (i, e) {
                     treeControl.expandNode(e.nodeId, { silent: true });
                 });
-            //treeControl.unselectNode(treeControl.getSelected());
-            //treeControl.selectNode(selectedNode);
         },
         complete: function () {
             $("#sidePanelProgress").hide();
@@ -213,7 +204,6 @@ function recieveFiles(node) {
             }
             pushHistory(folderId);
             $("#breadcrumbs").html(createHtmlForBreadcrumbs(treeControl.getSelected()[0]));
-            setObjectIdsCheckCallback();
             currentFolderId = folderId;
         },
         error: function (data) {

@@ -216,7 +216,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             {
                 if (!types[obj.TypeId].Children.Any())
                 {
-                    var dFile = obj.ActualFileSnapshot.Files.FirstOrDefault();
+                    var dFile = obj.ActualFileSnapshot.Files.FirstOrDefault(f => Path.GetExtension(f.Name).Equals(".xps") || Path.GetExtension(f.Name).Equals(".pdf"));
                     if (dFile == null)
                         continue;
 
