@@ -1,5 +1,5 @@
-# pilot-web-client-netcorerelease
-Новая редакция Web-клиента на ASP.NET Core 1.1 для системы управления двнными Pilot-ICE
+# Pilot-Web-client
+Web-клиент для системы управления двнными Pilot (Pilot-ICE, Pilot-ECM, 3D-Storage) на ASP.NET Core 1.1
 
 Релизные сборки Pilot-Web-Client здесь: https://github.com/PilotTeam/pilot-web-client-netcorerelease/releases
 
@@ -10,4 +10,4 @@ https://www.microsoft.com/net/download/core#/runtime
 
 Всё необходимое для устновки Pilot-Server и админки здесь: https://pilot.ascon.ru/
 
-Инструкция развёртывания всех компонентов Pilot-ICE: https://pilot.ascon.ru/release/Help/ru/ReadMe.pdf
+Инструкция развёртывания всех компонентов Pilot: https://pilot.ascon.ru/release/Help/ru/ReadMe.pdf
