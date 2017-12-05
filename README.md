@@ -1,5 +1,5 @@
-# Pilot-Web-client
-Web-клиент для системы управления двнными Pilot (Pilot-ICE, Pilot-ECM, 3D-Storage) на ASP.NET Core 1.1
+# Pilot-Web-Client
+Web-клиент для системы управления двнными Pilot (Pilot-ICE, Pilot-ECM, 3D-Storage) на ASP.NET Core 1.14
 
 Релизные сборки Pilot-Web-Client здесь: https://github.com/PilotTeam/pilot-web-client-netcorerelease/releases
 
