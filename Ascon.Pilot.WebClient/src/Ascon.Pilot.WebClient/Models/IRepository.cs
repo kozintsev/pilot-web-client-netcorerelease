@@ -13,6 +13,7 @@ namespace Ascon.Pilot.WebClient.Models
         Task<DSearchResult> Search(DSearchDefinition searchDefinition);
         List<DObject> GetObjects(Guid[] ids);
         DPerson GetPersonOnOrganisationUnit(int id);
+        DPerson GetPerson(int id);
         DOrganisationUnit GetOrganisationUnit(int id);
         DPerson CurrentPerson();
         MType GetType(int id);
@@ -60,6 +61,11 @@ namespace Ascon.Pilot.WebClient.Models
             return _persons.Values.Where(p => p.Positions.Select(m => m.Position).Contains(id))
                 .OrderBy(o => o.Positions.First(x => x.Position == id).Order)
                 .FirstOrDefault();
+        }
+
+        public DPerson GetPerson(int id)
+        {
+            return _persons.Values.FirstOrDefault(p => p.Id.Equals(id));
         }
 
         public DOrganisationUnit GetOrganisationUnit(int id)
