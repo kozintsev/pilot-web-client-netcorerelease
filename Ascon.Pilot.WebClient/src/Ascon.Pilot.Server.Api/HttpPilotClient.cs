@@ -11,7 +11,6 @@ namespace Ascon.Pilot.Server.Api
         private readonly TransportClient _client;
         private readonly CallbackReceiverAdapter _transportCallback;
         private readonly IGetService _marshaller;
-        private readonly ICallService _unmarshaller;
         private IServerCallback _serverCallback;
         private IServerAdminCallback _adminCallback;
         private IServerUpdateCallback _updateCallback;
@@ -27,8 +26,8 @@ namespace Ascon.Pilot.Server.Api
         {
             _client = new TransportClient();
             _marshaller = factory.GetMarshaller(new CallServiceAdapter(_client));
-            _unmarshaller = factory.GetUnmarshaller(this);
-            _transportCallback = new CallbackReceiverAdapter(_unmarshaller, CallbackError);
+            var unmarshaller = factory.GetUnmarshaller(this);
+            _transportCallback = new CallbackReceiverAdapter(unmarshaller, CallbackError);
         }
 
         /// <summary>
@@ -54,8 +53,7 @@ namespace Ascon.Pilot.Server.Api
 
         private void CallbackError()
         {
-            if (_connectionLostListener != null)
-                _connectionLostListener.ConnectionLost(new TransportException("Client connection is disconnected by server."));
+            _connectionLostListener?.ConnectionLost(new TransportException("Client connection is disconnected by server."));
         }
 
         public void Dispose()

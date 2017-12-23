@@ -70,9 +70,7 @@ namespace Ascon.Pilot.WebClient.Models
         public DOrganisationUnit GetOrganisationUnit(int id)
         {
             DOrganisationUnit result;
-            if (!_organisationUnits.TryGetValue(id, out result))
-                return new DOrganisationUnit();
-            return result;
+            return !_organisationUnits.TryGetValue(id, out result) ? new DOrganisationUnit() : result;
         }
 
         public MType GetType(int id)
@@ -91,9 +89,9 @@ namespace Ascon.Pilot.WebClient.Models
             {
                 _searchCompletionSource.SetResult(result);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                ;
+                // ignored
             }
         }
 

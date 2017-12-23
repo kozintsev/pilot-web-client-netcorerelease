@@ -19,7 +19,7 @@ namespace Ascon.Pilot.Transport
 
     public interface IImplementationFactory
     {
-        Object GetImplementation(string interfaceName);
+        object GetImplementation(string interfaceName);
     }
 
     public interface IGetService
@@ -72,7 +72,7 @@ namespace Ascon.Pilot.Transport
         public int ParamCount { get; set; }
 
         [ProtoMember(4)]
-        public List<int> NullParamIndices { get; private set; }
+        public List<int> NullParamIndices { get; }
 
         public MarshallingMessage()
         {
@@ -83,11 +83,11 @@ namespace Ascon.Pilot.Transport
     public class Unmarshaller : ICallService
     {
         private readonly IImplementationFactory _factory;
-        private readonly ConcurrentDictionary<string, Object> _registered = new ConcurrentDictionary<string, Object>();
+        private readonly ConcurrentDictionary<string, object> _registered = new ConcurrentDictionary<string, object>();
 
         public Unmarshaller(IImplementationFactory factory)
         {
-            this._factory = factory;
+            _factory = factory;
         }
 
         public byte[] Call(byte[] data)
@@ -126,7 +126,7 @@ namespace Ascon.Pilot.Transport
             }
         }
 
-        private byte[] ResultToBytes(object result)
+        private static byte[] ResultToBytes(object result)
         {
             if (result == null)
                 return new byte[0];
@@ -175,7 +175,7 @@ namespace Ascon.Pilot.Transport
             }
         }
 
-        private byte[] CallToData(MethodInfo method, IInvocation invocation)
+        private static byte[] CallToData(MemberInfo method, IInvocation invocation)
         {
             dynamic value = new ExpandoObject();
             value.api = method.DeclaringType.Name;
@@ -191,7 +191,7 @@ namespace Ascon.Pilot.Transport
             return Encoding.UTF8.GetBytes(res);
         }
 
-        private object DataToResult(byte[] data, MethodInfo method)
+        private static object DataToResult(byte[] data, MethodInfo method)
         {
             if (data.Length == 0)
                 return Convert.ChangeType(null, method.ReturnType);
@@ -235,7 +235,7 @@ namespace Ascon.Pilot.Transport
             }
         }
 
-        private byte[] CallToData(MethodInfo method, IInvocation invocation)
+        private static byte[] CallToData(MemberInfo method, IInvocation invocation)
         {
             using (var mem = new MemoryStream())
             {
@@ -245,7 +245,7 @@ namespace Ascon.Pilot.Transport
                     Method = method.Name,
                     ParamCount = invocation.Arguments.Length
                 };
-                for (int i = 0; i < invocation.Arguments.Length; i++)
+                for (var i = 0; i < invocation.Arguments.Length; i++)
                 {
                     if (invocation.Arguments[i] == null)
                         call.NullParamIndices.Add(i);
@@ -260,7 +260,7 @@ namespace Ascon.Pilot.Transport
             }
         }
 
-        private object DataToResult(byte[] data, MethodInfo method)
+        private static object DataToResult(byte[] data, MethodInfo method)
         {
             if (data.Length == 0)
                 return null;// Convert.ChangeType(null, method.ReturnType);
@@ -272,7 +272,7 @@ namespace Ascon.Pilot.Transport
         }
     }
 
-    static class ProtoSerializer
+    internal static class ProtoSerializer
     {
         public static void Serialize(Stream stream, object instance)
         {

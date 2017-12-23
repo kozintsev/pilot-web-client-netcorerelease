@@ -2,10 +2,8 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NLog;
 using System.IO;
 
@@ -21,7 +19,6 @@ namespace Ascon.Pilot.Transport
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private readonly HttpClient _client;
-        private readonly CookieContainer _cookie;
         private readonly HttpClientHandler _handler;
 
         private ICallbackReceiver _callbackReceiver;
@@ -29,18 +26,18 @@ namespace Ascon.Pilot.Transport
         private volatile bool _active;
         private long _callbackCount;
 
-        public bool Active { get { return _active; } }
+        public bool Active => _active;
 
         public TransportClient()
         {
             //ServicePointManager.DefaultConnectionLimit = 10;
             //ServicePointManager.Expect100Continue = false; //for squid proxy server. 100-Continue behaviour off!!!
 
-            _cookie = new CookieContainer();
+            var cookie = new CookieContainer();
             _handler = new HttpClientHandler
             {
                 UseCookies = true,
-                CookieContainer = _cookie,
+                CookieContainer = cookie,
                 UseProxy = false
             };
             _client = new HttpClient(_handler, false);
@@ -53,15 +50,18 @@ namespace Ascon.Pilot.Transport
             {
                 _client.CancelPendingRequests();
             }
-            catch (Exception){ }
-            
+            catch (Exception)
+            {
+                // ignored
+            }
+
             _client.Dispose();
             _handler.Dispose();
         }
 
         public void Connect(string url)
         {
-            this._url = url;
+            _url = url;
             _active = true;
             var task = _client.GetAsync(url + Method.CONNECT);
             ProcessResponse(task);
@@ -133,12 +133,11 @@ namespace Ascon.Pilot.Transport
             }
             finally
             {
-                if(response!=null)
-                    response.Dispose();
+                response?.Dispose();
             }
         }
 
-        private string GetReadableMessage(Exception exception)
+        private static string GetReadableMessage(Exception exception)
         {
             var inner = exception.InnerException;
             if (inner == null) 
@@ -199,8 +198,8 @@ namespace Ascon.Pilot.Transport
         {
             CheckActive();
             if (callbackReceiver == null)
-                throw new ArgumentNullException("callbackReceiver");
-            this._callbackReceiver = callbackReceiver;
+                throw new ArgumentNullException(nameof(callbackReceiver));
+            _callbackReceiver = callbackReceiver;
             SendCallbackRequestAsync();
         }
 
@@ -236,8 +235,7 @@ namespace Ascon.Pilot.Transport
             {
                 _active = false;
                 _callbackReceiver.Error();
-                if (task.Exception != null) 
-                    task.Exception.Handle(ex => true);
+                task.Exception?.Handle(ex => true);
             }
         }
 
