@@ -1,18 +1,14 @@
 ﻿using Ascon.Pilot.Server.Api.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Ascon.Pilot.Core;
 
 namespace Ascon.Pilot.WebClient.Models
 {
-    interface IRemoteStorageListener
+    internal interface IRemoteStorageListener
     {
         void Notify(DSearchResult result);
     }
-    
-    class ServerCallback : IServerCallback
+
+    internal class ServerCallback : IServerCallback
     {
         private IRemoteStorageListener _listener;
         

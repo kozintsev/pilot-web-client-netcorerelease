@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Ascon.Pilot.WebClient.Controllers;
 using Ascon.Pilot.WebClient.Models;
 
 namespace Ascon.Pilot.WebClient.ViewModels

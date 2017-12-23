@@ -12,11 +12,11 @@ namespace Ascon.Pilot.WebClient
     public static class ApplicationConst
     {
         public static IConfigurationRoot Configuration { get; set; }
-        static string path = Directory.GetCurrentDirectory();
+        private static readonly string Path = Directory.GetCurrentDirectory();
         static ApplicationConst()
         {
             var builder = new ConfigurationBuilder();
-            builder.SetBasePath(path);
+            builder.SetBasePath(Path);
             builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             Configuration = builder.Build();
             var pilotServer = Configuration.GetValue<string>("PilotServer:Url", "http://localhost:5545");

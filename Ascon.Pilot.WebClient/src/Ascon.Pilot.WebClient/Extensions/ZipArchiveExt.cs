@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO.Compression;
 
 namespace Ascon.Pilot.WebClient.Extensions
 {
@@ -17,24 +13,23 @@ namespace Ascon.Pilot.WebClient.Extensions
     public class ZipArchiveDirectory
     {
         private readonly string _directory;
-        private ZipArchive _archive;
 
         internal ZipArchiveDirectory(ZipArchive archive, string directory)
         {
-            _archive = archive;
+            Archive = archive;
             _directory = directory;
         }
 
-        public ZipArchive Archive { get { return _archive; } }
+        public ZipArchive Archive { get; }
 
         public ZipArchiveEntry CreateEntry(string entry)
         {
-            return _archive.CreateEntry(_directory + "/" + entry);
+            return Archive.CreateEntry(_directory + "/" + entry);
         }
 
         public ZipArchiveEntry CreateEntry(string entry, CompressionLevel compressionLevel)
         {
-            return _archive.CreateEntry(_directory + "/" + entry, compressionLevel);
+            return Archive.CreateEntry(_directory + "/" + entry, compressionLevel);
         }
     }
 }

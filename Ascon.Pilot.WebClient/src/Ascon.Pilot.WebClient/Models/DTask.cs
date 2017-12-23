@@ -10,7 +10,6 @@ namespace Ascon.Pilot.WebClient.Models
 {
     public class DTask
     {
-        private readonly Guid _id;
         private DPerson _initiator;
         private DPerson _executor;
         private DPerson _person;
@@ -22,19 +21,13 @@ namespace Ascon.Pilot.WebClient.Models
         public DTask(DObject obj, IRepository repository)
         {
             _repository = repository;
-            _id = obj.Id;
+            Id = obj.Id;
             _source = obj;
         }
 
-        public Guid Id
-        {
-            get { return _id; }
-        }
+        public Guid Id { get; }
 
-        public Guid ParentId
-        {
-            get { return _source.ParentId; }
-        }
+        public Guid ParentId => _source.ParentId;
 
         public DPerson Initiator
         {
@@ -104,7 +97,7 @@ namespace Ascon.Pilot.WebClient.Models
             {
                 DValue role;
                 _source.Attributes.TryGetValue(SystemAttributes.TASK_EXECUTOR_ROLE, out role);
-                return role.StrValue;
+                return role?.StrValue;
             }
         }
 
@@ -156,7 +149,7 @@ namespace Ascon.Pilot.WebClient.Models
             get
             {
                 if (_source == null)
-                    return new DObject { Id = _id };
+                    return new DObject { Id = Id };
                 return _source;
             }
         }

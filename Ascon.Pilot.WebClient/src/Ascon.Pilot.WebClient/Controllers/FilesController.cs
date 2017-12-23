@@ -5,7 +5,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Ascon.Pilot.Core;
-using Ascon.Pilot.Server.Api.Contracts;
 using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.Models;
 using Ascon.Pilot.WebClient.ViewComponents;
@@ -26,7 +25,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         private readonly IHostingEnvironment _environment;
         private readonly IContextHolder _contextHolder;
         private readonly MuPdf _mu;
-        private static object _lockObj = new object();
+        private static readonly object LockObj = new object();
 
         public FilesController(ILogger<FilesController> logger, IHostingEnvironment environment, IContextHolder contextHolder)
         {
@@ -57,7 +56,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             var model = new UserPositionViewModel();
 
             id = id ?? DObject.RootId;
-            FilesPanelType type = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
+            var type = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
             model.CurrentFolderId = id.Value;
             model.FilesPanelType = type;
             ViewBag.FilesPanelType = type;
@@ -66,19 +65,16 @@ namespace Ascon.Pilot.WebClient.Controllers
             var context = _contextHolder.GetContext(HttpContext);
             var repo = context.Repository;
             var node = repo.GetObjects(new[] { id.Value }).FirstOrDefault();
-            if (node != null)
+            if (node?.Children?.Any() == false)
             {
-                if (node.Children?.Any() == false)
+                var nodeType = repo.GetType(node.TypeId);
+                if (nodeType.HasFiles)
                 {
-                    var nodeType = repo.GetType(node.TypeId);
-                    if (nodeType.HasFiles)
-                    {
-                        model.Version = version;
-                        model.IsFile = true;
-                    }
+                    model.Version = version;
+                    model.IsFile = true;
                 }
             }
-            
+
             return View(model);
         }
 
@@ -284,7 +280,7 @@ namespace Ascon.Pilot.WebClient.Controllers
                             Directory.CreateDirectory(directory);
                         using (var fileStream = System.IO.File.Create(directory + fileName))
                             fileStream.Write(file, 0, file.Length);
-                        lock (_lockObj)
+                        lock (LockObj)
                         {
                             byte[] thumbnailContent = _mu.RenderFirstPageInBytes(directory + fileName);
                             System.IO.File.Delete(directory + fileName);

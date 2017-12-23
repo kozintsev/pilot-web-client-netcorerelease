@@ -1,6 +1,5 @@
 ﻿using Ascon.Pilot.Core;
 using Ascon.Pilot.Server.Api;
-using Ascon.Pilot.Server.Api.Contracts;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Security.Claims;
@@ -15,7 +14,7 @@ namespace Ascon.Pilot.WebClient.Models
         bool IsInitialized { get; }
     }
 
-    class Context : IContext
+    internal class Context : IContext
     {
         private Repository _repository;
         private HttpPilotClient _client;
@@ -51,10 +50,7 @@ namespace Ascon.Pilot.WebClient.Models
             Connect(creds);
         }
 
-        public IRepository Repository
-        {
-            get { return _repository; }
-        }
+        public IRepository Repository => _repository;
 
         public bool IsInitialized
         {

@@ -8,11 +8,11 @@ function openUserProfile() {
 }
 
 $(document).ready(function () {
-    $("#userProfileModal").on('shown.bs.modal', function (e) {
+    $("#userProfileModal").on("shown.bs.modal", function (e) {
         $("#userProfileLink").addClass("active");
     });
 
-    $("#userProfileModal").on('hidden.bs.modal', function (e) {
+    $("#userProfileModal").on("hidden.bs.modal", function (e) {
         $("#userProfileLink").removeClass("active");
     });
 });

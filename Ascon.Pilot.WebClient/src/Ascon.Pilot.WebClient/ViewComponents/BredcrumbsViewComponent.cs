@@ -10,7 +10,7 @@ namespace Ascon.Pilot.WebClient.ViewComponents
 {
     public class BreadcrumbsViewComponent : ViewComponent
     {
-        private IContextHolder _contextHolder;
+        private readonly IContextHolder _contextHolder;
 
         public BreadcrumbsViewComponent(IContextHolder contextHolder)
         {

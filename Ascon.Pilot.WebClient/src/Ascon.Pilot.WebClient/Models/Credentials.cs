@@ -9,10 +9,7 @@ namespace Ascon.Pilot.WebClient.Models
         public string Username { get; private set; }
         public string ProtectedPassword { get; private set; }
 
-        public bool UseWindowsAuth
-        {
-            get { return !string.IsNullOrEmpty(Username) && (Username.Contains("\\") || Username.Contains("@")); }
-        }
+        public bool UseWindowsAuth => !string.IsNullOrEmpty(Username) && (Username.Contains("\\") || Username.Contains("@"));
 
         public string DatabaseName { get; private set; }
 

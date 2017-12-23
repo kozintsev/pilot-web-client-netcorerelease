@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Ascon.Pilot.WebClient.ViewModels
 {
@@ -27,11 +26,11 @@ namespace Ascon.Pilot.WebClient.ViewModels
             }
         }
 
-        public string Title { get; private set; }
-        public string Description { get; private set; }
-        public string Initiator { get; private set; }
-        public string Executor { get; private set; }
-        public IEnumerable<Attachment> Attachments { get; private set; } = new List<Attachment>();
+        public string Title { get; }
+        public string Description { get; }
+        public string Initiator { get; }
+        public string Executor { get; }
+        public IEnumerable<Attachment> Attachments { get; } = new List<Attachment>();
     }
 
     public class Attachment
@@ -48,9 +47,9 @@ namespace Ascon.Pilot.WebClient.ViewModels
             }
         }
 
-        public Guid Id { get; private set; }
-        public string Title { get; private set; }
-        public string FileExtension { get; private set; }
-        public MType Type { get; private set; }
+        public Guid Id { get; }
+        public string Title { get; }
+        public string FileExtension { get; }
+        public MType Type { get; }
     }
 }

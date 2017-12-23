@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Ascon.Pilot.Core;
 using Ascon.Pilot.WebClient.Controllers;
-using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.Models;
 using Ascon.Pilot.WebClient.ViewModels;
 using Microsoft.Extensions.Logging;

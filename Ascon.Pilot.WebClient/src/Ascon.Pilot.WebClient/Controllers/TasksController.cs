@@ -17,7 +17,7 @@ namespace Ascon.Pilot.WebClient.Controllers
     [Authorize]
     public class TasksController : Controller
     {
-        private IContextHolder _contextHolder;
+        private readonly IContextHolder _contextHolder;
 
         public TasksController(IContextHolder contextHolder)
         {

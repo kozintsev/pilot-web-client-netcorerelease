@@ -9,7 +9,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
 {
     public class FilesDetailsViewModel
     {
-        private IRepository _repository;
+        private readonly IRepository _repository;
         public FilesDetailsViewModel(Guid objId, long version, IRepository repository, FilesPanelType type)
         {
             IsActual = true;
@@ -48,35 +48,34 @@ namespace Ascon.Pilot.WebClient.ViewModels
                     Attributes.Add(attr.Title, value);
             }
 
-            Snapshots = new List<DFilesSnapshot>();
-            Snapshots.Add(obj.ActualFileSnapshot);
+            Snapshots = new List<DFilesSnapshot> {obj.ActualFileSnapshot};
             foreach (var previousFileSnapshot in obj.PreviousFileSnapshots)
             {
                 Snapshots.Add(previousFileSnapshot);
             }
         }
 
-        public string Name { get; private set; }
-        public Guid Id { get; private set; }
-        public Guid FileId { get; private set; }
-        public long Version { get; private set; }
+        public string Name { get; }
+        public Guid Id { get; }
+        public Guid FileId { get; }
+        public long Version { get; }
         public DateTime VersionTime { get; private set; }
-        public string FileName { get; private set; }
-        public string SizeStr { get; private set; }
-        public int Size { get; private set; }
-        public DateTime LastModifiedDate { get; private set; }
-        public int ObjectTypeId { get; private set; }
-        public string ObjectTypeName { get; private set; }
-        public string ObjectTypeTitle { get; private set; }
-        public DFile File { get; private set; }
-        public string Extension { get { return Path.GetExtension(FileName); } }
+        public string FileName { get; }
+        public string SizeStr { get; }
+        public int Size { get; }
+        public DateTime LastModifiedDate { get; }
+        public int ObjectTypeId { get; }
+        public string ObjectTypeName { get; }
+        public string ObjectTypeTitle { get; }
+        public DFile File { get; }
+        public string Extension => Path.GetExtension(FileName);
         public bool IsActual { get; private set; }
         public string VersionReason { get; private set; }
         public string Author { get; private set; }
-        public SortedList<string, string> Attributes { get; private set; }
-        public List<DFilesSnapshot> Snapshots { get; private set; }
+        public SortedList<string, string> Attributes { get; }
+        public List<DFilesSnapshot> Snapshots { get; }
 
-        public FilesPanelType FilesPanelType { get; private set; }
+        public FilesPanelType FilesPanelType { get; }
 
         private static string GetAttrValue(DObject obj, string attrName)
         {
@@ -136,7 +135,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
 
 
 
-        private MAttribute[] GetVisibleAttributes(MType type)
+        private static IEnumerable<MAttribute> GetVisibleAttributes(MType type)
         {
             return type.Attributes.OrderBy(u => u.DisplaySortOrder).Where(a => a.IsService == false).ToArray();
         }

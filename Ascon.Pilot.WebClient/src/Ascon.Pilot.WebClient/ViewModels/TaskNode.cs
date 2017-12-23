@@ -1,10 +1,6 @@
 ﻿using Ascon.Pilot.Core;
 using Ascon.Pilot.WebClient.Models;
-using Ascon.Pilot.WebClient.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Ascon.Pilot.WebClient.ViewModels
 {
@@ -24,14 +20,14 @@ namespace Ascon.Pilot.WebClient.ViewModels
             DateOfStart = task.DateOfStart;
         }
 
-        public Guid Id { get; private set; }
-        public string Title { get; private set; }
-        public string Initiator { get; private set; }
-        public string Executor { get; private set; }
-        public TaskState State { get; private set; }
-        public TaskKind Kind { get; private set; }
-        public DateTime DateOfAssignment { get; private set; }
-        public DateTime DeadlineDate { get; private set; }
-        public DateTime? DateOfStart { get; private set; }
+        public Guid Id { get; }
+        public string Title { get; }
+        public string Initiator { get; }
+        public string Executor { get; }
+        public TaskState State { get; }
+        public TaskKind Kind { get; }
+        public DateTime DateOfAssignment { get; }
+        public DateTime DeadlineDate { get; }
+        public DateTime? DateOfStart { get; }
     }
 }

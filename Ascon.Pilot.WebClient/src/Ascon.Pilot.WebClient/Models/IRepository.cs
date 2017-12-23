@@ -3,7 +3,6 @@ using Ascon.Pilot.Server.Api.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ascon.Pilot.WebClient.Models
@@ -21,9 +20,9 @@ namespace Ascon.Pilot.WebClient.Models
         byte[] GetFileChunk(Guid id, long pos, int count);
     }
 
-    class Repository : IRepository, IRemoteStorageListener
+    internal class Repository : IRepository, IRemoteStorageListener
     {
-        private IServerApi _serverApi;
+        private readonly IServerApi _serverApi;
         private Dictionary<int, DPerson> _persons = new Dictionary<int, DPerson>();
         private Dictionary<int, DOrganisationUnit> _organisationUnits = new Dictionary<int, DOrganisationUnit>();
         private TaskCompletionSource<DSearchResult> _searchCompletionSource;

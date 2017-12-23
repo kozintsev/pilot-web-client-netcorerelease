@@ -4,6 +4,6 @@
     attach.addClass("active");
 
     //show selected task
-    var id = attach.attr('id');
+    var id = attach.attr("id");
     window.location.href = "/Files/Index/" + id;
 }

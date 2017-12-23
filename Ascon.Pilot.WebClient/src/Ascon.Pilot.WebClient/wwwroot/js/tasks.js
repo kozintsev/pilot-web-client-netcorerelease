@@ -2,8 +2,8 @@
 
 $(document).ready(function () {
     
-    var filterId = getURLParameter('filterId');
-    var taskId = getURLParameter('taskId');
+    var filterId = getURLParameter("filterId");
+    var taskId = getURLParameter("taskId");
     
     subscribeScroll();
 
@@ -43,11 +43,11 @@ function subscribeScroll() {
 
 function loadTasks(filterId, taskId) {
     $.ajax({
-        url: '/Tasks/GetTasks',
+        url: "/Tasks/GetTasks",
         datatype: "json",
         data: { 'filterId': filterId },
         type: "post",
-        contenttype: 'application/json; charset=utf-8',
+        contenttype: "application/json; charset=utf-8",
         async: true,
         beforeSend: function () {
             $("#taskList").empty();
@@ -82,7 +82,7 @@ function loadTasks(filterId, taskId) {
             }
         },
         error: function (xhr) {
-            alert('error' + xhr);
+            alert("error" + xhr);
         },
         complete: function () {
             $("#progress").hide();
@@ -97,10 +97,10 @@ function addTasks(taskId) {
 
     ready = false; //Set the flag here
     $.ajax({
-        url: '/Tasks/GetNextTasks',
+        url: "/Tasks/GetNextTasks",
         datatype: "json",
         type: "post",
-        contenttype: 'application/json; charset=utf-8',
+        contenttype: "application/json; charset=utf-8",
         async: true,
         success: function (data) {
             if (data.indexOf("Нет данных для отображения") !== -1)
@@ -127,7 +127,7 @@ function addTasks(taskId) {
             }
         },
         error: function (xhr) {
-            alert('error' + xhr);
+            alert("error" + xhr);
         },
         complete: function () {
             $("#progress").hide();
@@ -142,7 +142,7 @@ function processTaskClick(el) {
     task.addClass("active");
 
     //show selected task
-    var id = task.attr('id');
+    var id = task.attr("id");
 
     pushHistory(id);
     var win = $(window);
@@ -170,10 +170,10 @@ function setHamburgerMenuItemActivated(filterId) {
 function getURLParameter(sParam) {
 
     var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
+    var sURLVariables = sPageURL.split("&");
 
     for (var i = 0; i < sURLVariables.length; i++) {
-        var sParameterName = sURLVariables[i].split('=');
+        var sParameterName = sURLVariables[i].split("=");
         if (sParameterName[0] == sParam) {
             return sParameterName[1];
         }
@@ -181,18 +181,18 @@ function getURLParameter(sParam) {
 }
 
 function scrollToElement(elementId) {
-    $('html, body').animate({
+    $("html, body").animate({
         scrollTop: $(elementId).offset().top - 120
     }, 0);
 }
 
 function showTaskDetails(taskId) {
     $.ajax({
-        url: '/Tasks/GetTaskDetails',
+        url: "/Tasks/GetTaskDetails",
         datatype: "json",
         data: { 'taskId': taskId },
         type: "post",
-        contenttype: 'application/json; charset=utf-8',
+        contenttype: "application/json; charset=utf-8",
         async: true,
         beforeSend: function () {
             $("#taskDetails").empty();
@@ -201,7 +201,7 @@ function showTaskDetails(taskId) {
             $("#taskDetails").html(data);
         },
         error: function (xhr) {
-            alert('error' + xhr);
+            alert("error" + xhr);
         },
         complete: function () {
             $("#progress").hide();
@@ -210,6 +210,6 @@ function showTaskDetails(taskId) {
 }
 
 function pushHistory(id) {
-    var filterId = getURLParameter('filterId');
+    var filterId = getURLParameter("filterId");
     history.pushState(null, "", "/Tasks?filterId=" + filterId + "&taskId=" + id);
 }

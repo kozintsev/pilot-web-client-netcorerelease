@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +16,7 @@ namespace Ascon.Pilot.WebClient.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger<FilesController> _logger;
-        private IContextHolder _contextHolder;
+        private readonly IContextHolder _contextHolder;
 
         public AccountController(ILogger<FilesController> logger, IContextHolder contextHolder)
         {

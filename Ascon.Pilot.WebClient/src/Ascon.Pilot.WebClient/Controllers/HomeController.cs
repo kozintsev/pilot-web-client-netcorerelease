@@ -49,12 +49,9 @@ namespace Ascon.Pilot.WebClient.Controllers
             var context = _contextHolder.GetContext(HttpContext);
             var types = context.Repository.GetTypes().ToList();
             var type = types.FirstOrDefault(t => t.Id == id);
-            if (type != null)
-            {
-                if (type.Icon != null)
-                    return File(type.Icon, svgContentType);
-            }
-            
+            if (type?.Icon != null)
+                return File(type.Icon, svgContentType);
+
             return File(Url.Content("~/images/file.svg"), svgContentType);
         }
         /// <summary>

@@ -27,7 +27,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
                 {
                     string[] sizes = { "b", "Kb", "Mb", "Gb" };
                     double len = Size;
-                    int order = 0;
+                    var order = 0;
                     while (len >= 1024 && order + 1 < sizes.Length)
                     {
                         order++;
@@ -40,10 +40,8 @@ namespace Ascon.Pilot.WebClient.ViewModels
         }
 
         public bool IsFolder { get; set; }
-        public string Extension
-        {
-            get { return Path.GetExtension(FileName); }
-        }
+        public string Extension => Path.GetExtension(FileName);
+
         public bool IsThumbnailAvailable
         {
             get
