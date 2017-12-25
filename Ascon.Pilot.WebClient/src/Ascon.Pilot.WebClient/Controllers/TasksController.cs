@@ -75,7 +75,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             });
         }
         [HttpPost]
-        public async Task<ActionResult> SetState(string taskId, TaskState oldState, TaskState newState)
+        public async Task<ActionResult> SetState(string taskId, int oldState, int newState)
         {
             return await Task<ActionResult>.Factory.StartNew((() =>
             {

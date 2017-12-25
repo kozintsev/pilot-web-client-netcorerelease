@@ -205,6 +205,9 @@ function showTaskDetails(taskId) {
         },
         complete: function () {
             $("#progress").hide();
+            $("#btn-state").click(function() {
+                setState(taskId);
+            });
         }
     });
 }
@@ -212,4 +215,20 @@ function showTaskDetails(taskId) {
 function pushHistory(id) {
     var filterId = getURLParameter("filterId");
     history.pushState(null, "", "/Tasks?filterId=" + filterId + "&taskId=" + id);
+}
+
+function setState(taskId) {
+    var oldState = $("#btn-state").data("id");
+    var newState = oldState + 1;
+    $.ajax({
+        url: "/Tasks/SetState",
+        datatype: "json",
+        data: { 'taskId': taskId, 'oldState': oldState, 'newState': newState },
+        type: "post",
+        contenttype: "application/json; charset=utf-8",
+        async: true,
+        error: function (xhr) {
+            alert("error" + xhr);
+        }
+    });
 }

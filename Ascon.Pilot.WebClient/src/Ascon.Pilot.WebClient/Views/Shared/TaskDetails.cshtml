@@ -12,7 +12,7 @@ else
     <div class="task-details-content">
         @if (@Model.IsChangeState)
         {
-            <button type="button" class="btn" data-id="@Model.NumberState">@Model.State</button>
+            <button id="btn-state" type="button" class="btn" data-id="@Model.NumberState">@Model.State</button>
             <br/>
         }
         <span style="font-weight: 600;">@Model.Initiator</span>
