@@ -10,17 +10,22 @@
 else
 {
     <div class="task-details-content">
-        <span style="font-weight:600;">@Model.Initiator</span>
-        <br />
+        @if (@Model.IsChangeState)
+        {
+            <button type="button" class="btn" data-id="@Model.NumberState">@Model.State</button>
+            <br/>
+        }
+        <span style="font-weight: 600;">@Model.Initiator</span>
+        <br/>
         <span>@Model.Executor</span>
-        <br />
-        <br />
-        <p style="font-weight:200; font-size:large;">@Model.Title</p>
+        <br/>
+        <br/>
+        <p style="font-weight: 200; font-size: large;">@Model.Title</p>
         <p class="default-margin_top">@Model.Description</p>
         <div class="default-margin_top">
             @foreach (var attachment in Model.Attachments)
             {
-                var href = Url.Action("GetTypeIcon", "Home", new { id = attachment.Type.Id });
+                var href = Url.Action("GetTypeIcon", "Home", new {id = attachment.Type.Id});
                 <div class="task-attachment" id="@attachment.Id">
                     @if (attachment.Type.IsProjectFile())
                     {
@@ -41,7 +46,7 @@ else
                         <span style="color: #7D828D;">Документ</span>
                     }
 
-                    
+
                 </div>
             }
         </div>

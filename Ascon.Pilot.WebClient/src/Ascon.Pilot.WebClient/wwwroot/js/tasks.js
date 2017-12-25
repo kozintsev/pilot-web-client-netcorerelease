@@ -169,12 +169,12 @@ function setHamburgerMenuItemActivated(filterId) {
 
 function getURLParameter(sParam) {
 
-    var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split("&");
+    var sPageUrl = window.location.search.substring(1);
+    var sUrlVariables = sPageUrl.split("&");
 
-    for (var i = 0; i < sURLVariables.length; i++) {
-        var sParameterName = sURLVariables[i].split("=");
-        if (sParameterName[0] == sParam) {
+    for (var i = 0; i < sUrlVariables.length; i++) {
+        var sParameterName = sUrlVariables[i].split("=");
+        if (sParameterName[0] === sParam) {
             return sParameterName[1];
         }
     }

@@ -74,6 +74,15 @@ namespace Ascon.Pilot.WebClient.Controllers
                 return PartialView("TaskDetails", model);
             });
         }
+        [HttpPost]
+        public async Task<ActionResult> SetState(string taskId, TaskState oldState, TaskState newState)
+        {
+            return await Task<ActionResult>.Factory.StartNew((() =>
+            {
+                // вся логка по реализации изменения статуса задания должна быть тут
+                return Ok();
+            }));
+        }
 
         private int MaxResults
         {

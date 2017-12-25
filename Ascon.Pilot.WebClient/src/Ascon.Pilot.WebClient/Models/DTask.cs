@@ -1,10 +1,8 @@
 ﻿using Ascon.Pilot.Core;
 using Ascon.Pilot.WebClient.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Ascon.Pilot.WebClient.Models
 {
@@ -106,10 +104,7 @@ namespace Ascon.Pilot.WebClient.Models
         //    get { return _person ?? (_person = _repository.GetPerson(_source.CreatorId)); }
         //}
 
-        public DateTime Created
-        {
-            get { return _source.Created.ToLocalTime(); }
-        }
+        public DateTime Created => _source.Created.ToLocalTime();
 
         //public IList<Guid> Children
         //{
@@ -144,15 +139,7 @@ namespace Ascon.Pilot.WebClient.Models
         //    get { return _source.ActualFileSnapshot.Files; }
         //}
 
-        public DObject Source
-        {
-            get
-            {
-                if (_source == null)
-                    return new DObject { Id = Id };
-                return _source;
-            }
-        }
+        public DObject Source => _source ?? new DObject { Id = Id };
 
         public string Title
         {
@@ -214,13 +201,9 @@ namespace Ascon.Pilot.WebClient.Models
             get
             {
                 DValue deadLine;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DEADLINE_DATE, out deadLine))
-                {
-                    if (deadLine.DateValue != null)
-                        return ((DateTime)deadLine).ToLocalTime();
-                }
-
-                return DateTime.MaxValue;
+                if (!_source.Attributes.TryGetValue(SystemAttributes.TASK_DEADLINE_DATE, out deadLine))
+                    return DateTime.MaxValue;
+                return deadLine.DateValue != null ? ((DateTime)deadLine).ToLocalTime() : DateTime.MaxValue;
             }
         }
 
@@ -258,12 +241,7 @@ namespace Ascon.Pilot.WebClient.Models
             get
             {
                 DValue date;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_START, out date))
-                {
-                    return date.DateValue?.ToLocalTime();
-                }
-
-                return null;
+                return _source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_START, out date) ? date.DateValue?.ToLocalTime() : null;
             }
         }
 
@@ -301,12 +279,7 @@ namespace Ascon.Pilot.WebClient.Models
             get
             {
                 DValue result;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_IS_VERSION, out result))
-                {
-                    return Convert.ToBoolean(result.IntValue);
-                }
-
-                return false;
+                return _source.Attributes.TryGetValue(SystemAttributes.TASK_IS_VERSION, out result) && Convert.ToBoolean(result.IntValue);
             }
         }
     }
@@ -315,12 +288,7 @@ namespace Ascon.Pilot.WebClient.Models
     {
         public static string GetTitle(this DTask task)
         {
-            if (string.IsNullOrEmpty(task.Title))
-            {
-                return task.Description.LimitCharacters(150);
-            }
-
-            return task.Title;
+            return string.IsNullOrEmpty(task.Title) ? task.Description.LimitCharacters(150) : task.Title;
         }
 
         public static bool IsTaskExecutor(this DTask task, DPerson user)

@@ -730,6 +730,4 @@ a.task-node {
 .list-group-item.active:hover,
 .list-group-item.active:focus {
   z-index: 2;
-  color: #fff;
-  background-color: #F8F9FB;
 }
