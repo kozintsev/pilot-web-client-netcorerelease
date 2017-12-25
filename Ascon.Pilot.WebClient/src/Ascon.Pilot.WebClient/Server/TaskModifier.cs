@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Ascon.Pilot.Core;
 using Ascon.Pilot.Server.Api.Contracts;
+using Ascon.Pilot.WebClient.Models;
 
 namespace Ascon.Pilot.WebClient.Server
 {
@@ -72,17 +73,17 @@ namespace Ascon.Pilot.WebClient.Server
             var task = GetActualObject(taskId);
             var oldExecutorPosition = task.GetExecutorPosition();
 
-            var oldState = (State)(long)task.Attributes["TaskState B65D6C5B-7D8E-4055-852F-D1AAB060CD22"]; //task.GetTaskState();
+            var oldState = (TaskState)(long)task.Attributes["TaskState B65D6C5B-7D8E-4055-852F-D1AAB060CD22"]; //task.GetTaskState();
 
             var isExecutorChanged = oldExecutorPosition != executorPosition;
-            if (isExecutorChanged && oldState != State.Revoked)
+            if (isExecutorChanged && oldState != TaskState.Revoked)
             {
-                Edit(taskId).SetState(State.Assigned);
+                Edit(taskId).SetState(TaskState.Assigned);
                 return;
             }
 
             if (isExecutorChanged)
-                InnerEdit(taskId).SetState(State.Revoked);
+                InnerEdit(taskId).SetState(TaskState.Revoked);
         }
 
         private ITaskChangeBuilder CreateNewObject(Guid id, Guid parentId, int typeId)

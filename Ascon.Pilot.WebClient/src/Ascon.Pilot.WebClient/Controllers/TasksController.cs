@@ -74,13 +74,15 @@ namespace Ascon.Pilot.WebClient.Controllers
                 return PartialView("TaskDetails", model);
             });
         }
+
         [HttpPost]
         public async Task<ActionResult> SetState(string taskId, int oldState, int newState)
         {
             return await Task<ActionResult>.Factory.StartNew((() =>
             {
-                // вся логка по реализации изменения статуса задания должна быть тут
-                return Ok();
+                var id = Guid.Parse(taskId);
+                var model = new TaskDetailsViewModel(id, _contextHolder.GetContext(HttpContext).Repository);
+                return model.SetState(oldState, newState) ? (ActionResult) Ok() : NoContent();
             }));
         }
 

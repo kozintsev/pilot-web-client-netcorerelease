@@ -4,13 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Ascon.Pilot.WebClient.Server;
 
 namespace Ascon.Pilot.WebClient.ViewModels
 {
     public class TaskDetailsViewModel
     {
+        private readonly IRepository _repository;
+        private readonly Guid _taskId;
+
         public TaskDetailsViewModel(Guid taskId, IRepository repository)
         {
+            _repository = repository;
+            _taskId = taskId;
             IsChangeState = false;
             var objs = repository.GetObjects(new[] { taskId });
             if (!objs.Any())
@@ -73,6 +79,14 @@ namespace Ascon.Pilot.WebClient.ViewModels
         public bool IsChangeState { get; }
 
         public IEnumerable<Attachment> Attachments { get; } = new List<Attachment>();
+
+        public bool SetState(int oldState, int newState)
+        {
+            var modifier = new TaskModifier(_repository.GetServerApi());
+            modifier.Edit(_taskId).SetState((TaskState) newState);
+            modifier.Apply();
+            return true;
+        }
     }
 
     public class Attachment

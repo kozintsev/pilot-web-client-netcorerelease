@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Ascon.Pilot.Core;
 using Ascon.Pilot.Server.Api.Contracts;
+using Ascon.Pilot.WebClient.Models;
 
 namespace Ascon.Pilot.WebClient.Server
 {
     public interface ITaskChangeBuilder
     {
         ITaskChangeBuilder SetAttribute(string name, DValue value);
-        ITaskChangeBuilder SetState(State state);
+        ITaskChangeBuilder SetState(TaskState state);
         ITaskChangeBuilder SetAttributes(IEnumerable<KeyValuePair<string, DValue>> attributes);
         ITaskChangeBuilder RemoveAttribute(string name);
         ITaskChangeBuilder RemoveTaskChild(Guid childId);
@@ -77,16 +78,16 @@ namespace Ascon.Pilot.WebClient.Server
             return this;
         }
 
-        public ITaskChangeBuilder SetState(State state)
+        public ITaskChangeBuilder SetState(TaskState state)
         {
             SetAttribute(SystemAttributes.TASK_STATE, (int)state);
-            if (state == State.OnValidation)
+            if (state == TaskState.OnValidation)
                 SetDateOfCompletion(DateTime.UtcNow);
-            if (state == State.InProgress)
+            if (state == TaskState.InProgress)
                 SetDateOfStart(DateTime.UtcNow);
-            if (state == State.Revoked)
+            if (state == TaskState.Revoked)
                 SetDateOfRevokation(DateTime.UtcNow);
-            if (state == State.Assigned)
+            if (state == TaskState.Assigned)
             {
                 SetDateOfStart(null);
                 SetDateOfRevokation(null);
