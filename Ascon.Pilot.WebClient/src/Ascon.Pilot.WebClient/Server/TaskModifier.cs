@@ -1,92 +1,200 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Ascon.Pilot.Core;
+using Ascon.Pilot.Server.Api.Contracts;
 
 namespace Ascon.Pilot.WebClient.Server
 {
-    public interface ITaskModifier
+    public class TaskModifier
     {
-        void Apply(DChangesetData changesetData);
-        DChange EditStage(DObject stage);
-        DChange EditTask(DObject task);
-        DChange EditTaskById(Guid taskId);
-        DChange EditWorkflow(DObject workflow);
-        DObject NewAgreementTask(DObject workflow, DObject stage, int executorPosition);
-        DObject NewStage(DObject workflow);
-        IEnumerable<DObject> NewTask(string title, string description, IEnumerable<int> executors, DateTime deadLine);
-        IEnumerable<DObject> NewTask(string title, string description, IEnumerable<int> executors, DateTime deadLine, IEnumerable<Guid> attachments);
-        DObject NewTask(DObject workflow, DObject stage, int executorPosition);
-        DObject NewWorkflow();
-    }
+        private readonly IServerApi _backend;
+        private readonly Dictionary<Guid, ITaskChangeBuilder> _builders = new Dictionary<Guid, ITaskChangeBuilder>();
 
-    public class TaskModifier : ITaskModifier
-    {
-        private readonly IServerConnector _connector;
-        private readonly int _personId;
-
-        public TaskModifier(IServerConnector connector, int personId)
+        public TaskModifier(IServerApi backend)
         {
-            _connector = connector;
-            _personId = personId;
+            if (backend == null)
+                throw new ArgumentNullException(nameof(backend));
+            _backend = backend;
         }
 
-        public void Apply(DChangesetData changesetData)
+        public ITaskChangeBuilder EditWorkFlow(Guid sourceId)
         {
-            _connector.ServerApi.Change(changesetData);
+            return InnerEdit(sourceId);
         }
 
-        public DChange EditStage(DObject stage)
+        public DObject NewStage(Guid id, Guid parentWorkflowId, long order)
         {
-            throw new NotImplementedException();
+            var type = GetType(_backend, SystemTypes.TASK_STAGE);
+            var stage = CreateNewObject(id, parentWorkflowId, type.Id).SetStageOrder(order);
+            return stage.GetNewTaskObject();
         }
 
-        public DChange EditTask(DObject task)
+        public ITaskChangeBuilder EditStage(Guid sourceId)
         {
-            var changed = task.Clone();
-            var change = new DChange { Old = task, New = changed };
-            return change;
+            return InnerEdit(sourceId);
+        }
+        
+
+        public ITaskChangeBuilder DeleteStage(Guid workflowId, Guid stageId)
+        {
+            return Edit(workflowId).RemoveTaskChild(stageId);
+        }
+        
+
+        public ITaskChangeBuilder UpdateTask(Guid taskId, int executorPosition)
+        {
+            UpdateState(taskId, executorPosition);
+            return Edit(taskId).SetExecutor(executorPosition);
         }
 
-        public DChange EditTaskById(Guid taskId)
+        public void Apply()
         {
-            throw new NotImplementedException();
+            var changes = _builders.Select(x => x.Value.Change).ToArray();
+            var newFileIds = _builders.SelectMany(x => x.Value.NewFileIds);
+
+            if (!changes.Any())
+                throw new InvalidOperationException("There are no changes to apply");
+
+            //Запрещаем изменения типа 
+            //modifier.Edit(task);
+            //modifier.Apply();
+            //Пустое изменение
+            CheckTaskChangesApply(changes);
+
+            _backend.Apply(Guid.NewGuid(), changes, newFileIds);
+            _builders.Clear();
         }
 
-        public DChange EditWorkflow(DObject workflow)
+        private void UpdateState(Guid taskId, int executorPosition)
         {
-            throw new NotImplementedException();
+            var task = GetActualObject(taskId);
+            var oldExecutorPosition = task.GetExecutorPosition();
+
+            var oldState = (State)(long)task.Attributes["TaskState B65D6C5B-7D8E-4055-852F-D1AAB060CD22"]; //task.GetTaskState();
+
+            var isExecutorChanged = oldExecutorPosition != executorPosition;
+            if (isExecutorChanged && oldState != State.Revoked)
+            {
+                Edit(taskId).SetState(State.Assigned);
+                return;
+            }
+
+            if (isExecutorChanged)
+                InnerEdit(taskId).SetState(State.Revoked);
         }
 
-        public DObject NewAgreementTask(DObject workflow, DObject stage, int executorPosition)
+        private ITaskChangeBuilder CreateNewObject(Guid id, Guid parentId, int typeId)
         {
-            throw new NotImplementedException();
+            var obj = new DObject
+            {
+                Id = id,
+                ParentId = parentId,
+                TypeId = typeId,
+                CreatorId = _backend.CurrentPerson().Id,
+                Created = DateTime.UtcNow
+            };
+
+            InnerEdit(parentId).AddChild(obj.Id, typeId);
+            return CreateChangeBuilder(obj.Id, null, obj).SetParent(parentId);
         }
 
-        public DObject NewStage(DObject workflow)
+        //При изменении этого метода не забыть поправить TaskHistoryChangeHelper.PrepareHistoryChanges
+        //автоматический переход задания в состояние "Выпонено" при согласовании документов
+        private void CreateTaskVersion(Guid sourceId)
         {
-            throw new NotImplementedException();
+            var newId = Guid.NewGuid();
+            var source = GetActualObject(sourceId);
+            var newObj = new DObject().Clone();
+            newObj.Access.Clear();
+            newObj.Children.Clear();
+            newObj.Id = newId;
+            newObj.Created = DateTime.UtcNow;
+            newObj.ClearTaskVersions();
+            newObj.CreatorId = _backend.CurrentPerson().Id;
+
+            // добавим текущей таске в дети клона
+            InnerEdit(source.Id).AddTaskChild(newId);
+
+            //создадим change для клона
+            //клону добавим папу - текущую таску
+            CreateChangeBuilder(newObj.Id, null, newObj).SetParent(source.Id).SetIsVersion(true);
         }
 
-        public IEnumerable<DObject> NewTask(string title, string description, IEnumerable<int> executors, DateTime deadLine)
+        public ITaskChangeBuilder Edit(Guid id)
         {
-            throw new NotImplementedException();
+            CreateTaskVersion(id);
+            return InnerEdit(id);
         }
 
-        public IEnumerable<DObject> NewTask(string title, string description, IEnumerable<int> executors, DateTime deadLine,
-            IEnumerable<Guid> attachments)
+        public ITaskChangeBuilder InnerEdit(Guid id)
         {
-            throw new NotImplementedException();
+            ITaskChangeBuilder builder;
+            if (!_builders.TryGetValue(id, out builder))
+            {
+                var obj = _backend.GetObject(id);
+                var old = new DObject();
+                var changed = old.Clone();
+                builder = CreateChangeBuilder(obj.Id, old, changed);
+            }
+            return builder;
         }
 
-        public DObject NewTask(DObject workflow, DObject stage, int executorPosition)
+        private DObject GetActualObject(Guid id)
         {
-            throw new NotImplementedException();
+            ITaskChangeBuilder builder;
+            if (_builders.TryGetValue(id, out builder))
+                return builder.GetNewTaskObject();
+            return _backend.GetObject(id);
         }
 
-        public DObject NewWorkflow()
+        private ITaskChangeBuilder CreateChangeBuilder(Guid builderId, DObject old, DObject @new)
         {
-            throw new NotImplementedException();
+            var change = new DChange { Old = old, New = @new };
+            var builder = new TaskChangeBuilder(change, this, _backend);
+            _builders[builderId] = builder;
+            return builder;
+        }
+
+        private MType GetType(IServerApi backend, string name)
+        {
+            return backend.GetTypes().FirstOrDefault(x => x.Name == name) ?? null;
+        }
+
+        private void CheckTaskChangesApply(IEnumerable<DChange> changes)
+        {
+            var changesList = changes.ToList();
+            if (changesList.Count != 2)
+                return;
+
+            var task = changesList[0].New;
+            var version = changesList[1].New;
+            if (!IsTaskChanged(task, version))
+                throw new InvalidOperationException("There are no changes to apply");
+        }
+
+        private bool IsTaskChanged(DObject task, DObject version)
+        {
+            task.Attributes.Remove(SystemAttributes.TASK_IS_VERSION);
+
+            version.Attributes.Remove(SystemAttributes.TASK_IS_VERSION);
+
+            if (!task.Attributes.SequenceEqual(version.Attributes))
+                return true;
+
+
+            var taskAttachments = task.Relations.Where(x => x.Type == RelationType.TaskInitiatorAttachments ||
+                                                            x.Type == RelationType.TaskExecutorAttachments);
+            var versionAttachments = version.Relations.Where(x => x.Type == RelationType.TaskInitiatorAttachments ||
+                                                                  x.Type == RelationType.TaskExecutorAttachments);
+
+            return !taskAttachments.SequenceEqualIgnoreOrder(versionAttachments);
+        }
+
+        public void SetExecutionDepartment(Guid taskId, int orgUnitPosition)
+        {
+            InnerEdit(taskId).SetAttribute(SystemAttributes.TASK_EXECUTION_DEPARTMENT, orgUnitPosition);
         }
     }
 }

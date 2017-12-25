@@ -52,6 +52,12 @@ namespace Ascon.Pilot.Server.Api.Contracts
         List<DObject> GetObjects(Guid[] ids);
 
         /// <summary>
+        /// Получить типы объектов
+        /// </summary>
+        /// <returns></returns>
+        List<MType> GetTypes();
+
+        /// <summary>
         /// Получить изменения 
         /// </summary>
         /// <param name="first">с позиции</param>
@@ -147,6 +153,23 @@ namespace Ascon.Pilot.Server.Api.Contracts
         /// </summary>
         /// <param name="searchDefinition">условия поиска</param>
         void ContentSearch(DSearchDefinition searchDefinition);
+        
+        /// <summary>
+        /// Применить операцию
+        /// </summary>
+        /// <param name="globalId"></param>
+        /// <param name="changes"></param>
+        /// <param name="newFileIds"></param>
+        void Apply(Guid globalId, DChange[] changes, IEnumerable<Guid> newFileIds);
+
+        /// <summary>
+        /// Получить объект
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        DObject GetObject(Guid id);
+
+        DPerson CurrentPerson();
     }
 
     public interface IFileArchiveApi
