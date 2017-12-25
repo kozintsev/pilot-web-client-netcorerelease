@@ -133,7 +133,9 @@ namespace Ascon.Pilot.WebClient.Server
         {
             if (!_change.New.Children.Exists(ch => ch.ObjectId == childId))
             {
-                var typeId = GetType(SystemTypes.TASK).Id;
+                var objs = _backend.GetObjects(new[] {DObject.TaskRootId });
+                var typeId = _backend.GetObjects(new[] {DObject.TaskRootId}).First().TypeId;
+                //var typeId = 1; //GetType(SystemTypes.TASK).Id;
                 _change.New.Children.Add(new DChild { ObjectId = childId, TypeId = typeId });
             }
             return this;
@@ -174,8 +176,6 @@ namespace Ascon.Pilot.WebClient.Server
             _change.New.Children.Remove(item);
             return this;
         }
-
-
 
         public ITaskChangeBuilder SetValidationPhase(bool withValidation)
         {
@@ -282,7 +282,8 @@ namespace Ascon.Pilot.WebClient.Server
 
         private MType GetType(string name)
         {
-            return _backend.GetTypes().FirstOrDefault(x => x.Name == name) ?? null;
+            //return _backend.GetTypes().FirstOrDefault(x => x.Name == name) ?? null;
+            return null;
         }
     }
 }

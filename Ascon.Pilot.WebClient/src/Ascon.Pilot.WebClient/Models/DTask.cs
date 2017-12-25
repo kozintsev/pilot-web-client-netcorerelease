@@ -155,18 +155,7 @@ namespace Ascon.Pilot.WebClient.Models
             }
         }
 
-        public string DisplayTitle
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(Title))
-                {
-                    return Description.LimitCharacters(150);
-                }
-
-                return Title;
-            }
-        }
+        public string DisplayTitle => string.IsNullOrEmpty(Title) ? Description.LimitCharacters(150) : Title;
 
         public TaskKind Kind
         {
@@ -175,7 +164,7 @@ namespace Ascon.Pilot.WebClient.Models
                 DValue result;
                 if (_source.Attributes.TryGetValue(SystemAttributes.TASK_KIND, out result))
                 {
-                    return (TaskKind)Int32.Parse(result.ToString());
+                    return (TaskKind)int.Parse(result.ToString());
                 }
 
                 return TaskKind.Task;
@@ -212,13 +201,8 @@ namespace Ascon.Pilot.WebClient.Models
             get
             {
                 DValue date;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_ASSIGNMENT, out date))
-                {
-                    if (date.DateValue != null)
-                        return ((DateTime)date).ToLocalTime();
-                }
-
-                return Created;
+                if (!_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_ASSIGNMENT, out date)) return Created;
+                return date.DateValue != null ? ((DateTime)date).ToLocalTime() : Created;
             }
         }
 
@@ -227,12 +211,7 @@ namespace Ascon.Pilot.WebClient.Models
             get
             {
                 DValue date;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_COMPLETION, out date))
-                {
-                    return date.DateValue?.ToLocalTime();
-                }
-
-                return null;
+                return _source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_COMPLETION, out date) ? date.DateValue?.ToLocalTime() : null;
             }
         }
 
@@ -250,12 +229,7 @@ namespace Ascon.Pilot.WebClient.Models
             get
             {
                 DValue date;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_REVOKATION, out date))
-                {
-                    return date.DateValue?.ToLocalTime();
-                }
-
-                return null;
+                return _source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_REVOKATION, out date) ? date.DateValue?.ToLocalTime() : null;
             }
         }
 

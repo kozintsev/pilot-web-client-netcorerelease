@@ -53,7 +53,7 @@ namespace Ascon.Pilot.WebClient.Server
         public void Apply()
         {
             var changes = _builders.Select(x => x.Value.Change).ToArray();
-            var newFileIds = _builders.SelectMany(x => x.Value.NewFileIds);
+            //var newFileIds = _builders.SelectMany(x => x.Value.NewFileIds);
 
             if (!changes.Any())
                 throw new InvalidOperationException("There are no changes to apply");
@@ -64,7 +64,19 @@ namespace Ascon.Pilot.WebClient.Server
             //Пустое изменение
             CheckTaskChangesApply(changes);
 
-            _backend.Apply(Guid.NewGuid(), changes, newFileIds);
+            //_backend.Apply(Guid.NewGuid(), changes, newFileIds);
+
+            var changesetData = new DChangesetData {Identity = Guid.NewGuid()};
+
+            var change = changes.First();
+
+            //Добавим изменение (создание) текущего объекта
+            changesetData.Changes.Add(change);
+            //Добавим изменение родительского объекта (добавление детей)
+
+
+            _backend.Change(changesetData);
+
             _builders.Clear();
         }
 
@@ -93,7 +105,7 @@ namespace Ascon.Pilot.WebClient.Server
                 Id = id,
                 ParentId = parentId,
                 TypeId = typeId,
-                CreatorId = _backend.CurrentPerson().Id,
+                //CreatorId = _backend.CurrentPerson().Id,
                 Created = DateTime.UtcNow
             };
 
@@ -107,13 +119,13 @@ namespace Ascon.Pilot.WebClient.Server
         {
             var newId = Guid.NewGuid();
             var source = GetActualObject(sourceId);
-            var newObj = new DObject().Clone();
+            var newObj = source.Clone();
             newObj.Access.Clear();
             newObj.Children.Clear();
             newObj.Id = newId;
             newObj.Created = DateTime.UtcNow;
             newObj.ClearTaskVersions();
-            newObj.CreatorId = _backend.CurrentPerson().Id;
+            //newObj.CreatorId = _backend.CurrentPerson().Id;
 
             // добавим текущей таске в дети клона
             InnerEdit(source.Id).AddTaskChild(newId);
@@ -134,7 +146,7 @@ namespace Ascon.Pilot.WebClient.Server
             ITaskChangeBuilder builder;
             if (!_builders.TryGetValue(id, out builder))
             {
-                var obj = _backend.GetObject(id);
+                var obj = _backend.GetObjects(new[] { id }).First(); 
                 var old = new DObject();
                 var changed = old.Clone();
                 builder = CreateChangeBuilder(obj.Id, old, changed);
@@ -147,7 +159,7 @@ namespace Ascon.Pilot.WebClient.Server
             ITaskChangeBuilder builder;
             if (_builders.TryGetValue(id, out builder))
                 return builder.GetNewTaskObject();
-            return _backend.GetObject(id);
+            return _backend.GetObjects(new[] { id }).First();
         }
 
         private ITaskChangeBuilder CreateChangeBuilder(Guid builderId, DObject old, DObject @new)
@@ -160,7 +172,8 @@ namespace Ascon.Pilot.WebClient.Server
 
         private MType GetType(IServerApi backend, string name)
         {
-            return backend.GetTypes().FirstOrDefault(x => x.Name == name) ?? null;
+            //return backend.GetTypes().FirstOrDefault(x => x.Name == name) ?? null;
+            return null;
         }
 
         private void CheckTaskChangesApply(IEnumerable<DChange> changes)
