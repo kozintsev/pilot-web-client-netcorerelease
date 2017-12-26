@@ -29,34 +29,34 @@ namespace Ascon.Pilot.WebClient.Server
 
     public class TaskChangeBuilder : ITaskChangeBuilder
     {
-        private readonly DChange _change;
         private readonly TaskModifier _modifier;
         private readonly IServerApi _backend;
         private readonly List<Guid> _newFileIds = new List<Guid>();
+        private const int TaskTypeId = 6;
 
         public TaskChangeBuilder(DChange change, TaskModifier modifier, IServerApi backend)
         {
-            _change = change;
+            Change = change;
             _modifier = modifier;
             _backend = backend;
         }
 
         public ITaskChangeBuilder SetAttribute(string name, DValue value)
         {
-            _change.New.Attributes[name] = value;
+            Change.New.Attributes[name] = value;
             return this;
         }
 
         public ITaskChangeBuilder SetAttributes(IEnumerable<KeyValuePair<string, DValue>> attributes)
         {
             foreach (var attribute in attributes)
-                _change.New.Attributes[attribute.Key] = attribute.Value;
+                Change.New.Attributes[attribute.Key] = attribute.Value;
             return this;
         }
 
         public ITaskChangeBuilder RemoveAttribute(string name)
         {
-            _change.New.Attributes.Remove(name);
+            Change.New.Attributes.Remove(name);
             return this;
         }
 
@@ -109,9 +109,9 @@ namespace Ascon.Pilot.WebClient.Server
 
         public ITaskChangeBuilder SetParent(Guid id)
         {
-            if (_change.Old != null)
-                _change.Old.ParentId = Guid.NewGuid();
-            _change.New.ParentId = id;
+            if (Change.Old != null)
+                Change.Old.ParentId = Guid.NewGuid();
+            Change.New.ParentId = id;
             return this;
         }
 
@@ -123,39 +123,36 @@ namespace Ascon.Pilot.WebClient.Server
 
         public ITaskChangeBuilder AddChild(Guid childId, int typeId)
         {
-            if (!_change.New.Children.Exists(ch => ch.ObjectId == childId))
-                _change.New.Children.Add(new DChild { ObjectId = childId, TypeId = typeId });
+            if (!Change.New.Children.Exists(ch => ch.ObjectId == childId))
+                Change.New.Children.Add(new DChild { ObjectId = childId, TypeId = typeId });
 
             return this;
         }
 
         public ITaskChangeBuilder AddTaskChild(Guid childId)
         {
-            if (!_change.New.Children.Exists(ch => ch.ObjectId == childId))
+            if (!Change.New.Children.Exists(ch => ch.ObjectId == childId))
             {
-                var objs = _backend.GetObjects(new[] {DObject.TaskRootId });
-                var typeId = _backend.GetObjects(new[] {DObject.TaskRootId}).First().TypeId;
-                //var typeId = 1; //GetType(SystemTypes.TASK).Id;
-                _change.New.Children.Add(new DChild { ObjectId = childId, TypeId = typeId });
+                Change.New.Children.Add(new DChild { ObjectId = childId, TypeId = TaskTypeId });
             }
             return this;
         }
 
         public ITaskChangeBuilder AddRelation(DRelation relation)
         {
-            _change.New.Relations.Add(relation);
+            Change.New.Relations.Add(relation);
             return this;
         }
 
         public ITaskChangeBuilder RemoveRelationById(Guid relationId)
         {
-            _change.New.Relations.RemoveAll(x => x.Id == relationId);
+            Change.New.Relations.RemoveAll(x => x.Id == relationId);
             return this;
         }
 
         public ITaskChangeBuilder ClearRelations(RelationType relationType)
         {
-            _change.New.Relations.RemoveAll(x => x.Type == relationType);
+            Change.New.Relations.RemoveAll(x => x.Type == relationType);
             return this;
         }
 
@@ -168,12 +165,11 @@ namespace Ascon.Pilot.WebClient.Server
         public ITaskChangeBuilder RemoveTaskChild(Guid childId)
         {
             var item = new DChild {ObjectId = childId};
-            if (_change.Old != null && !_change.Old.Children.Exists(ch => ch.ObjectId == childId))
+            if (Change.Old != null && !Change.Old.Children.Exists(ch => ch.ObjectId == childId))
             {
-                var typeId = GetType(SystemTypes.TASK).Id;
-                _change.Old.Children.Add(new DChild { ObjectId = childId, TypeId = typeId });
+                Change.Old.Children.Add(new DChild { ObjectId = childId, TypeId = TaskTypeId });
             }
-            _change.New.Children.Remove(item);
+            Change.New.Children.Remove(item);
             return this;
         }
 
@@ -278,12 +274,6 @@ namespace Ascon.Pilot.WebClient.Server
             return new DObject();
         }
 
-        public DChange Change => new DChange();
-
-        private MType GetType(string name)
-        {
-            //return _backend.GetTypes().FirstOrDefault(x => x.Name == name) ?? null;
-            return null;
-        }
+        public DChange Change { get; }
     }
 }

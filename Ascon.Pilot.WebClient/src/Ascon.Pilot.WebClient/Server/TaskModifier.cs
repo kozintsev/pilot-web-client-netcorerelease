@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Ascon.Pilot.Core;
 using Ascon.Pilot.Server.Api.Contracts;
@@ -12,6 +11,7 @@ namespace Ascon.Pilot.WebClient.Server
     {
         private readonly IServerApi _backend;
         private readonly Dictionary<Guid, ITaskChangeBuilder> _builders = new Dictionary<Guid, ITaskChangeBuilder>();
+        private const int TaskTypeId = 6;
 
         public TaskModifier(IServerApi backend)
         {
@@ -27,8 +27,7 @@ namespace Ascon.Pilot.WebClient.Server
 
         public DObject NewStage(Guid id, Guid parentWorkflowId, long order)
         {
-            var type = GetType(_backend, SystemTypes.TASK_STAGE);
-            var stage = CreateNewObject(id, parentWorkflowId, type.Id).SetStageOrder(order);
+            var stage = CreateNewObject(id, parentWorkflowId, TaskTypeId).SetStageOrder(order);
             return stage.GetNewTaskObject();
         }
 
@@ -53,27 +52,17 @@ namespace Ascon.Pilot.WebClient.Server
         public void Apply()
         {
             var changes = _builders.Select(x => x.Value.Change).ToArray();
-            //var newFileIds = _builders.SelectMany(x => x.Value.NewFileIds);
 
             if (!changes.Any())
                 throw new InvalidOperationException("There are no changes to apply");
 
-            //Запрещаем изменения типа 
-            //modifier.Edit(task);
-            //modifier.Apply();
             //Пустое изменение
             CheckTaskChangesApply(changes);
 
-            //_backend.Apply(Guid.NewGuid(), changes, newFileIds);
-
             var changesetData = new DChangesetData {Identity = Guid.NewGuid()};
 
-            var change = changes.First();
-
             //Добавим изменение (создание) текущего объекта
-            changesetData.Changes.Add(change);
-            //Добавим изменение родительского объекта (добавление детей)
-
+            changesetData.Changes.AddRange(changes);
 
             _backend.Change(changesetData);
 
@@ -85,7 +74,7 @@ namespace Ascon.Pilot.WebClient.Server
             var task = GetActualObject(taskId);
             var oldExecutorPosition = task.GetExecutorPosition();
 
-            var oldState = (TaskState)(long)task.Attributes["TaskState B65D6C5B-7D8E-4055-852F-D1AAB060CD22"]; //task.GetTaskState();
+            var oldState = (TaskState)(long)task.Attributes["TaskState B65D6C5B-7D8E-4055-852F-D1AAB060CD22"]; 
 
             var isExecutorChanged = oldExecutorPosition != executorPosition;
             if (isExecutorChanged && oldState != TaskState.Revoked)
@@ -144,22 +133,17 @@ namespace Ascon.Pilot.WebClient.Server
         public ITaskChangeBuilder InnerEdit(Guid id)
         {
             ITaskChangeBuilder builder;
-            if (!_builders.TryGetValue(id, out builder))
-            {
-                var obj = _backend.GetObjects(new[] { id }).First(); 
-                var old = new DObject();
-                var changed = old.Clone();
-                builder = CreateChangeBuilder(obj.Id, old, changed);
-            }
+            if (_builders.TryGetValue(id, out builder)) return builder;
+            var obj = _backend.GetObjects(new[] { id }).First(); 
+            var changed = obj.Clone();
+            builder = CreateChangeBuilder(obj.Id, obj, changed);
             return builder;
         }
 
         private DObject GetActualObject(Guid id)
         {
             ITaskChangeBuilder builder;
-            if (_builders.TryGetValue(id, out builder))
-                return builder.GetNewTaskObject();
-            return _backend.GetObjects(new[] { id }).First();
+            return _builders.TryGetValue(id, out builder) ? builder.GetNewTaskObject() : _backend.GetObjects(new[] { id }).First();
         }
 
         private ITaskChangeBuilder CreateChangeBuilder(Guid builderId, DObject old, DObject @new)
@@ -168,12 +152,6 @@ namespace Ascon.Pilot.WebClient.Server
             var builder = new TaskChangeBuilder(change, this, _backend);
             _builders[builderId] = builder;
             return builder;
-        }
-
-        private MType GetType(IServerApi backend, string name)
-        {
-            //return backend.GetTypes().FirstOrDefault(x => x.Name == name) ?? null;
-            return null;
         }
 
         private void CheckTaskChangesApply(IEnumerable<DChange> changes)

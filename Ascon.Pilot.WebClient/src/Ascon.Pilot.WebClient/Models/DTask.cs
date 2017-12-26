@@ -73,17 +73,14 @@ namespace Ascon.Pilot.WebClient.Models
         {
             get
             {
-                if (_initiatorPosition == null)
+                if (_initiatorPosition != null) return _initiatorPosition;
+                DValue initiatorPositionId;
+                if (!_source.Attributes.TryGetValue(SystemAttributes.TASK_INITIATOR_POSITION,
+                    out initiatorPositionId)) return _initiatorPosition;
+                int pos;
+                if (int.TryParse(initiatorPositionId.ToString(), out pos))
                 {
-                    DValue initiatorPositionId;
-                    if (_source.Attributes.TryGetValue(SystemAttributes.TASK_INITIATOR_POSITION, out initiatorPositionId))
-                    {
-                        int pos;
-                        if (int.TryParse(initiatorPositionId.ToString(), out pos))
-                        {
-                            _initiatorPosition = _repository.GetOrganisationUnit(pos);
-                        }
-                    }
+                    _initiatorPosition = _repository.GetOrganisationUnit(pos);
                 }
                 return _initiatorPosition;
             }
@@ -104,7 +101,7 @@ namespace Ascon.Pilot.WebClient.Models
         //    get { return _person ?? (_person = _repository.GetPerson(_source.CreatorId)); }
         //}
 
-        public DateTime Created => _source.Created.ToLocalTime();
+        public DateTime Created => _source.Created.ToUniversalTime();
 
         //public IList<Guid> Children
         //{
