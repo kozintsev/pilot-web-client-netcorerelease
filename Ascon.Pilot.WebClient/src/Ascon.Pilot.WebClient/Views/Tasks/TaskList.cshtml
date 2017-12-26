@@ -8,7 +8,7 @@
 }
 else
 {
-    @foreach (var node in Model)
+    foreach (var node in Model)
     {
         <div class="task-node" onclick="processTaskClick(this)" id="@node.Id">
             <div class="row">
@@ -26,19 +26,19 @@ else
                         <div class="col-fix-16"></div>
                         break;
                     case TaskState.Assigned:
-                        <div class="col-fix-16"><img src="~/images/tasks/assigned.png" /></div>
+                        <div class="col-fix-16"><img data-item-id="@node.Id" src="~/images/tasks/assigned.png" /></div>
                         break;
                     case TaskState.InProgress:
-                        <div class="col-fix-16"><img src="~/images/tasks/in_progress.png" /></div>
+                        <div class="col-fix-16"><img data-id="@node.Id" src="~/images/tasks/in_progress.png" /></div>
                         break;
                     case TaskState.Revoked:
-                        <div class="col-fix-16"><img src="~/images/tasks/revoked.png" /></div>
+                        <div class="col-fix-16"><img data-id="@node.Id" src="~/images/tasks/revoked.png" /></div>
                         break;
                     case TaskState.OnValidation:
-                        <div class="col-fix-16"><img src="~/images/tasks/validation.png" /></div>
+                        <div class="col-fix-16"><img data-id="@node.Id" src="~/images/tasks/validation.png" /></div>
                         break;
                     case TaskState.Completed:
-                        <div class="col-fix-16"><img src="~/images/tasks/completed.png" /></div>
+                        <div class="col-fix-16"><img data-id="@node.Id" src="~/images/tasks/completed.png" /></div>
                         break;
                     default:
                         <div class="col-fix-16"></div>

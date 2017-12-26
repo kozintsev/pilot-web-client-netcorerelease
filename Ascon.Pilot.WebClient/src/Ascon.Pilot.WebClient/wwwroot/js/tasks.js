@@ -218,6 +218,7 @@ function pushHistory(id) {
 }
 
 function setState(taskId) {
+    var imagePrefix = "/images/tasks/";
     var oldState = $("#btn-state").data("id");
     var newState = oldState + 1;
     $.ajax({
@@ -227,6 +228,17 @@ function setState(taskId) {
         type: "post",
         contenttype: "application/json; charset=utf-8",
         async: true,
+        success: function () {
+            if (oldState === 1) {
+                $("#btn-state").html("Завершить работу по заданию");
+                $("#btn-state").attr("data-id", "2");
+                $('img[data-item-id="' + taskId + '"]').attr("src", imagePrefix + "in_progress.png");
+            }
+            if (oldState === 2) {
+                $("#state-btn").hide();
+                $("#" + taskId).hide();
+            }
+        },
         error: function (xhr) {
             alert("error" + xhr);
         }
