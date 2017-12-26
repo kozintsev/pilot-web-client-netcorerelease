@@ -10,14 +10,16 @@ namespace Ascon.Pilot.WebClient.Server
     public class TaskModifier
     {
         private readonly IServerApi _backend;
+        private readonly IRepository _repository;
         private readonly Dictionary<Guid, ITaskChangeBuilder> _builders = new Dictionary<Guid, ITaskChangeBuilder>();
         private const int TaskTypeId = 6;
 
-        public TaskModifier(IServerApi backend)
+        public TaskModifier(IRepository repository)
         {
-            if (backend == null)
-                throw new ArgumentNullException(nameof(backend));
-            _backend = backend;
+            if (repository == null)
+                throw new ArgumentNullException(nameof(repository));
+            _repository = repository;
+            _backend = repository.GetServerApi();
         }
 
         public ITaskChangeBuilder EditWorkFlow(Guid sourceId)
@@ -94,7 +96,7 @@ namespace Ascon.Pilot.WebClient.Server
                 Id = id,
                 ParentId = parentId,
                 TypeId = typeId,
-                //CreatorId = _backend.CurrentPerson().Id,
+                CreatorId = _repository.CurrentPerson().Id,
                 Created = DateTime.UtcNow
             };
 
@@ -114,7 +116,7 @@ namespace Ascon.Pilot.WebClient.Server
             newObj.Id = newId;
             newObj.Created = DateTime.UtcNow;
             newObj.ClearTaskVersions();
-            //newObj.CreatorId = _backend.CurrentPerson().Id;
+            newObj.CreatorId = source.CreatorId;
 
             // добавим текущей таске в дети клона
             InnerEdit(source.Id).AddTaskChild(newId);

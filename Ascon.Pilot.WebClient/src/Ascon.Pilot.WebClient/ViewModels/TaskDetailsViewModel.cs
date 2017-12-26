@@ -82,9 +82,17 @@ namespace Ascon.Pilot.WebClient.ViewModels
 
         public bool SetState(int oldState, int newState)
         {
-            var modifier = new TaskModifier(_repository.GetServerApi());
-            modifier.Edit(_taskId).SetState((TaskState) newState);
-            modifier.Apply();
+            var modifier = new TaskModifier(_repository);
+            if (oldState == 1 && newState == 2)
+            {
+                modifier.Edit(_taskId).SetState((TaskState) newState);
+                modifier.Apply();
+            }
+            if (oldState == 2 && newState == 3)
+            {
+                modifier.Edit(_taskId).SetState(TaskState.OnValidation);
+                modifier.Apply();
+            }
             return true;
         }
     }

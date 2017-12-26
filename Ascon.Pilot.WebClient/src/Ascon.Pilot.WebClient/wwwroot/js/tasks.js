@@ -220,7 +220,13 @@ function pushHistory(id) {
 function setState(taskId) {
     var imagePrefix = "/images/tasks/";
     var oldState = $("#btn-state").data("id");
-    var newState = oldState + 1;
+    var newState = 0;
+    if (oldState === 1) {
+        newState = 2;
+    }
+    if (oldState === 2) {
+        newState = 3;
+    }
     $.ajax({
         url: "/Tasks/SetState",
         datatype: "json",
