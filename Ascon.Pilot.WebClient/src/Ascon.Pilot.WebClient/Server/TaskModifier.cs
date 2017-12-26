@@ -113,7 +113,7 @@ namespace Ascon.Pilot.WebClient.Server
             newObj.Id = newId;
             newObj.Created = DateTime.UtcNow;
             newObj.ClearTaskVersions();
-            newObj.CreatorId = source.CreatorId;
+            newObj.CreatorId = _repository.CurrentPerson().Id;
 
             // добавим текущей таске в дети клона
             InnerEdit(source.Id).AddTaskChild(newId);
