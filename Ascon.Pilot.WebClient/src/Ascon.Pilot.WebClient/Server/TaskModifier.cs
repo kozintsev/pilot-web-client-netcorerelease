@@ -37,13 +37,11 @@ namespace Ascon.Pilot.WebClient.Server
         {
             return InnerEdit(sourceId);
         }
-        
 
         public ITaskChangeBuilder DeleteStage(Guid workflowId, Guid stageId)
         {
             return Edit(workflowId).RemoveTaskChild(stageId);
         }
-        
 
         public ITaskChangeBuilder UpdateTask(Guid taskId, int executorPosition)
         {
@@ -63,7 +61,6 @@ namespace Ascon.Pilot.WebClient.Server
 
             var changesetData = new DChangesetData {Identity = Guid.NewGuid()};
 
-            //Добавим изменение (создание) текущего объекта
             changesetData.Changes.AddRange(changes);
 
             _backend.Change(changesetData);
