@@ -17,6 +17,51 @@ namespace Ascon.Pilot.WebClient.Models
             _fileArchiveApi = fileArchiveApi;
         }
 
+        public void SetState(Guid id, int stat, int personId)
+        {
+            var newId = Guid.NewGuid();
+            var obj = _serverApi.GetObjects(new[] { id }).First();
+            var newObject = obj.Clone();
+            //newObject.Access.Clear();
+            newObject.Children.Clear();
+            newObject.Id = newId;
+            newObject.Created = DateTime.UtcNow;
+            newObject.ClearTaskVersions();
+            newObject.CreatorId = personId;
+            newObject.ParentId = obj.Id;
+
+            //Создадим изменение для нового объекта
+            var change = new DChange() { New = newObject, Old = null }; // Old = null - создание объекта. New = null - безвозвратное удаление объекта
+
+            //Добавим новый объект родителю в дети
+            var parentChange = EditObject(obj.Id);
+            parentChange.New.Attributes[SystemAttributes.TASK_STATE] = stat;
+            parentChange.New.Attributes[SystemAttributes.TASK_DATE_OF_START] = DateTime.UtcNow;
+            // изменить атрибут
+            parentChange.New.Children.Add(new DChild() { ObjectId = newObject.Id, TypeId = 6 });
+
+            //НЕ ЗАБЫВАЕМ ПРОПИСАТЬ ПРАВА НА ОБЪЕТК
+            foreach (var access in parentChange.New.Access)
+            {
+                newObject.Access.Add(access);
+            }
+
+            newObject.Access.Add(new AccessRecord(0, personId, obj.Id,
+                new Access(AccessLevel.ViewEdit, DateTime.MaxValue, true)));
+
+            //Для того, чтобы сервер принял изменения необходимо создать объект типа DChangesetData
+            var changesetData = new DChangesetData();
+            changesetData.Identity = Guid.NewGuid();
+
+            //Добавим изменение (создание) текущего объекта
+            changesetData.Changes.Add(change);
+            //Добавим изменение родительского объекта (добавление детей)
+            changesetData.Changes.Add(parentChange);
+
+            //отправим изменение на сервер
+            _serverApi.Change(changesetData);
+        }
+
         public void CreateObject(Guid id, Guid parentId, int typeId, string filename)
         {
             var personId = 1; //TODO необъодимо задать ID текущего пользователя
@@ -72,13 +117,14 @@ namespace Ascon.Pilot.WebClient.Models
             parentChange.New.Children.Add(new DChild() { ObjectId = newObject.Id, TypeId = typeId });
 
             ////НЕ ЗАБЫВАЕМ ПРОПИСАТЬ ПРАВА НА ОБЪЕТК
-            //foreach (var access in parentChange.New.Access)
-            //{
-            //    newObject.Access.Add(access.Key, new Access(access.Value.AccessLevel, access.Value.ValidThrough, access.Value.IsInheritable, access.Value.IsInherited));
-            //}
-            ////Добавить права создателя на объект
-            //newObject.Access.Add(personId, new Access(AccessLevel.ViewEdit, DateTime.MaxValue, true, false));
-            
+            foreach (var access in parentChange.New.Access)
+            {
+                newObject.Access.Add(access);
+            }
+            //Добавить права создателя на объект
+            var a = new Access(AccessLevel.ViewEdit, DateTime.MaxValue, true);
+            //newObject.Access.Add(personId, );
+
             //Создадим изменение для нового объекта
             var change = new DChange() { New = newObject, Old = null }; // Old = null - создание объекта. New = null - безвозвратное удаление объекта
 
