@@ -72,8 +72,8 @@ namespace Ascon.Pilot.WebClient.Server
         {
             var task = GetActualObject(taskId);
             var oldExecutorPosition = task.GetExecutorPosition();
-
-            var oldState = (TaskState)(long)task.Attributes["TaskState B65D6C5B-7D8E-4055-852F-D1AAB060CD22"]; 
+            
+            var oldState = (TaskState)(long)task.Attributes[SystemAttributes.TASK_STATE]; 
 
             var isExecutorChanged = oldExecutorPosition != executorPosition;
             if (isExecutorChanged && oldState != TaskState.Revoked)

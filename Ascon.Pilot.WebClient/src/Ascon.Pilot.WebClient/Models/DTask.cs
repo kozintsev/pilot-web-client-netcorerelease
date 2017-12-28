@@ -101,7 +101,7 @@ namespace Ascon.Pilot.WebClient.Models
         //    get { return _person ?? (_person = _repository.GetPerson(_source.CreatorId)); }
         //}
 
-        public DateTime Created => _source.Created.ToUniversalTime();
+        public DateTime Created => _source.Created;
 
         //public IList<Guid> Children
         //{
