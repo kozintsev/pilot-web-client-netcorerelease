@@ -115,7 +115,7 @@ namespace Ascon.Pilot.WebClient.Models
 
         public DateTime Created
         {
-            get { return _source.Created.ToLocalTime(); }
+            get { return _source.Created; }
         }
 
         //public IList<Guid> Children
@@ -224,7 +224,7 @@ namespace Ascon.Pilot.WebClient.Models
                 if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DEADLINE_DATE, out deadLine))
                 {
                     if (deadLine.DateValue != null)
-                        return ((DateTime)deadLine).ToLocalTime();
+                        return deadLine;
                 }
 
                 return DateTime.MaxValue;
@@ -239,7 +239,7 @@ namespace Ascon.Pilot.WebClient.Models
                 if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_ASSIGNMENT, out date))
                 {
                     if (date.DateValue != null)
-                        return ((DateTime)date).ToLocalTime();
+                        return date;
                 }
 
                 return Created;
@@ -253,7 +253,7 @@ namespace Ascon.Pilot.WebClient.Models
                 DValue date;
                 if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_COMPLETION, out date))
                 {
-                    return date.DateValue?.ToLocalTime();
+                    return date.DateValue;
                 }
 
                 return null;
@@ -267,7 +267,7 @@ namespace Ascon.Pilot.WebClient.Models
                 DValue date;
                 if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_START, out date))
                 {
-                    return date.DateValue?.ToLocalTime();
+                    return date.DateValue;
                 }
 
                 return null;
@@ -281,7 +281,7 @@ namespace Ascon.Pilot.WebClient.Models
                 DValue date;
                 if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_REVOKATION, out date))
                 {
-                    return date.DateValue?.ToLocalTime();
+                    return date.DateValue;
                 }
 
                 return null;

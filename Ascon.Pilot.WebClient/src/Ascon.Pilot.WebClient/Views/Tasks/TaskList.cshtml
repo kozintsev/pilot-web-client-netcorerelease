@@ -1,4 +1,5 @@
-﻿@using Ascon.Pilot.WebClient.Models;
+﻿@using Ascon.Pilot.Core
+@using Ascon.Pilot.WebClient.Models;
 
 @model IEnumerable<Ascon.Pilot.WebClient.ViewModels.TaskNode>
 
@@ -45,7 +46,7 @@ else
                         break;
                 }
                 <div class="col-md-6 col-sm-8 col-lg-8 text-title truncate">@node.Title</div>
-                <div class="col-fix-145 col-float-right hidden-xs" style="font-size:small">Выдано @node.DateOfAssignment.ToString("g")</div>
+                <div class="col-fix-145 col-float-right hidden-xs" style="font-size:small">Выдано <span class="local-datetime nowrap" data-utc="@node.DateOfAssignment.ToUnixTimeMilliseconds()">@node.DateOfAssignment.ToString("g")</span></div>
             </div>
             <div class="row">
                 <div class="col-fix-16"></div>
@@ -57,7 +58,7 @@ else
                 }
                 else 
                 {
-                    <div class="col-fix-145 col-float-right hidden-xs" style="font-size:small">Срок @node.DeadlineDate.ToString("g")</div>
+                    <div class="col-fix-145 col-float-right hidden-xs" style="font-size:small">Срок <span class="local-datetime nowrap" data-utc="@node.DeadlineDate.ToUnixTimeMilliseconds()">@node.DeadlineDate.ToString("g")</span></div>
                 }
             </div>
             <div class="row">
@@ -68,7 +69,7 @@ else
                 }
                 else
                 {
-                    <div class="col-fix-145 col-float-right hidden-xs" style="font-size:small">Начало @node.DateOfStart?.ToString("g")</div>
+                    <div class="col-fix-145 col-float-right hidden-xs" style="font-size:small">Начало <span class="local-datetime nowrap" data-utc="@node.DateOfStart?.ToUnixTimeMilliseconds()">@node.DateOfStart?.ToString("g")</span></div>
                 }
             </div>
         </div>

@@ -308,5 +308,10 @@ namespace Ascon.Pilot.Core
         {
             return dateTime.ToString("d", DateTimeFormatInfo.CurrentInfo);
         }
+
+        public static double ToUnixTimeMilliseconds(this DateTime dateTime)
+        {
+            return dateTime.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds;
+        }
     }
 }
