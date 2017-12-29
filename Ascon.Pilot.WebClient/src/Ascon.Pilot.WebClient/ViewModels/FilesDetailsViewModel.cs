@@ -93,7 +93,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
                 var file = obj.ActualFileSnapshot.Files.FirstOrDefault();
                 if (file != null)
                 {
-                    VersionTime = obj.ActualFileSnapshot.Created.ToLocalTime();
+                    VersionTime = obj.ActualFileSnapshot.Created;
                     Author = _repository.GetPerson(obj.ActualFileSnapshot.CreatorId).DisplayName;
                 }
                 return file;
@@ -107,7 +107,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
                 {
                     if (!string.IsNullOrEmpty(snapshot.Reason))
                         VersionReason = string.Format("\"{0}\"", snapshot.Reason);
-                    VersionTime = snapshot.Created.ToLocalTime();
+                    VersionTime = snapshot.Created;
                     Author = GetPersonDisplayName(snapshot.CreatorId);
                 }
                 return file;
