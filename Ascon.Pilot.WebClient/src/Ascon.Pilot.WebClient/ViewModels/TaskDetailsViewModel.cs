@@ -82,7 +82,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
 
         public bool SetState(int oldState, int newState)
         {
-            var modifier = new TaskModifier(_repository);
+            var modifier = _repository.GetTaskModifier();
             if (oldState == 1 && newState == 2)
             {
                 modifier.Edit(_taskId).SetState(TaskState.InProgress);
