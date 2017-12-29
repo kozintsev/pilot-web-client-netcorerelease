@@ -33,7 +33,7 @@ else
                     </dl>
                     <br/>
                     <br/>
-                    <p>Создал(а) @Model.Author @Model.VersionTime</p>
+                    <p>Создал(а) @Model.Author <span class="local-datetime nowrap" data-utc="@Model.VersionTime.ToUnixTimeMilliseconds()">@Model.VersionTime</span></p>
                 </div>
             </div>
         </div>
@@ -53,17 +53,19 @@ else
                         @{
                             foreach (var snapshot in Model.Snapshots)
                             {
-                                var snapshotTime = @snapshot.Created;
+                                var snapshotTime = snapshot.Created;
                                 var isActive = "";
                                 var author = Model.GetPersonDisplayName(snapshot.CreatorId);
                                 var reason = "";
                                 if (!string.IsNullOrEmpty(snapshot.Reason))
+                                {
                                     reason = string.Format("\"{0}\"", snapshot.Reason);
-                                if (Model.VersionTime.Equals(snapshotTime.ToLocalTime()))
+                                }
+                                if (Model.VersionTime.Equals(snapshotTime))
                                 {
                                     isActive = "active";
                                 }
-                                <li class="list-group-item @isActive"><a href="@Url.Action("Index", "Files", new {id = Model.Id, version = snapshotTime.Ticks})">Версия @snapshotTime.ToLocalTime() @author @reason </a></li>
+                                <li class="list-group-item @isActive"><a href="@Url.Action("Index", "Files", new {id = Model.Id, version = snapshotTime.Ticks})">Версия <span class="local-datetime nowrap" data-utc="@snapshotTime.ToUnixTimeMilliseconds()">@snapshotTime</span> @author @reason </a></li>
                             }
                         }
                     </ul>
@@ -77,7 +79,7 @@ else
             @if (Model.IsActual == false)
             {
                 <div class="row info-note info-panel">
-                    <p>Неактуальная версия от @Model.VersionTime @Model.Author @Model.VersionReason. Перейти к <a href="@Url.Action("Index", "Files", new {id = Model.Id})">актуальной версии</a>
+                    <p>Неактуальная версия от <span class="local-datetime" data-utc="@Model.VersionTime.ToUnixTimeMilliseconds()">@Model.VersionTime</span> @Model.Author @Model.VersionReason. Перейти к <a href="@Url.Action("Index", "Files", new {id = Model.Id})">актуальной версии</a>
                     </p>
                 </div>
             }

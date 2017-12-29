@@ -1,4 +1,5 @@
 ﻿/// <autosync enabled="true" />
+/// <reference path="js/datetime.js" />
 /// <reference path="js/dropzone.js" />
 /// <reference path="js/files.js" />
 /// <reference path="js/site.js" />
