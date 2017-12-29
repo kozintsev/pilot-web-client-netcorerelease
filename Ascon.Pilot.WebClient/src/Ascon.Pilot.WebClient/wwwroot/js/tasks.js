@@ -86,6 +86,7 @@ function loadTasks(filterId, taskId) {
         },
         complete: function () {
             $("#progress").hide();
+            convertUtcDateTimeToLocal();
         }
     });
 }

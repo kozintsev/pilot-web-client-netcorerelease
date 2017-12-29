@@ -464,6 +464,10 @@ a.task-node {
         margin-top: -20px;
     }
 }
+
+.nowrap {
+  white-space: nowrap;
+}
 /*--------------------------------------Modal preview---------------------------*/
 
 @media (min-width: 992px) {
