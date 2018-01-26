@@ -36,5 +36,8 @@
 
 ## Ссылки
 
-1. [Kestrel]: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/?tabs=aspnetcore1x "Web server implementations in ASP.NET Core" [Web server implementations in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/?tabs=aspnetcore1x)
-2. [Linux_Man]: https://habrahabr.ru/post/332920/ "Разворачиваем и демонизируем ASP.NET Core приложение под Linux в виде фонового сервиса" [Разворачиваем и демонизируем ASP.NET Core приложение под Linux в виде фонового сервиса](https://habrahabr.ru/post/332920/) 
+1. [Web server implementations in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/?tabs=aspnetcore1x)
+2. [Разворачиваем и демонизируем ASP.NET Core приложение под Linux в виде фонового сервиса](https://habrahabr.ru/post/332920/) 
+
+[Kestrel]: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/?tabs=aspnetcore1x "Web server implementations in ASP.NET Core"
+[Linux_Man]: https://habrahabr.ru/post/332920/ "Разворачиваем и демонизируем ASP.NET Core приложение под Linux в виде фонового сервиса"
