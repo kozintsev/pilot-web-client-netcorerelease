@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Dynamic;
+//using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -97,6 +97,7 @@ namespace Ascon.Pilot.Transport
                 var msg = ProtoSerializer.Deserialize<MarshallingMessage>(mem);
                 var obj = GetImplementation(msg.Interface);
                 var method = obj.GetType().GetMethod(msg.Method);
+                if (method == null) return new byte[0];
                 var parameters = method.GetParameters();
 
                 if (parameters.Count() != msg.ParamCount && parameters.Count(p => p.IsOptional == false) != msg.ParamCount)
@@ -177,18 +178,18 @@ namespace Ascon.Pilot.Transport
 
         private static byte[] CallToData(MemberInfo method, IInvocation invocation)
         {
-            dynamic value = new ExpandoObject();
-            value.api = method.DeclaringType.Name;
-            value.method = method.Name;
+            //dynamic value = new ExpandoObject();
+            //value.method = method.Name;
 
-            var parameters = invocation.Method.GetParameters();
-            for (int i = 0; i < invocation.Arguments.Length; i++)
-            {
-                JsonConvert.PopulateObject(parameters[i].Name, value);
-            }
+            //var parameters = invocation.Method.GetParameters();
+            //for (var i = 0; i < invocation.Arguments.Length; i++)
+            //{
+            //    JsonConvert.PopulateObject(parameters[i].Name, value);
+            //}
                 
-            var res = JsonConvert.SerializeObject(value);
-            return Encoding.UTF8.GetBytes(res);
+            //var res = JsonConvert.SerializeObject(value);
+            //return Encoding.UTF8.GetBytes(res);
+            return new byte[0];
         }
 
         private static object DataToResult(byte[] data, MethodInfo method)

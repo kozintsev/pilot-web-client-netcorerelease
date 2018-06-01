@@ -50,8 +50,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         {
             _contextHolder.GetContext(HttpContext).Build(HttpContext);
             var versionInput = HttpContext.Request.Query["version"].ToString();
-            long version;
-            long.TryParse(versionInput, out version);
+            long.TryParse(versionInput, out var version);
 
             var model = new UserPositionViewModel();
 
@@ -65,15 +64,11 @@ namespace Ascon.Pilot.WebClient.Controllers
             var context = _contextHolder.GetContext(HttpContext);
             var repo = context.Repository;
             var node = repo.GetObjects(new[] { id.Value }).FirstOrDefault();
-            if (node?.Children?.Any() == false)
-            {
-                var nodeType = repo.GetType(node.TypeId);
-                if (nodeType.HasFiles)
-                {
-                    model.Version = version;
-                    model.IsFile = true;
-                }
-            }
+            if (node?.Children?.Any() != false) return View(model);
+            var nodeType = repo.GetType(node.TypeId);
+            if (!nodeType.HasFiles) return View(model);
+            model.Version = version;
+            model.IsFile = true;
 
             return View(model);
         }
@@ -82,8 +77,6 @@ namespace Ascon.Pilot.WebClient.Controllers
         {
             return await Task.Run(() =>
             {
-                dynamic[] childNodes;
-
                 var context = _contextHolder.GetContext(HttpContext);
                 var repo = context.Repository;
                 var node = repo.GetObjects(new[] { id }).First();
@@ -93,25 +86,25 @@ namespace Ascon.Pilot.WebClient.Controllers
                                     .Select(child => child.ObjectId).ToArray();
                 var nodeChilds = repo.GetObjects(childIds);
 
-                childNodes = nodeChilds.Where(t =>
-                {
-                    var mType = types[t.TypeId];
-                    return !mType.IsService;
-
-                }).Select(x =>
-                {
-                    var mType = types[x.TypeId];
-
-
-                    var sidePanelItem = new SidePanelItem
+                var childNodes = nodeChilds.Where(t =>
                     {
-                        DObject = x,
-                        Type = mType,
-                        SubItems = x.Children.Any(y => types[y.TypeId].Children.Any()) ? new List<SidePanelItem>() : null
-                    };
+                        var mType = types[t.TypeId];
+                        return !mType.IsService;
 
-                    return sidePanelItem.GetDynamic(id, types);
-                })
+                    }).Select(x =>
+                    {
+                        var mType = types[x.TypeId];
+
+
+                        var sidePanelItem = new SidePanelItem
+                        {
+                            DObject = x,
+                            Type = mType,
+                            SubItems = x.Children.Any(y => types[y.TypeId].Children.Any()) ? new List<SidePanelItem>() : null
+                        };
+
+                        return sidePanelItem.GetDynamic(id, types);
+                    })
                     .ToArray();
                 return Json(childNodes);
             });
@@ -128,19 +121,14 @@ namespace Ascon.Pilot.WebClient.Controllers
             var context = _contextHolder.GetContext(HttpContext);
             var repo = context.Repository;
             var node = repo.GetObjects(new[] { id }).FirstOrDefault();
-            if (node != null)
-            {
-                if (node.Children?.Any() == false)
-                {
-                    var type = repo.GetType(node.TypeId);
-                    if (type.HasFiles)
-                    {
-                        return ViewComponent(typeof(FileDetailsViewComponent), new { docId = id, panelType = filesPanelType });
-                    }
-                }
-            }
-
-            return ViewComponent(typeof(FilesPanelViewComponent), new { folderId = id, panelType = filesPanelType, onlySource = isSource });
+            if (node == null)
+                return ViewComponent(typeof(FilesPanelViewComponent),
+                    new {folderId = id, panelType = filesPanelType, onlySource = isSource});
+            if (node.Children?.Any() != false)
+                return ViewComponent(typeof(FilesPanelViewComponent),
+                    new {folderId = id, panelType = filesPanelType, onlySource = isSource});
+            var type = repo.GetType(node.TypeId);
+            return type.HasFiles ? ViewComponent(typeof(FileDetailsViewComponent), new { docId = id, panelType = filesPanelType }) : ViewComponent(typeof(FilesPanelViewComponent), new { folderId = id, panelType = filesPanelType, onlySource = isSource });
         }
 
         public IActionResult GetSource(Guid id)
@@ -158,10 +146,8 @@ namespace Ascon.Pilot.WebClient.Controllers
 
         public IActionResult DownloadPdf(Guid id, int size, string name)
         {
-            byte[] fileChunk;
-
             var repository = _contextHolder.GetContext(HttpContext).Repository;
-            fileChunk = repository.GetFileChunk(id, 0, size);
+            var fileChunk = repository.GetFileChunk(id, 0, size);
             var fileDownloadName = string.IsNullOrWhiteSpace(name) ? id.ToString() : name;
             if (Response.Headers.ContainsKey("Content-Disposition"))
                 Response.Headers.Remove("Content-Disposition");
@@ -206,7 +192,7 @@ namespace Ascon.Pilot.WebClient.Controllers
             return new FileContentResult(mstData, "application/zip") { FileDownloadName = "archive.zip" };
         }
 
-        private void AddObjectsToArchive(IRepository repository, List<DObject> objects, ZipArchive archive, IDictionary<int, MType> types, string currentPath)
+        private static void AddObjectsToArchive(IRepository repository, List<DObject> objects, ZipArchive archive, IDictionary<int, MType> types, string currentPath)
         {
             foreach (var obj in objects)
             {
@@ -268,21 +254,15 @@ namespace Ascon.Pilot.WebClient.Controllers
                 {
                     if (extension.Contains("xps"))
                     {
-                        int page = 1;
-                        int dpi = 150;
-                        //var RenderType = RenderType.;
-                        bool rotateAuto = false;
-                        string password = "";
-
                         var fileName = $"{id}{extension}";
-                        var directory = "tmp/";
+                        const string directory = "tmp/";
                         if (!Directory.Exists(directory))
                             Directory.CreateDirectory(directory);
                         using (var fileStream = System.IO.File.Create(directory + fileName))
                             fileStream.Write(file, 0, file.Length);
                         lock (LockObj)
                         {
-                            byte[] thumbnailContent = _mu.RenderFirstPageInBytes(directory + fileName);
+                            var thumbnailContent = _mu.RenderFirstPageInBytes(directory + fileName);
                             System.IO.File.Delete(directory + fileName);
                             return File(thumbnailContent, pngContentType, $"{id}.png");
                         }

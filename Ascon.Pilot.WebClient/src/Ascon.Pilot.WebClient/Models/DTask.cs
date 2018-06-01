@@ -53,17 +53,12 @@ namespace Ascon.Pilot.WebClient.Models
         {
             get
             {
-                if (_executorPosition == null)
+                if (_executorPosition != null) return _executorPosition;
+                if (!_source.Attributes.TryGetValue(SystemAttributes.TASK_EXECUTOR_POSITION, out var executorPositionId)
+                ) return _executorPosition;
+                if (int.TryParse(executorPositionId.ToString(), out var pos))
                 {
-                    DValue executorPositionId;
-                    if (_source.Attributes.TryGetValue(SystemAttributes.TASK_EXECUTOR_POSITION, out executorPositionId))
-                    {
-                        int pos;
-                        if (int.TryParse(executorPositionId.ToString(), out pos))
-                        {
-                            _executorPosition = _repository.GetOrganisationUnit(pos);
-                        }
-                    }
+                    _executorPosition = _repository.GetOrganisationUnit(pos);
                 }
                 return _executorPosition;
             }
@@ -74,11 +69,9 @@ namespace Ascon.Pilot.WebClient.Models
             get
             {
                 if (_initiatorPosition != null) return _initiatorPosition;
-                DValue initiatorPositionId;
                 if (!_source.Attributes.TryGetValue(SystemAttributes.TASK_INITIATOR_POSITION,
-                    out initiatorPositionId)) return _initiatorPosition;
-                int pos;
-                if (int.TryParse(initiatorPositionId.ToString(), out pos))
+                    out var initiatorPositionId)) return _initiatorPosition;
+                if (int.TryParse(initiatorPositionId.ToString(), out var pos))
                 {
                     _initiatorPosition = _repository.GetOrganisationUnit(pos);
                 }
@@ -90,8 +83,7 @@ namespace Ascon.Pilot.WebClient.Models
         {
             get
             {
-                DValue role;
-                _source.Attributes.TryGetValue(SystemAttributes.TASK_EXECUTOR_ROLE, out role);
+                _source.Attributes.TryGetValue(SystemAttributes.TASK_EXECUTOR_ROLE, out var role);
                 return role?.StrValue;
             }
         }
@@ -142,8 +134,7 @@ namespace Ascon.Pilot.WebClient.Models
         {
             get
             {
-                DValue title;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_TITLE, out title))
+                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_TITLE, out var title))
                 {
                     return title == null ? string.Empty : title.ToString();
                 }
@@ -158,8 +149,7 @@ namespace Ascon.Pilot.WebClient.Models
         {
             get
             {
-                DValue result;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_KIND, out result))
+                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_KIND, out var result))
                 {
                     return (TaskKind)int.Parse(result.ToString());
                 }
@@ -172,8 +162,7 @@ namespace Ascon.Pilot.WebClient.Models
         {
             get
             {
-                DValue description;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DESCRIPTION, out description))
+                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_DESCRIPTION, out var description))
                 {
                     return description == null ? string.Empty : description.ToString();
                 }
@@ -186,8 +175,7 @@ namespace Ascon.Pilot.WebClient.Models
         {
             get
             {
-                DValue deadLine;
-                if (!_source.Attributes.TryGetValue(SystemAttributes.TASK_DEADLINE_DATE, out deadLine))
+                if (!_source.Attributes.TryGetValue(SystemAttributes.TASK_DEADLINE_DATE, out var deadLine))
                     return DateTime.MaxValue;
                 return deadLine.DateValue != null ? ((DateTime)deadLine).ToLocalTime() : DateTime.MaxValue;
             }
@@ -197,45 +185,22 @@ namespace Ascon.Pilot.WebClient.Models
         {
             get
             {
-                DValue date;
-                if (!_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_ASSIGNMENT, out date)) return Created;
+                if (!_source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_ASSIGNMENT, out var date)) return Created;
                 return date.DateValue != null ? ((DateTime)date).ToLocalTime() : Created;
             }
         }
 
-        public DateTime? DateOfCompletion
-        {
-            get
-            {
-                DValue date;
-                return _source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_COMPLETION, out date) ? date.DateValue?.ToLocalTime() : null;
-            }
-        }
+        public DateTime? DateOfCompletion => _source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_COMPLETION, out var date) ? date.DateValue?.ToLocalTime() : null;
 
-        public DateTime? DateOfStart
-        {
-            get
-            {
-                DValue date;
-                return _source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_START, out date) ? date.DateValue?.ToLocalTime() : null;
-            }
-        }
+        public DateTime? DateOfStart => _source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_START, out var date) ? date.DateValue?.ToLocalTime() : null;
 
-        public DateTime? DateOfRevokation
-        {
-            get
-            {
-                DValue date;
-                return _source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_REVOKATION, out date) ? date.DateValue?.ToLocalTime() : null;
-            }
-        }
+        public DateTime? DateOfRevokation => _source.Attributes.TryGetValue(SystemAttributes.TASK_DATE_OF_REVOKATION, out var date) ? date.DateValue?.ToLocalTime() : null;
 
         public TaskState State
         {
             get
             {
-                DValue state;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_STATE, out state))
+                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_STATE, out var state))
                 {
                     return (TaskState)Enum.Parse(typeof(TaskState), state.ToString());
                 }
@@ -245,14 +210,7 @@ namespace Ascon.Pilot.WebClient.Models
         }
 
 
-        public bool IsVersion
-        {
-            get
-            {
-                DValue result;
-                return _source.Attributes.TryGetValue(SystemAttributes.TASK_IS_VERSION, out result) && Convert.ToBoolean(result.IntValue);
-            }
-        }
+        public bool IsVersion => _source.Attributes.TryGetValue(SystemAttributes.TASK_IS_VERSION, out var result) && Convert.ToBoolean(result.IntValue);
     }
 
     public static class TaskExtensions

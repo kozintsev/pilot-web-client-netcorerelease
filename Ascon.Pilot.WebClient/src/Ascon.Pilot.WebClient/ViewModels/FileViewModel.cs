@@ -23,18 +23,16 @@ namespace Ascon.Pilot.WebClient.ViewModels
         {
             get
             {
-                if (string.IsNullOrEmpty(_sizeStr))
+                if (!string.IsNullOrEmpty(_sizeStr)) return _sizeStr;
+                string[] sizes = { "b", "Kb", "Mb", "Gb" };
+                double len = Size;
+                var order = 0;
+                while (len >= 1024 && order + 1 < sizes.Length)
                 {
-                    string[] sizes = { "b", "Kb", "Mb", "Gb" };
-                    double len = Size;
-                    var order = 0;
-                    while (len >= 1024 && order + 1 < sizes.Length)
-                    {
-                        order++;
-                        len = len / 1024;
-                    }
-                    _sizeStr = $"{len:0.##} {sizes[order]}";
+                    order++;
+                    len = len / 1024;
                 }
+                _sizeStr = $"{len:0.##} {sizes[order]}";
                 return _sizeStr;
             }
         }

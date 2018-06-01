@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Ascon.Pilot.WebClient.Extensions;
 using Ascon.Pilot.WebClient.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

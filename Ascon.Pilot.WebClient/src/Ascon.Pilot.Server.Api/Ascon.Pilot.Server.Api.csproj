@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Ascon.Pilot.Server.Api Class Library</Description>
+    <VersionPrefix>0.0.1</VersionPrefix>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+    <AssemblyName>Ascon.Pilot.Server.Api</AssemblyName>
+    <PackageId>Ascon.Pilot.Server.Api</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ascon.Pilot.Core\Ascon.Pilot.Core.csproj" />
+    <ProjectReference Include="..\Ascon.Pilot.Transport\Ascon.Pilot.Transport.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Net.Utilities" Version="4.0.0-beta-23516" />
+  </ItemGroup>
+
+</Project>

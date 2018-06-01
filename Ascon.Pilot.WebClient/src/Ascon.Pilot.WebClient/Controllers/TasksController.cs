@@ -88,38 +88,20 @@ namespace Ascon.Pilot.WebClient.Controllers
 
         private int MaxResults
         {
-            get
-            {
-                return HttpContext.Session.GetSessionValues<int>("max_results");
-            }
-            set
-            {
-                HttpContext.Session.SetSessionValues<int>("max_results", value);
-            }
+            get => HttpContext.Session.GetSessionValues<int>("max_results");
+            set => HttpContext.Session.SetSessionValues<int>("max_results", value);
         }
 
         private int FilterId
         {
-            get
-            {
-                return HttpContext.Session.GetSessionValues<int>("filter_id");
-            }
-            set
-            {
-                HttpContext.Session.SetSessionValues("filter_id", value);
-            }
+            get => HttpContext.Session.GetSessionValues<int>("filter_id");
+            set => HttpContext.Session.SetSessionValues("filter_id", value);
         }
 
         private IList<Guid> Tasks
         {
-            get
-            {
-                return HttpContext.Session.GetSessionValues<IList<Guid>>("tasks");
-            }
-            set
-            {
-                HttpContext.Session.SetSessionValues("tasks", value);
-            }
+            get => HttpContext.Session.GetSessionValues<IList<Guid>>("tasks");
+            set => HttpContext.Session.SetSessionValues("tasks", value);
         }
 
         private async Task<IEnumerable<TaskNode>> GetItemsAsync(int id, int results)

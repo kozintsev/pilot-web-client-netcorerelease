@@ -7,8 +7,8 @@ using Ascon.Pilot.WebClient.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http.Authentication;
 using Ascon.Pilot.WebClient.Models;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Ascon.Pilot.WebClient.Controllers
 {
@@ -92,13 +92,19 @@ namespace Ascon.Pilot.WebClient.Controllers
             };
 
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, ApplicationConst.PilotMiddlewareInstanceName));
-            
-            await HttpContext.Authentication.SignInAsync(ApplicationConst.PilotMiddlewareInstanceName, principal, new AuthenticationProperties { IsPersistent = isPersistent });
+            await HttpContext.SignInAsync(
+                ApplicationConst.PilotMiddlewareInstanceName,
+                principal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = true
+                });
         }
         
         public async Task<IActionResult> LogOff()
         {
-            await HttpContext.Authentication.SignOutAsync(ApplicationConst.PilotMiddlewareInstanceName);
+            await HttpContext.SignOutAsync(
+                ApplicationConst.PilotMiddlewareInstanceName);
             _contextHolder.Dispose();
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
