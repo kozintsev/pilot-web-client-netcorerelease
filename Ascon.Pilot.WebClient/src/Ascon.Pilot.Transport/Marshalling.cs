@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-//using System.Dynamic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -178,18 +178,19 @@ namespace Ascon.Pilot.Transport
 
         private static byte[] CallToData(MemberInfo method, IInvocation invocation)
         {
-            //dynamic value = new ExpandoObject();
-            //value.method = method.Name;
+            dynamic value = new ExpandoObject();
 
-            //var parameters = invocation.Method.GetParameters();
-            //for (var i = 0; i < invocation.Arguments.Length; i++)
-            //{
-            //    JsonConvert.PopulateObject(parameters[i].Name, value);
-            //}
+            value.api = method.DeclaringType?.Name; 
+            value.method = method.Name;
+
+            var parameters = invocation.Method.GetParameters();
+            for (var i = 0; i < invocation.Arguments.Length; i++)
+            {
+                JsonConvert.PopulateObject(parameters[i].Name, value);
+            }
                 
-            //var res = JsonConvert.SerializeObject(value);
-            //return Encoding.UTF8.GetBytes(res);
-            return new byte[0];
+            var res = JsonConvert.SerializeObject(value);
+            return Encoding.UTF8.GetBytes(res);
         }
 
         private static object DataToResult(byte[] data, MethodInfo method)
