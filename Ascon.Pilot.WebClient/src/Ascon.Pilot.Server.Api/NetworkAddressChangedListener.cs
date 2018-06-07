@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Net.NetworkInformation;
 
 namespace Ascon.Pilot.Server.Api
@@ -26,13 +25,8 @@ namespace Ascon.Pilot.Server.Api
 
         public NetworkAddressChangedListener(IConnectionLostListener connectionLostListener, ConnectionCredentials credentials)
         {
-            if (connectionLostListener == null) 
-                throw new ArgumentNullException("connectionLostListener");
-            if (credentials == null) 
-                throw new ArgumentNullException("credentials");
-
-            _connectionLostListener = connectionLostListener;
-            _credentials = credentials;
+            _connectionLostListener = connectionLostListener ?? throw new ArgumentNullException(nameof(connectionLostListener));
+            _credentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
 
             //NetworkChange.NetworkAddressChanged += NetworkAddressChanged;
             //NetworkChange.NetworkAvailabilityChanged += NetworkAvailabilityChanged;
@@ -60,12 +54,10 @@ namespace Ascon.Pilot.Server.Api
         public static bool PingHost(string host, int timeout = 120)
         {
             var pingSender = new Ping();
-            PingReply reply = pingSender.SendPingAsync(host, timeout).Result;
+            var reply = pingSender.SendPingAsync(host, timeout).Result;
             if (reply == null)
                 return false;
-            if (reply.Status == IPStatus.Success)
-                return true;
-            return false;
+            return reply.Status == IPStatus.Success;
         }
 
         public void Dispose()

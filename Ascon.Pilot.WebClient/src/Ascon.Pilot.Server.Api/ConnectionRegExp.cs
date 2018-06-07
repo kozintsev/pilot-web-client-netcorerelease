@@ -10,14 +10,12 @@ namespace Ascon.Pilot.Server.Api
         public static string TcpPreffix = @"net.tcp://";
 
         //Порт в строке встречается 0 или 1 раз
-        private static string _port = "(:([0-9]{1,5}))?";
-        private static string _ip = @"([01]?\d\d?|2[0-4]\d|25[0-5])\." +
-                                    @"([01]?\d\d?|2[0-4]\d|25[0-5])\." +
-                                    @"([01]?\d\d?|2[0-4]\d|25[0-5])\." +
-                                    @"([01]?\d\d?|2[0-4]\d|25[0-5])";
+        private const string _port = "(:([0-9]{1,5}))?";
+
+        private const string _ip = @"([01]?\d\d?|2[0-4]\d|25[0-5])\." + @"([01]?\d\d?|2[0-4]\d|25[0-5])\." + @"([01]?\d\d?|2[0-4]\d|25[0-5])\." + @"([01]?\d\d?|2[0-4]\d|25[0-5])";
 
         //Строки вида http://10.1.5.256:80/some_string
-        public static string HttpBindingIP = HttpPrefix + _ip + _port + @"/([0-9a-zA-Z]{1,})";
+        public static string HttpBindingIp = HttpPrefix + _ip + _port + @"/([0-9a-zA-Z]{1,})";
 
         //строки вида http://url:8080/some_string
         public static string HttpBindingName = HttpPrefix + @"([a-zA-Z0-9\-\._]+)" + _port + @"/(\w+)";
@@ -37,7 +35,7 @@ namespace Ascon.Pilot.Server.Api
         //
         public static List<string> ServerRegExpressions = new List<string>
                                                               {
-                                                       HttpBindingIP,
+                                                       HttpBindingIp,
                                                        HttpBindingName,
                                                        NetBindingIP,
                                                        NetBindingName,

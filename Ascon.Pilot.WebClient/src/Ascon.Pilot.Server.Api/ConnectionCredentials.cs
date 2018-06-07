@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Net.Http;
 using System.Security;
 using Ascon.Pilot.Core;
 
@@ -13,27 +12,17 @@ namespace Ascon.Pilot.Server.Api
         public string Username { get; private set; }
         public SecureString Password { get; private set; }
 
-        public bool UseWindowsAuth
-        {
-            get { return !String.IsNullOrEmpty(Username) && (Username.Contains("\\") || Username.Contains("@")); }
-        }
+        public bool UseWindowsAuth => !string.IsNullOrEmpty(Username) && (Username.Contains("\\") || Username.Contains("@"));
 
-        public string DatabaseName
-        {
-            get { return ServerUrl != null ? Uri.UnescapeDataString(ServerUrl.AbsolutePath.TrimStart('/')) : null; }
-        }
+        public string DatabaseName => ServerUrl != null ? Uri.UnescapeDataString(ServerUrl.AbsolutePath.TrimStart('/')) : null;
 
-        public string ProtectedPassword
-        {
-            get { return Password.ConvertToUnsecureString().EncryptAes(); }
-        }
+        public string ProtectedPassword => Password.ConvertToUnsecureString().EncryptAes();
 
         public Uri PersonUrl
         {
             get
             {
-                var uri = new UriBuilder(new Uri(ServerUrl, DatabaseName));
-                uri.UserName = Uri.EscapeDataString(Username);
+                var uri = new UriBuilder(new Uri(ServerUrl, DatabaseName)) {UserName = Uri.EscapeDataString(Username)};
                 return uri.Uri;
             }
         }

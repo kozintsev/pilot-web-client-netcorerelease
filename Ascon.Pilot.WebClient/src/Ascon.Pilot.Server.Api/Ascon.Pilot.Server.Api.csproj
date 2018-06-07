@@ -17,8 +17,4 @@
     <ProjectReference Include="..\Ascon.Pilot.Transport\Ascon.Pilot.Transport.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Net.Utilities" Version="4.0.0-beta-23516" />
-  </ItemGroup>
-
 </Project>
