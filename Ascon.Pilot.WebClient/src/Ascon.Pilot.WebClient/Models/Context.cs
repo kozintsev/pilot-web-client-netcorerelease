@@ -28,10 +28,12 @@ namespace Ascon.Pilot.WebClient.Models
 
         public DDatabaseInfo Connect(Credentials credentials)
         {
-            _client = new HttpPilotClient();
-            _client.Connect(ApplicationConst.PilotServerUrl);
+            _client = new HttpPilotClient(ApplicationConst.PilotServerUrl);
+            _client.Connect();
             var serverApi = _client.GetServerApi(_serverCallback);
-            var dbInfo = serverApi.OpenDatabase(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth);
+            var authApi = _client.GetAuthenticationApi();
+            authApi.Login(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth, 100);
+            var dbInfo = serverApi.OpenDatabase();
             _repository = new Repository(serverApi, _serverCallback);
             _repository.Initialize(credentials.Username);
             IsInitialized = true;

@@ -8,43 +8,27 @@ namespace Ascon.Pilot.Server.Api
 {
     public class HttpPilotClient : IImplementationFactory, IDisposable
     {
+        private readonly string _url;
+        private readonly IWebProxy _proxy;
         private readonly TransportClient _client;
         private readonly CallbackReceiverAdapter _transportCallback;
-        private readonly IGetService _marshaller;
-        private readonly ICallService _unmarshaller;
+        protected readonly Marshaller _marshaller;
+        private readonly Unmarshaller _unmarshaller;
+        protected IServerUpdateCallback _updateCallback;
         private IServerCallback _serverCallback;
         private IServerAdminCallback _adminCallback;
-        private IServerUpdateCallback _updateCallback;
+        private IMessageCallback _messageCallback;
         private bool _isBroken;
         private IConnectionLostListener _connectionLostListener;
 
-        public HttpPilotClient() : this(new MarshallingFactory())
+        public HttpPilotClient(string url, IWebProxy proxy = null)
         {
-
-        }
-
-        public HttpPilotClient(IMarshallingFactory factory)
-        {
+            _url = url;
+            _proxy = proxy;
             _client = new TransportClient();
-            _marshaller = factory.GetMarshaller(new CallServiceAdapter(_client));
-            _unmarshaller = factory.GetUnmarshaller(this);
+            _marshaller = new Marshaller(new CallServiceAdapter(_client));
+            _unmarshaller = new Unmarshaller(this);
             _transportCallback = new CallbackReceiverAdapter(_unmarshaller, CallbackError);
-        }
-
-        /// <summary>
-        /// Init new HttpPilotClient instance with Marshalling factory as default.
-        /// Connect with specified credentials to server
-        /// </summary>
-        /// <param name="credentials"></param>
-        public HttpPilotClient(ConnectionCredentials credentials)
-            : this(credentials, new MarshallingFactory())
-        {
-        }
-
-        public HttpPilotClient(ConnectionCredentials credentials, IMarshallingFactory factory) 
-            : this(factory)
-        {
-            Connect(credentials);
         }
 
         public void SetConnectionLostListener(IConnectionLostListener connectionLostListener)
@@ -55,7 +39,8 @@ namespace Ascon.Pilot.Server.Api
         private void CallbackError()
         {
             if (_connectionLostListener != null)
-                _connectionLostListener.ConnectionLost(new TransportException("Client connection is disconnected by server."));
+                _connectionLostListener.ConnectionLost(
+                    new TransportException("Client connection is disconnected by server."));
         }
 
         public void Dispose()
@@ -80,29 +65,32 @@ namespace Ascon.Pilot.Server.Api
                 throw new TransportException("Connection is not available");
         }
 
-        public bool IsClientActive()
+        public virtual void Connect()
         {
-            return _client.Active;
-        }
-
-        public void Connect(string url, IWebProxy proxy = null)
-        {
-            CheckBroken();
-            _client.SetProxy(proxy);
-            _client.Connect(url);
+            ConnectBase();
+#if !DEBUG 
+            CheckClientVersion();
+#endif
             _client.OpenCallback(_transportCallback);
         }
 
-        public void Connect(ConnectionCredentials credentials)
+        protected void ConnectBase()
         {
-            Connect(credentials.GetConnectionString());
+            CheckBroken();
+            _client.SetProxy(_proxy);
+            _client.Connect(_url);
         }
 
         public void Disconnect()
         {
             _client.Disconnect();
         }
-        
+
+        public IAuthenticationApi GetAuthenticationApi()
+        {
+            return _marshaller.Get<IAuthenticationApi>();
+        }
+
         public IServerApi GetServerApi(IServerCallback callback)
         {
             _serverCallback = callback;
@@ -115,7 +103,7 @@ namespace Ascon.Pilot.Server.Api
             return _marshaller.Get<IServerAdminApi>();
         }
 
-        public IServerUpdateApi GetServerUpdateApi(IServerUpdateCallback callback)
+        protected IServerUpdateApi GetServerUpdateApi(IServerUpdateCallback callback)
         {
             _updateCallback = callback;
             return _marshaller.Get<IServerUpdateApi>();
@@ -126,14 +114,21 @@ namespace Ascon.Pilot.Server.Api
             return _marshaller.Get<IImportApi>();
         }
 
-        public IFileArchiveApi GetFileArchiveApi(string database)
+        public IFileArchiveApi GetFileArchiveApi()
         {
-            return new DataBaseNameSubstitutor(_marshaller.Get<IFileArchiveApi>(), database);
+            return _marshaller.Get<IFileArchiveApi>();
+        }
+
+        public IMessagesApi GetMessagesApi(IMessageCallback callback)
+        {
+            _messageCallback = callback;
+            return _marshaller.Get<IMessagesApi>();
         }
 
         private class CallServiceAdapter : ICallService
         {
             private readonly TransportClient _client;
+
             public CallServiceAdapter(TransportClient client)
             {
                 _client = client;
@@ -153,15 +148,25 @@ namespace Ascon.Pilot.Server.Api
                 return _adminCallback;
             if (interfaceName == "IServerUpdateCallback")
                 return _updateCallback;
+            if (interfaceName == "IMessageCallback")
+                return _messageCallback;
             throw new NotImplementedException(interfaceName);
+        }
+
+        internal void CheckClientVersion()
+        {
+            //var updateApi = GetServerUpdateApi(new NullServerUpdateCallback());
+            //var serverVersion = new Version(updateApi.GetServerVersion());
+            //if (serverVersion.CompareTo(_clientVersion) != 0)
+            //    throw new VersionMatchException("Server version and client do not match");
         }
 
         private class CallbackReceiverAdapter : ICallbackReceiver
         {
-            private readonly ICallService _unmarshaller;
+            private readonly Unmarshaller _unmarshaller;
             private readonly Action _action;
 
-            public CallbackReceiverAdapter(ICallService unmarshaller, Action action)
+            public CallbackReceiverAdapter(Unmarshaller unmarshaller, Action action)
             {
                 _unmarshaller = unmarshaller;
                 _action = action;
@@ -175,38 +180,6 @@ namespace Ascon.Pilot.Server.Api
             public void Error()
             {
                 _action.Invoke();
-            }
-        }
-
-        private class DataBaseNameSubstitutor : IFileArchiveApi
-        {
-            private readonly IFileArchiveApi _api;
-            private readonly string _database;
-
-            public DataBaseNameSubstitutor(IFileArchiveApi api, string database)
-            {
-                _database = database;
-                _api = api;
-            }
-
-            public byte[] GetFileChunk(string databaseName, Guid id, long pos, int count)
-            {
-                return _api.GetFileChunk(_database, id, pos, count);
-            }
-
-            public void PutFileChunk(string databaseName, Guid id, byte[] buffer, long pos)
-            {
-                _api.PutFileChunk(_database, id, buffer, pos);
-            }
-
-            public long GetFilePosition(string databaseName, Guid id)
-            {
-                return _api.GetFilePosition(_database, id);
-            }
-
-            public void PutFileInArchive(string databaseName, DFileBody fileBody)
-            {
-                _api.PutFileInArchive(_database, fileBody);
             }
         }
     }

@@ -2497,4 +2497,375 @@ namespace Ascon.Pilot.Core
             SetState(stateInfo.State, stateInfo.PersonId, stateInfo.PositionId, stateInfo.Date);
         }
     }
+
+    [ProtoContract(EnumPassthru = true)]
+    public enum FileArchiveCheckOperationState
+    {
+        NotStarted,
+        Running,
+        Completed,
+        CompletedWithError
+    }
+
+    [ProtoContract]
+    public class DFileArchiveCheckState
+    {
+        [ProtoMember(1)]
+        public DateTime StartTime { get; set; }
+        [ProtoMember(2)]
+        public FileArchiveCheckOperationState State { get; set; }
+        [ProtoMember(3)]
+        public long CheckedCount { get; set; }
+        [ProtoMember(4)]
+        public long TotalCount { get; set; }
+        [ProtoMember(5)]
+        public string Error { get; set; }
+        [ProtoMember(6)]
+        public bool HasErrors { get; set; }
+    }
+
+    [ProtoContract]
+    public class DPersonUpdateInfo
+    {
+        [ProtoMember(1)]
+        public Guid Id { get; set; }
+
+        [ProtoMember(2)]
+        public bool? IsInactive { get; set; }
+
+        [ProtoMember(3)]
+        public string Comment { get; set; }
+
+        [ProtoMember(4)]
+        public string Email { get; set; }
+
+        public DPersonUpdateInfo()
+        {
+            IsInactive = null;
+            Comment = null;
+            Email = null;
+        }
+    }
+
+    [ProtoContract]
+    public class DOrganisationUnitUpdateInfo
+    {
+        public DOrganisationUnitUpdateInfo()
+        {
+            VicePersons = new List<int>();
+        }
+
+        [ProtoMember(1)]
+        public List<int> VicePersons { get; }
+    }
+
+    [ProtoContract]
+    public class DChatChange
+    {
+        [ProtoMember(1)]
+        public DChat Chat { get; set; }
+        [ProtoMember(2)]
+        public bool IsRenamed { get; set; }
+        [ProtoMember(3)]
+        public bool IsDescriptionChanged { get; set; }
+    }
+
+    [ProtoContract]
+    public class DChat
+    {
+        [ProtoMember(1)]
+        public Guid Id { get; set; }
+        [ProtoMember(2)]
+        public string Name { get; set; }
+
+        [ProtoMember(3)]
+        public int CreatorId { get; set; }
+        [ProtoMember(4)]
+        public ChatKind Type { get; set; }
+        [ProtoMember(5)]
+        public Guid? LastMessageId { get; set; }
+        [ProtoMember(6)]
+        public DateTime CreationDateUtc { get; set; }
+        [ProtoMember(7)]
+        public string Description { get; set; }
+
+        public DChat Clone()
+        {
+            return new DChat
+            {
+                Id = Id,
+                CreatorId = CreatorId,
+                Name = Name,
+                Description = Description,
+                Type = Type,
+                LastMessageId = LastMessageId,
+                CreationDateUtc = CreationDateUtc
+            };
+        }
+    }
+
+    [ProtoContract(EnumPassthru = true)]
+    public enum ChatKind
+    {
+        Personal = 0,
+        Group = 1
+    }
+
+    [ProtoContract]
+    public class DChatInfo
+    {
+        [ProtoMember(1)]
+        public DChat Chat { get; set; }
+        [ProtoMember(2)]
+        public DMessage LastMessage { get; set; }
+        [ProtoMember(3)]
+        public int UnreadMessagesNumber { get; set; }
+        [ProtoMember(4)]
+        public List<DChatRelation> Relations { get; set; }
+
+        public DChatInfo()
+        {
+            Chat = new DChat();
+            LastMessage = new DMessage();
+            Relations = new List<DChatRelation>();
+        }
+    }
+
+    [ProtoContract]
+    public class DChatMember
+    {
+        [ProtoMember(1)]
+        public Guid ChatId { get; set; }
+        [ProtoMember(2)]
+        public int PersonId { get; set; }
+        [ProtoMember(3)]
+        public bool IsAdmin { get; set; }
+        [ProtoMember(4)]
+        public bool IsDeleted { get; set; }
+        [ProtoMember(5)]
+        public bool IsNotifiable { get; set; }
+        [ProtoMember(6)]
+        public DateTime DateUpdatedUtc { get; set; }
+    }
+
+    [ProtoContract]
+    public class DTextMessageData
+    {
+        public DTextMessageData()
+        {
+            Attachments = new List<DChatRelation>();
+        }
+
+        [ProtoMember(1)]
+        public string Text { get; set; }
+        [ProtoMember(2)]
+        public List<DChatRelation> Attachments { get; set; }
+    }
+
+    [ProtoContract]
+    public class DMemberChange
+    {
+        [ProtoMember(1)]
+        public int PersonId { get; set; }
+        [ProtoMember(2)]
+        public bool? IsAdded { get; set; }
+        [ProtoMember(3)]
+        public bool? IsDeleted { get; set; }
+        [ProtoMember(4)]
+        public bool? IsAdmin { get; set; }
+        [ProtoMember(5)]
+        public bool? IsNotifiable { get; set; }
+    }
+
+    [ProtoContract]
+    public class DChatMembersData
+    {
+        [ProtoMember(1)]
+        public List<DMemberChange> Changes { get; }
+        [ProtoMember(2)]
+        public string Title { get; set; }
+
+        public DChatMembersData()
+        {
+            Changes = new List<DMemberChange>();
+        }
+    }
+
+    [ProtoContract]
+    public class NotifiableDMessage
+    {
+        [ProtoMember(1)]
+        public DMessage Message { get; set; }
+        [ProtoMember(2)]
+        public bool IsNotifiable { get; set; }
+    }
+
+    [ProtoContract]
+    public class DMessage
+    {
+        [ProtoMember(1)]
+        public Guid Id { get; set; }
+        [ProtoMember(2)]
+        public byte[] Data { get; set; }
+        [ProtoMember(3)]
+        public int CreatorId { get; set; }
+        [ProtoMember(4)]
+        public DateTime? ServerDate { get; set; }
+        [ProtoMember(5)]
+        public DateTime LocalDate { get; set; }
+        [ProtoMember(6)]
+        public Guid ChatId { get; set; }
+        [ProtoMember(7)]
+        public Guid? RelatedMessageId { get; set; }
+        [ProtoMember(8)]
+        public MessageType Type { get; set; }
+        [ProtoMember(9)]
+        public List<DMessage> RelatedMessages { get; set; }
+
+        public DMessage()
+        {
+            RelatedMessages = new List<DMessage>();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DMessage)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Id.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Data != null ? Data.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ CreatorId;
+                hashCode = (hashCode * 397) ^ ServerDate.GetHashCode();
+                hashCode = (hashCode * 397) ^ LocalDate.GetHashCode();
+                hashCode = (hashCode * 397) ^ ChatId.GetHashCode();
+                hashCode = (hashCode * 397) ^ RelatedMessageId.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int)Type;
+                hashCode = (hashCode * 397) ^ (RelatedMessages != null ? RelatedMessages.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
+
+        public bool Equals(DMessage dMessage)
+        {
+            return Id == dMessage.Id && Data.SequenceEqual(dMessage.Data) && CreatorId == dMessage.CreatorId &&
+                   ServerDate == dMessage.ServerDate && LocalDate == dMessage.LocalDate &&
+                   RelatedMessageId == dMessage.RelatedMessageId && ChatId == dMessage.ChatId && Type == dMessage.Type;
+        }
+    }
+
+    [ProtoContract]
+    public class DChatRelation
+    {
+        [ProtoMember(1)]
+        public Guid ObjectId { get; set; }
+        [ProtoMember(2)]
+        public ChatRelationType Type { get; set; }
+        [ProtoMember(3)]
+        public Guid? MessageId { get; set; }
+        [ProtoMember(4)]
+        public bool IsDeleted { get; set; }
+    }
+
+    public enum ChatRelationType
+    {
+        Relation = 0,
+        Attach = 1
+    }
+
+    public class DMessagePerson
+    {
+        public Guid MessageId { get; set; }
+        public int PersonId { get; set; }
+        public bool IsSent { get; set; }
+        public bool IsRead { get; set; }
+    }
+
+    public enum MessageType
+    {
+        TextMessage = 0,
+        ChatCreation = 1,
+        ChatMembers = 2,
+        MessageRead = 3,
+        MessageAnswer = 4,
+        ChatChanged = 5,
+        ChatRelation = 6
+    }
+
+    public static class DataClassesExtensions
+    {
+        public static void Add(this List<DChild> children, DObject child)
+        {
+            children.Add(new DChild { ObjectId = child.Id, TypeId = child.TypeId });
+        }
+
+        public static void Add(this List<DChild> children, Guid childId, int typeId)
+        {
+            children.Add(new DChild { ObjectId = childId, TypeId = typeId });
+        }
+
+        public static void AddRange(this List<DChild> children, params DObject[] toAdd)
+        {
+            children.AddRange(toAdd.Select(x => new DChild { TypeId = x.TypeId, ObjectId = x.Id }));
+        }
+
+        public static void Remove(this List<DChild> children, Guid objectId)
+        {
+            children.RemoveAll(x => x.ObjectId == objectId);
+        }
+
+        public static bool Contains(this IEnumerable<DChild> children, Guid objectId)
+        {
+            return children.Any(x => x.ObjectId == objectId);
+        }
+
+        public static IEnumerable<Guid> OfType(this IEnumerable<DChild> children, int typeId)
+        {
+            return children.Where(x => x.TypeId == typeId).Select(x => x.ObjectId);
+        }
+
+        public static void AddDistinct(this List<AccessRecord> access, IEnumerable<AccessRecord> toAdd)
+        {
+            access.AddRange(toAdd.FastExcept(access));
+        }
+
+        public static void AddDistinct(this List<AccessRecord> access, AccessRecord record)
+        {
+            if (!access.Contains(record))
+                access.Add(record);
+        }
+
+        public static void RemoveAll(this List<AccessRecord> access, IEnumerable<AccessRecord> toRemove)
+        {
+            foreach (var record in toRemove)
+            {
+                access.Remove(record);
+            }
+        }
+    }
+
+    public static class ByteExtensions
+    {
+        public static bool IsBitSet(this byte b, int pos)
+        {
+            if (pos < 0 || pos > 7)
+                throw new ArgumentOutOfRangeException("pos", "Index must be in the range of 0-7.");
+
+            return (b & (1 << pos)) != 0;
+        }
+
+        public static byte SetBit(this byte b, int pos, bool value)
+        {
+            if (pos < 0 || pos > 7)
+                throw new ArgumentOutOfRangeException("pos", "Index must be in the range of 0-7.");
+
+            return value ? (byte)(b | (1 << pos)) : (byte)(b & ~(1 << pos));
+        }
+    }
 }

@@ -9,13 +9,8 @@ namespace Ascon.Pilot.Server.Api.Contracts
         /// <summary>
         /// открыть базу данных
         /// </summary>
-        /// <param name="database">имя базы данных</param>
-        /// <param name="login">логин пользователя</param>
-        /// <param name="protectedPassword">пароль</param>
-        /// <param name="useWindowsAuth">использовать windows авторизацию</param>
-        /// <param name="licenseType">тип забираемой лицензии</param>
         /// <returns>описание базы данных</returns>
-        DDatabaseInfo OpenDatabase(string database, string login, string protectedPassword, bool useWindowsAuth, int licenseType = 100);
+        DDatabaseInfo OpenDatabase();
 
         /// <summary>
         /// Получить описание базы данных
@@ -84,18 +79,12 @@ namespace Ascon.Pilot.Server.Api.Contracts
         void PutFileChunk(Guid id, byte[] buffer, long pos);
 
         /// <summary>
-        /// Создать описание файла в базе данных
-        /// </summary>
-        /// <param name="fileBody">описание файла</param>
-        void CreateFileBody(DFileBody fileBody);
-
-        /// <summary>
         /// Получить текущую позицию при считывании тела файла
         /// </summary>
         /// <param name="id">идентификатор файла</param>
         /// <returns>позиция</returns>
         long GetFilePosition(Guid id);
-        
+
         /// <summary>
         /// Загрузить всех пользователей базы данных
         /// </summary>
@@ -103,10 +92,24 @@ namespace Ascon.Pilot.Server.Api.Contracts
         List<DPerson> LoadPeople();
 
         /// <summary>
+        /// Получить список пользователей по идентификаторам
+        /// </summary>
+        /// <param name="ids">Идентификаторы</param>
+        /// <returns>список пользователей</returns>
+        List<DPerson> LoadPeopleByIds(int[] ids);
+
+        /// <summary>
         /// Получить список организационных единиц
         /// </summary>
         /// <returns>список орг. единиц</returns>
         List<DOrganisationUnit> LoadOrganisationUnits();
+
+        /// <summary>
+        /// Получить список организационных единиц по идентификаторам
+        /// </summary>
+        /// <param name="ids">Идентификаторы</param>
+        /// <returns>список орг. единиц</returns>
+        List<DOrganisationUnit> LoadOrganisationUnitsByIds(int[] ids);
 
         /// <summary>
         /// Добавить условие поиска
@@ -121,22 +124,6 @@ namespace Ascon.Pilot.Server.Api.Contracts
         void RemoveSearch(Guid searchDefinitionId);
 
         /// <summary>
-        /// Получить информацию о лицензии
-        /// </summary>
-        /// <returns>инфо</returns>
-        byte[] GetLicenseInformation();
-
-        /// <summary>
-        /// Захватить лицензию с типом licenseType
-        /// </summary>
-        void ConsumeLicense(int licenseType);
-
-        /// <summary>
-        /// Отпустить лицензию с типом licenseType
-        /// </summary>
-        void ReleaseLicense(int licenseType);
-
-        /// <summary>
         /// Запустить поиск по геометрии
         /// </summary>
         /// <param name="searchDefinition">условия поиска</param>
@@ -147,6 +134,18 @@ namespace Ascon.Pilot.Server.Api.Contracts
         /// </summary>
         /// <param name="searchDefinition">условия поиска</param>
         void ContentSearch(DSearchDefinition searchDefinition);
+
+        /// <summary>
+        /// Обновить информацию о пользователе.
+        /// </summary>
+        /// <param name="updateInfo"></param>
+        void UpdatePerson(DPersonUpdateInfo updateInfo);
+
+        /// <summary>
+        /// Обновить информацию о должности
+        /// </summary>
+        /// <param name="updateInfo"></param>
+        void UpdateOrganisationUnit(DOrganisationUnitUpdateInfo updateInfo);
     }
 
     public interface IFileArchiveApi
@@ -154,36 +153,32 @@ namespace Ascon.Pilot.Server.Api.Contracts
         /// <summary>
         /// Получить часть тела файла из архива
         /// </summary>
-        /// <param name="databaseName">имя базы данных</param>
         /// <param name="id">идентификатор файла</param>
         /// <param name="pos">позиция</param>
         /// <param name="count">кол-во</param>
         /// <returns>часть тела файла</returns>
-        byte[] GetFileChunk(string databaseName, Guid id, long pos, int count);
+        byte[] GetFileChunk(Guid id, long pos, int count);
 
         /// <summary>
         /// Положить часть тела файла
         /// </summary>
-        /// <param name="databaseName">имя базы данных</param>
         /// <param name="id">идентификатор файла</param>
         /// <param name="buffer">часть тела</param>
         /// <param name="pos">позиция</param>
-        void PutFileChunk(string databaseName, Guid id, byte[] buffer, long pos);
+        void PutFileChunk(Guid id, byte[] buffer, long pos);
 
         /// <summary>
         /// Получить текущую позицию при считывании тела файла
         /// </summary>
-        /// <param name="databaseName">имя базы данных</param>
         /// <param name="id">идентификатор файла</param>
         /// <returns>позиция</returns>
-        long GetFilePosition(string databaseName, Guid id);
+        long GetFilePosition(Guid id);
 
         /// <summary>
         /// Зафиксировать отправленные данные в файловом архиве. 
         /// При возникновении ошибки (например, несовпадении контрольной суммы или размера файла) данные во временном хранилище очищаются.
         /// </summary>
-        /// <param name="databaseName">имя базы данных</param>
         /// <param name="fileBody">Описание файла</param>
-        void PutFileInArchive(string databaseName, DFileBody fileBody);
+        void PutFileInArchive(DFileBody fileBody);
     }
 }
