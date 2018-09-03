@@ -146,13 +146,20 @@ namespace Ascon.Pilot.Core
 
         public static string GetTitle(this DObject obj, MType type)
         {
+            DValue name;
             if (type.IsProjectFileOrFolder())
             {
-                DValue name;
                 if (obj.Attributes.TryGetValue(SystemAttributes.PROJECT_ITEM_NAME, out name))
-                    return (string)name;
+                    return name;
                 return "unnamed";
             }
+
+            if (type.IsSmartFolder())
+            {
+                if (obj.Attributes.TryGetValue(SystemAttributes.SMART_FOLDER_TITLE, out name))
+                    return name;
+            }
+
             return GetObjectTitle(obj, type);
         }
 
@@ -265,6 +272,11 @@ namespace Ascon.Pilot.Core
         public static bool IsProjectFileOrFolder(string typeName)
         {
             return IsProjectFile(typeName) || IsProjectFolder(typeName);
+        }
+
+        public static bool IsSmartFolder(this MType type)
+        {
+            return type.Id == MType.SMART_FOLDER_ID;
         }
 
         public static IEnumerable<MAttribute> GetDisplayAttributes(this MType type)
