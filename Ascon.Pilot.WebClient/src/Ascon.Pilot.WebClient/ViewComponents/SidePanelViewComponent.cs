@@ -67,9 +67,12 @@ namespace Ascon.Pilot.WebClient.ViewComponents
                 {
                     var parentChilds = repo.GetObjects(parentChildsIds);
                     var subtree = model.Items;
-                    model.Items = new List<SidePanelItem>(parentChilds.Count);
+                    model.Items = new List<SidePanelItem>();
                     foreach (var parentChild in parentChilds)
                     {
+                        if (parentChild.IsForbidden())
+                            continue;
+
                         model.Items.Add(new SidePanelItem
                         {
                             Type = mTypes[parentChild.TypeId],
