@@ -1,0 +1,115 @@
+﻿@using Ascon.Pilot.WebClient.Models;
+@using Ascon.Pilot.Core;
+
+@model Ascon.Pilot.WebClient.ViewModels.FilesDetailsViewModel
+
+
+@if (Model == null || Model.File == null)
+{
+    <p class="no-data-info">Нет данных для отображения</p>
+}
+else
+{
+    <div id="docInfoModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <div>
+                        <img src="@Url.Action("GetTypeIcon", "Home", new {id = Model.ObjectTypeId})" alt="@Model.ObjectTypeTitle" height="24px" style="float: left;"/>
+                        <h4 class="modal-title">@Model.ObjectTypeTitle</h4>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <dl>
+                        @{
+                            foreach (var attr in Model.Attributes)
+                            {
+                                <dt>@attr.Key</dt>
+                                <dd>@attr.Value</dd>
+                                <br/>
+                            }
+                        }
+                    </dl>
+                    <br/>
+                    <br/>
+                    <p>Создал(а) @Model.Author <span class="local-datetime nowrap" data-utc="@Model.VersionTime.ToUnixTimeMilliseconds()">@Model.VersionTime</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="docVersionsModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <div>
+                        <h4 class="modal-title">История изменений</h4>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        @{
+                            foreach (var snapshot in Model.Snapshots)
+                            {
+                                var snapshotTime = new DateTimeOffset(snapshot.Created);
+                                var isActive = "";
+                                var author = Model.GetPersonDisplayName(snapshot.CreatorId);
+                                var reason = "";
+                                if (!string.IsNullOrEmpty(snapshot.Reason))
+                                {
+                                    reason = string.Format("\"{0}\"", snapshot.Reason);
+                                }
+                                if (Model.VersionTime.Equals(snapshotTime))
+                                {
+                                    isActive = "active";
+                                }
+                                <li class="list-group-item @isActive"><a href="@Url.Action("Index", "Files", new {id = Model.Id, version = snapshotTime.Ticks})">Версия <span class="local-datetime nowrap" data-utc="@snapshotTime.ToUnixTimeMilliseconds()">@snapshotTime</span> @author @reason </a></li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="file-details">
+        <div class="file-details-content">
+            @if (Model.IsActual == false)
+            {
+                <div class="row info-note info-panel">
+                    <p>Неактуальная версия от <span class="local-datetime" data-utc="@Model.VersionTime.ToUnixTimeMilliseconds()">@Model.VersionTime</span> @Model.Author @Model.VersionReason. Перейти к <a href="@Url.Action("Index", "Files", new {id = Model.Id})">актуальной версии</a>
+                    </p>
+                </div>
+            }
+            <div class="file-details-body">
+                <div class="row">
+                    <div class="col-md-8 col-sm-12" id="fileDetailsContent">
+                        @{
+                            var href = Url.Action("Image", "Files", new {id = Model.FileId, size = Model.Size, extension = Model.Extension, typeId = Model.ObjectTypeId});
+                        }
+                        <img class="img-responsive center-block" src="@href" alt="@Model.Name"/>
+                    </div>
+                    @{
+                        var name = Model.Name;
+                        var fileDownloadRouteValues = new {id = Model.FileId, size = Model.Size, name = name.EndsWith(Model.Extension) ? name : $"{name}{Model.Extension}"};
+                    }
+                    <div class="col-md-4 col-sm-12" id="fileDetailsInfo">
+                        <h4><i class="glyphicon glyphicon-info-sign"></i>&nbsp;Информация</h4>
+                        <dl>
+                            <dt>Размер</dt><dd>@Model.SizeStr</dd>
+                        </dl>
+                        <dl>
+                            <a class="btn btn-default" id="modalDownloadButton" href="@Url.Action("Download", "Files", fileDownloadRouteValues)">
+                                <i class="glyphicon glyphicon-download-alt"></i>&nbsp;Скачать
+                            </a>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="file-details-footer">
+            </div>
+        </div>
+    </div>
+}
