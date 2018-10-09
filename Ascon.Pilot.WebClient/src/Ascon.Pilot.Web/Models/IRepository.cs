@@ -92,7 +92,7 @@ namespace Ascon.Pilot.WebClient.Models
             {
                 _searchCompletionSource.SetResult(result);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 ;
             }
