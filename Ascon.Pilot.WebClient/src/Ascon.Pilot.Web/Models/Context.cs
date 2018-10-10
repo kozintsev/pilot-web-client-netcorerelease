@@ -29,7 +29,8 @@ namespace Ascon.Pilot.WebClient.Models
         public DDatabaseInfo Connect(Credentials credentials)
         {
             _client = new HttpPilotClient(ApplicationConst.PilotServerUrl);
-            _client.Connect();
+            // Do not check version of the Server and Client
+            _client.Connect(false);
             var serverApi = _client.GetServerApi(_serverCallback);
             var authApi = _client.GetAuthenticationApi();
             authApi.Login(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth, 100);
