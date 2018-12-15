@@ -1,4 +1,4 @@
-﻿namespace Ascon.Pilot.WebClient
+﻿namespace Ascon.Pilot.Web
 {
     /// <summary>
     /// Особые значения состояния сессии

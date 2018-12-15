@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Ascon.Pilot.WebClient
+﻿namespace Ascon.Pilot.Web
 {
     public class PilotServer
     {

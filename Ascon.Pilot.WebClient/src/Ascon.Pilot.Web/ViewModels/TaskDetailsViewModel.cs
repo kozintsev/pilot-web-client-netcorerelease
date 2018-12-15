@@ -1,12 +1,12 @@
-﻿using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Extensions;
+using Ascon.Pilot.Web.Models;
 
-namespace Ascon.Pilot.WebClient.ViewModels
+namespace Ascon.Pilot.Web.ViewModels
 {
     public class TaskDetailsViewModel
     {

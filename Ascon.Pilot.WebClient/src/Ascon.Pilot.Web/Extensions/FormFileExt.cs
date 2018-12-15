@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 
-namespace Ascon.Pilot.WebClient.Extensions
+namespace Ascon.Pilot.Web.Extensions
 {
     public static class FormFileExt
     {

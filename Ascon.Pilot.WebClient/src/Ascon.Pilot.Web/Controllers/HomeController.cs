@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using Ascon.Pilot.WebClient.Extensions;
-using Ascon.Pilot.WebClient.Models;
+using Ascon.Pilot.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Ascon.Pilot.WebClient.Controllers
+namespace Ascon.Pilot.Web.Controllers
 {
     /// <summary>
     /// Контроллер модели Home

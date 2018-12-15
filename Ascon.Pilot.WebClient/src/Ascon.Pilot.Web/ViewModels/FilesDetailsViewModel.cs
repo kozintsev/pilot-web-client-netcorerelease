@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Ascon.Pilot.WebClient.Models;
-using Ascon.Pilot.Core;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Extensions;
+using Ascon.Pilot.Web.Models;
 
-namespace Ascon.Pilot.WebClient.ViewModels
+namespace Ascon.Pilot.Web.ViewModels
 {
     public class FilesDetailsViewModel
     {
-        private IRepository _repository;
+        private readonly IRepository _repository;
+
         public FilesDetailsViewModel(Guid objId, long version, IRepository repository, FilesPanelType type)
         {
             IsActual = true;

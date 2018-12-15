@@ -1,12 +1,10 @@
-﻿using Ascon.Pilot.WebClient.Models;
-using Ascon.Pilot.WebClient.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
+using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Ascon.Pilot.WebClient.Controllers
+namespace Ascon.Pilot.Web.Controllers
 {
     public class TaskDetailsController : Controller
     {

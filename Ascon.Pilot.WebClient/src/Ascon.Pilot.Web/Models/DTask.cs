@@ -1,12 +1,10 @@
-﻿using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Extensions;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Extensions;
 
-namespace Ascon.Pilot.WebClient.Models
+namespace Ascon.Pilot.Web.Models
 {
     public class DTask
     {
@@ -330,18 +328,6 @@ namespace Ascon.Pilot.WebClient.Models
             return task.Title;
         }
 
-        public static bool IsTaskExecutor(this DTask task, DPerson user)
-        {
-            var executorPosition = task.ExecutorPosition;
-            return user.Positions.Any(x => x == executorPosition.Id);
-        }
-
-        public static bool IsTaskInitiator(this DTask task, DPerson user)
-        {
-            var executorPosition = task.InitiatorPosition;
-            return user.Positions.Any(x => x == executorPosition.Id);
-        }
-
         public static string GetInitiatorDisplayName(this DTask task, IRepository repository)
         {
             string name;
@@ -351,7 +337,7 @@ namespace Ascon.Pilot.WebClient.Models
             }
             else
             {
-                name = IsTaskInitiator(task, repository.CurrentPerson()) ? "Вы" : task.Initiator.GetActualName();
+                name = task.Initiator.Id == repository.CurrentPerson().Id ? "You" : task.Initiator.ActualName();
             }
 
             return name;
@@ -366,7 +352,7 @@ namespace Ascon.Pilot.WebClient.Models
             }
             else
             {
-                name = IsTaskExecutor(task, repository.CurrentPerson()) ? "Вы" : task.Executor.GetActualName();
+                name = task.Executor.Id == repository.CurrentPerson().Id ? "You" : task.Executor.ActualName();
             }
 
             return name;

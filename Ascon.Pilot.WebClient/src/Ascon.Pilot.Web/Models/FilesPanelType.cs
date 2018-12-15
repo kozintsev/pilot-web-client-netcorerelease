@@ -1,4 +1,4 @@
-namespace Ascon.Pilot.WebClient.Models
+namespace Ascon.Pilot.Web.Models
 {
     public enum FilesPanelType
     {

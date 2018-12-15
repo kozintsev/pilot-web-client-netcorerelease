@@ -1,6 +1,6 @@
 ﻿@using System.Globalization
 @using System.Threading.Tasks
-@model Ascon.Pilot.WebClient.ViewModels.FileViewModel
+@model Ascon.Pilot.Web.ViewModels.FileViewModel
 @{
     var name = Model.Name;
     var fileDownloadRouteValues = new { id = Model.FileId, size = Model.Size, name = name.EndsWith(Model.Extension) ? name : $"{name}{Model.Extension}" };

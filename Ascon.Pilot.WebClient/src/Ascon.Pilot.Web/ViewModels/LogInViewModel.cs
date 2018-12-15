@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-
-namespace Ascon.Pilot.WebClient.ViewModels
+namespace Ascon.Pilot.Web.ViewModels
 {
     /// <summary>
     /// Модель пользователя    

@@ -1,8 +1,8 @@
-﻿using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Models;
-using System;
+﻿using System;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Models;
 
-namespace Ascon.Pilot.WebClient.ViewModels
+namespace Ascon.Pilot.Web.ViewModels
 {
     public class TaskNode
     {

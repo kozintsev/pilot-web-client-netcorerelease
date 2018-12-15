@@ -1,11 +1,11 @@
-﻿using Ascon.Pilot.Core;
-using Ascon.Pilot.Server.Api;
-using Ascon.Pilot.Server.Api.Contracts;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Security.Claims;
+using Ascon.Pilot.Common;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Server.Api;
+using Microsoft.AspNetCore.Http;
 
-namespace Ascon.Pilot.WebClient.Models
+namespace Ascon.Pilot.Web.Models
 {
     public interface IContext : IDisposable
     {
@@ -29,7 +29,7 @@ namespace Ascon.Pilot.WebClient.Models
         public DDatabaseInfo Connect(Credentials credentials)
         {
             _client = new HttpPilotClient(ApplicationConst.PilotServerUrl);
-            // Do not check version of the Server and Client
+            // Do not check versions of the Server and Client
             _client.Connect(false);
             var serverApi = _client.GetServerApi(_serverCallback);
             var authApi = _client.GetAuthenticationApi();

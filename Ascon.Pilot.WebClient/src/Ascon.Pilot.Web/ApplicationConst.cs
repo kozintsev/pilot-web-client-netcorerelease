@@ -1,13 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Collections.Generic;
-using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Controllers;
-using Ascon.Pilot.WebClient.Models;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Hosting;
 
-namespace Ascon.Pilot.WebClient
+namespace Ascon.Pilot.Web
 {
     public static class ApplicationConst
     {

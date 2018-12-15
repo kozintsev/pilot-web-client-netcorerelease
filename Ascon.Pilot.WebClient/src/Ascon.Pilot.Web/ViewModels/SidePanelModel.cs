@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ascon.Pilot.Core;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Extensions;
 
-namespace Ascon.Pilot.WebClient.ViewModels
+namespace Ascon.Pilot.Web.ViewModels
 {
     /// <summary>
     /// Модель боковой панели

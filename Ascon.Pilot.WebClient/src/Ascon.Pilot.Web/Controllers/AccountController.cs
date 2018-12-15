@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Extensions;
-using Ascon.Pilot.WebClient.ViewModels;
-using Microsoft.Extensions.Logging;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http.Authentication;
-using Ascon.Pilot.WebClient.Models;
+using Microsoft.Extensions.Logging;
 
-namespace Ascon.Pilot.WebClient.Controllers
+namespace Ascon.Pilot.Web.Controllers
 {
     [Authorize]
     public class AccountController : Controller

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Ascon.Pilot.Core;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Ascon.Pilot.WebClient.Models;
 using System.Linq;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Extensions;
+using Ascon.Pilot.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Ascon.Pilot.WebClient.ViewComponents
+namespace Ascon.Pilot.Web.ViewComponents
 {
     public class BreadcrumbsViewComponent : ViewComponent
     {

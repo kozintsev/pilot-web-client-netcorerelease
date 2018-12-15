@@ -4,20 +4,18 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using Ascon.Pilot.Core;
-using Ascon.Pilot.Server.Api.Contracts;
-using Ascon.Pilot.WebClient.Extensions;
-using Ascon.Pilot.WebClient.Models;
-using Ascon.Pilot.WebClient.ViewComponents;
-using Ascon.Pilot.WebClient.ViewModels;
-using Microsoft.Extensions.Logging;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Extensions;
+using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.ViewComponents;
+using Ascon.Pilot.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using MuPDF;
 
-
-namespace Ascon.Pilot.WebClient.Controllers
+namespace Ascon.Pilot.Web.Controllers
 {
     [Authorize]
     public class FilesController : Controller

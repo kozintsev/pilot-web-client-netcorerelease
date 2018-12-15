@@ -1,15 +1,15 @@
-﻿using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Models;
-using Ascon.Pilot.WebClient.ViewModels;
-using Ascon.Pilot.WebClient.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Extensions;
+using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Ascon.Pilot.WebClient.Controllers
+namespace Ascon.Pilot.Web.Controllers
 {
     /// <summary>
     /// Контроллер задач
@@ -114,13 +114,22 @@ namespace Ascon.Pilot.WebClient.Controllers
         private async Task<IEnumerable<TaskNode>> GetItemsAsync(int id, int results)
         {
             var context = _contextHolder.GetContext(HttpContext);
-            var searchDefinition = new DSearchDefinition()
+            var searchDefinition = new DSearchDefinition
             {
                 Id = Guid.NewGuid(),
-                MaxResults = results,
-                SearchKind = (SearchKind)id,
-                Ascending = false,
-                SortFieldName = SystemAttributes.TASK_DATE_OF_ASSIGNMENT
+                Request =
+                {
+                    MaxResults = results,
+                    SearchKind = (SearchKind)id,
+                    SortDefinitions =
+                    {
+                        new DSortDefinition {
+                            Ascending = false,
+                            FieldName = SystemAttributes.TASK_DATE_OF_ASSIGNMENT
+
+                        }
+                    }
+                }
             };
 
             var repo = _contextHolder.GetContext(HttpContext).Repository;

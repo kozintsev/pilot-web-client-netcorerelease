@@ -1,7 +1,7 @@
-﻿using Ascon.Pilot.Core;
-using System;
+﻿using System;
+using Ascon.Pilot.Common;
 
-namespace Ascon.Pilot.WebClient.Models
+namespace Ascon.Pilot.Web.Models
 {
     public class Credentials
     {

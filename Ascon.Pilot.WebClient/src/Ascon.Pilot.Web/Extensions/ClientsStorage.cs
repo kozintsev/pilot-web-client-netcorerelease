@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Microsoft.AspNetCore.Http;
 
-namespace Ascon.Pilot.WebClient.Extensions
+namespace Ascon.Pilot.Web.Extensions
 {
     public static class SessionExt
     {

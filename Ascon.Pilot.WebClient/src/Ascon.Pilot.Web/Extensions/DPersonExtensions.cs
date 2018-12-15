@@ -1,10 +1,6 @@
-﻿using Ascon.Pilot.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Ascon.Pilot.DataClasses;
 
-namespace Ascon.Pilot.WebClient.Extensions
+namespace Ascon.Pilot.Web.Extensions
 {
     public static class DPersonExtensions
     {

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Controllers;
-using Ascon.Pilot.WebClient.Extensions;
-using Ascon.Pilot.WebClient.Models;
-using Ascon.Pilot.WebClient.ViewModels;
-using Microsoft.Extensions.Logging;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Controllers;
+using Ascon.Pilot.Web.Extensions;
+using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
-namespace Ascon.Pilot.WebClient.ViewComponents
+namespace Ascon.Pilot.Web.ViewComponents
 {
     /// <summary>
     /// Компнент - панель управления файлом.

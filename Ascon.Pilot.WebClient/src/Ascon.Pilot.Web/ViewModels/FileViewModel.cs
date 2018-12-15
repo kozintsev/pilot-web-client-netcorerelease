@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Ascon.Pilot.WebClient.ViewModels
+namespace Ascon.Pilot.Web.ViewModels
 {
     public class FileViewModel
     {

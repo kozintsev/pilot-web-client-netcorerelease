@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Ascon.Pilot.WebClient.Controllers;
-using Ascon.Pilot.WebClient.Models;
+using Ascon.Pilot.Web.Models;
 
-namespace Ascon.Pilot.WebClient.ViewModels
+namespace Ascon.Pilot.Web.ViewModels
 {
     /// <summary>
     /// Модель представления пользовательских папок

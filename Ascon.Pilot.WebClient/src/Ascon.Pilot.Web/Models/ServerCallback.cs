@@ -1,11 +1,7 @@
-﻿using Ascon.Pilot.Server.Api.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Ascon.Pilot.Core;
+﻿using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Server.Api.Contracts;
 
-namespace Ascon.Pilot.WebClient.Models
+namespace Ascon.Pilot.Web.Models
 {
     interface IRemoteStorageListener
     {

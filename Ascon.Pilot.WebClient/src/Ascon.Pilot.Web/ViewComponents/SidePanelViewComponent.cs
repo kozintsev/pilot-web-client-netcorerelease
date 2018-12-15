@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Ascon.Pilot.Core;
-using Ascon.Pilot.WebClient.Extensions;
-using Ascon.Pilot.WebClient.ViewModels;
+using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Web.Extensions;
+using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Ascon.Pilot.WebClient.Models;
 
-namespace Ascon.Pilot.WebClient.ViewComponents
+namespace Ascon.Pilot.Web.ViewComponents
 {
     /// <summary>
     /// Компонент - боковая панель.
