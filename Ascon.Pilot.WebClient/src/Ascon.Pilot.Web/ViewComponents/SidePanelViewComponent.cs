@@ -70,6 +70,9 @@ namespace Ascon.Pilot.Web.ViewComponents
                     model.Items = new List<SidePanelItem>();
                     foreach (var parentChild in visibleChildren)
                     {
+                        if (parentChild.IsForbidden())
+                            continue;
+
                         model.Items.Add(new SidePanelItem
                         {
                             Type = mTypes[parentChild.TypeId],
