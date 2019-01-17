@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ascon.Pilot.WebClient.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Ascon.Pilot.WebClient.Controllers
 {
@@ -93,7 +94,7 @@ namespace Ascon.Pilot.WebClient.Controllers
 
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, ApplicationConst.PilotMiddlewareInstanceName));
             await HttpContext.SignInAsync(
-                ApplicationConst.PilotMiddlewareInstanceName,
+                CookieAuthenticationDefaults.AuthenticationScheme,
                 principal,
                 new AuthenticationProperties
                 {
@@ -104,7 +105,7 @@ namespace Ascon.Pilot.WebClient.Controllers
         public async Task<IActionResult> LogOff()
         {
             await HttpContext.SignOutAsync(
-                ApplicationConst.PilotMiddlewareInstanceName);
+                CookieAuthenticationDefaults.AuthenticationScheme);
             _contextHolder.Dispose();
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
