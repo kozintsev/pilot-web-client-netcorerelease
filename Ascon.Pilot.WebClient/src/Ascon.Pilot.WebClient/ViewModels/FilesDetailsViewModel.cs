@@ -87,7 +87,7 @@ namespace Ascon.Pilot.WebClient.ViewModels
 
         private DFile GetFile(long version, DObject obj)
         {
-            var versionUniversalTime = new DateTime(version);
+            var versionUniversalTime = new DateTime(version).ToUniversalTime();
             if (obj.ActualFileSnapshot.Created.Equals(versionUniversalTime) || version == 0)
             {
                 var file = obj.ActualFileSnapshot.Files.FirstOrDefault();

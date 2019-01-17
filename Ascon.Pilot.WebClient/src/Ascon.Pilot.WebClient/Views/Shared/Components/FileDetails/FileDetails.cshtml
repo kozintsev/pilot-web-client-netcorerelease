@@ -53,17 +53,17 @@ else
                         @{
                             foreach (var snapshot in Model.Snapshots)
                             {
-                                var snapshotTime = @snapshot.Created;
+                                var snapshotTime = @snapshot.Created.ToLocalTime();
                                 var isActive = "";
                                 var author = Model.GetPersonDisplayName(snapshot.CreatorId);
                                 var reason = "";
                                 if (!string.IsNullOrEmpty(snapshot.Reason))
                                     reason = string.Format("\"{0}\"", snapshot.Reason);
-                                if (Model.VersionTime.Equals(snapshotTime.ToLocalTime()))
+                                if (Model.VersionTime.Equals(snapshotTime))
                                 {
                                     isActive = "active";
                                 }
-                                <li class="list-group-item @isActive"><a href="@Url.Action("Index", "Files", new {id = Model.Id, version = snapshotTime.Ticks})">Версия @snapshotTime.ToLocalTime() @author @reason </a></li>
+                                <li class="list-group-item @isActive"><a href="@Url.Action("Index", "Files", new {id = Model.Id, version = snapshotTime.Ticks})">Версия @snapshotTime @author @reason </a></li>
                             }
                         }
                     </ul>
