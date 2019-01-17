@@ -1,0 +1,47 @@
+﻿@using System.Threading.Tasks
+@using Ascon.Pilot.DataClasses
+
+@model Ascon.Pilot.Web.ViewModels.UserPositionViewModel
+@{
+    ViewBag.Title = "Файлы";
+    Layout = "_FilesLayout";
+}
+
+<form action="/Files/DownloadArchive" id="downloadArchiveForm" method="post">
+    <div class="row">
+        <div class="hidden-xs hidden-sm collapse in sidePanel" id="sidePanel">
+            @await Component.InvokeAsync("SidePanel", new { id = Model.CurrentFolderId })
+        </div>
+        <div  class="files-content" >
+            <div>
+                @await Component.InvokeAsync("Breadcrumbs", new { id = Model.CurrentFolderId })
+            </div>
+            <div id="filesPanel" style="padding-bottom: 15px;">
+                @if (Model.IsFile)
+                {
+                    @await Component.InvokeAsync("FileDetails", new { docId = Model.CurrentFolderId, panelType = Model.FilesPanelType, version = Model.Version })
+                }
+                else
+                {
+                    @await Component.InvokeAsync("FilesPanel", new { folderId = Model.CurrentFolderId, panelType = Model.FilesPanelType, onlySource = ViewBag.IsSource ?? false })
+                }
+            </div>
+        </div>
+    </div>
+</form>
+
+@section scripts
+{
+    <script type="text/javascript">
+        var baseFilesUrl = '/Files/Index/';
+        var getFilesUrl = '@Html.Raw(Url.Action("GetObject", "Files"))';
+        var getSourceUrl = '@Html.Raw(Url.Action("GetSource", "Files"))';
+        var getChildsUrl = '@Html.Raw(Url.Action("GetNodeChilds", "Files"))';
+        var getSidePanelUrl = '@Html.Raw(Url.Action("SidePanel", "Files"))';
+        var downloadUrl = '@Html.Raw(Url.Action("Download"))';
+        var ROOT_ID = '@DObject.RootId';
+        var currentFolderId = '@Model.CurrentFolderId';
+    </script>
+    <script type="text/javascript" src="~/js/datetime.js"></script>
+    <script type="text/javascript" src="@Url.Content("~/js/files.js")" asp-append-version="true"></script>
+}

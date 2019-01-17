@@ -1,0 +1,90 @@
+﻿@using Ascon.Pilot.DataClasses
+@using Ascon.Pilot.Web.Models
+@model IEnumerable<Ascon.Pilot.Web.ViewModels.TaskNode>
+
+@if (Model == null || !Model.Any())
+{
+    <p class="no-data-info">Нет данных для отображения</p>
+}
+else
+{
+    @foreach (var node in Model)
+    {
+        <div class="task-node" onclick="processTaskClick(this)" id="@node.Id">
+            <div class="row">
+                @if (node.Kind == TaskKind.Agreement)
+                {
+                    <div class="col-fix-16"><img src="~/images/tasks/agree_task_kind.png"/></div>
+                }
+                else
+                {
+                    <div class="col-fix-16"></div>
+                }
+                @switch (node.State)
+                {
+                    case TaskState.None:
+                        <div class="col-fix-16"></div>
+                        break;
+                    case TaskState.Assigned:
+                        <div class="col-fix-16"><img src="~/images/tasks/assigned.png" /></div>
+                        break;
+                    case TaskState.InProgress:
+                        <div class="col-fix-16"><img src="~/images/tasks/in_progress.png" /></div>
+                        break;
+                    case TaskState.Revoked:
+                        <div class="col-fix-16"><img src="~/images/tasks/revoked.png" /></div>
+                        break;
+                    case TaskState.OnValidation:
+                        <div class="col-fix-16"><img src="~/images/tasks/validation.png" /></div>
+                        break;
+                    case TaskState.Completed:
+                        <div class="col-fix-16"><img src="~/images/tasks/completed.png" /></div>
+                        break;
+                    default:
+                        <div class="col-fix-16"></div>
+                        break;
+                }
+                <div class="col-md-6 col-sm-8 col-lg-8 text-title truncate">@node.Title</div>
+                <div class="col-fix-200 col-float-right hidden-xs" style="font-size: small">
+                    Выдано: 
+                    <span class="local-datetime nowrap" data-utc="@node.DateOfAssignment.ToUnixTimeMilliseconds()">
+                        @node.DateOfAssignment.ToString("g")
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-fix-16"></div>
+                <div class="col-fix-16"></div> 
+                <div class="col-md-6 col-sm-8 truncate" style="font-size:small">@node.Initiator → @node.Executor</div>
+                @if (node.DeadlineDate == DateTime.MaxValue)
+                {
+                    <div class="col-fix-200 col-float-right hidden-xs"></div>
+                }
+                else 
+                {
+                    <div class="col-fix-200 col-float-right hidden-xs" style="font-size: small">
+                        Срок: 
+                        <span class="local-datetime nowrap" data-utc="@node.DeadlineDate.ToUnixTimeMilliseconds()">
+                            @node.DeadlineDate.ToString("g")
+                        </span>
+                    </div>
+                }
+            </div>
+            <div class="row">
+                @if (node.DateOfStart == null)
+                {
+                    <div class="col-fix-200 col-float-right hidden-xs"></div>
+
+                }
+                else
+                {
+                    <div class="col-fix-200 col-float-right hidden-xs" style="font-size: small">
+                        Начало: <span class="local-datetime nowrap" data-utc="@node.DateOfStart?.ToUnixTimeMilliseconds()">
+                            @node.DateOfStart?.ToString("g")
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+}
