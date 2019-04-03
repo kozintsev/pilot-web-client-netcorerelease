@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Ascon.Pilot.Web.Controllers;
 using Ascon.Pilot.Web.Models;
 using Ascon.Pilot.Web.ViewModels;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Ascon.Pilot.Web.ViewComponents
 {
@@ -13,12 +12,11 @@ namespace Ascon.Pilot.Web.ViewComponents
     /// </summary>
     public class FileDetailsViewComponent : ViewComponent
     {
-        private readonly ILogger<FilesController> _logger;
+        private readonly ILog _logger = LogManager.GetLogger(typeof(FileDetailsViewComponent));
         private readonly IContextHolder _contextHolder;
 
-        public FileDetailsViewComponent(ILogger<FilesController> logger, IContextHolder contextHolder)
+        public FileDetailsViewComponent(IContextHolder contextHolder)
         {
-            _logger = logger;
             _contextHolder = contextHolder;
         }
 
@@ -41,7 +39,9 @@ namespace Ascon.Pilot.Web.ViewComponents
                     }
                     catch (Exception ex)
                     {
+                        _logger.Error(ex);
                         throw new Exception(ex.Message);
+
                     }
                 }
             });

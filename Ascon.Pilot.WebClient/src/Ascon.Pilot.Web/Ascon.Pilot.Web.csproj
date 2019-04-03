@@ -17,8 +17,8 @@
     <PackageReference Include="Ascon.Pilot.DataClasses" Version="18.37.0.30607" />
     <PackageReference Include="Ascon.Pilot.Server.Api" Version="18.37.0.30607" />
     <PackageReference Include="Ascon.Pilot.Transport" Version="18.37.0.30607" />
+    <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="NLog" Version="4.5.10" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="logger.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Views\Account\LogIn.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

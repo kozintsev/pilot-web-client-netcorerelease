@@ -5,21 +5,20 @@ using System.Threading.Tasks;
 using Ascon.Pilot.DataClasses;
 using Ascon.Pilot.Web.Models;
 using Ascon.Pilot.Web.ViewModels;
+using log4net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Ascon.Pilot.Web.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly ILogger<FilesController> _logger;
+        private readonly ILog _logger = LogManager.GetLogger(typeof(AccountController));
         private IContextHolder _contextHolder;
 
-        public AccountController(ILogger<FilesController> logger, IContextHolder contextHolder)
+        public AccountController(IContextHolder contextHolder)
         {
-            _logger = logger;
             _contextHolder = contextHolder;
         }
 
@@ -70,7 +69,7 @@ namespace Ascon.Pilot.Web.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(1, "Не удалось подключиться к серверу", ex);
+                _logger.Error("Не удалось подключиться к серверу", ex);
                 ModelState.AddModelError("", ex.Message);
                 return View();
             }

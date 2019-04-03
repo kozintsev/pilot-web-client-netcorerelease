@@ -9,10 +9,11 @@ using Ascon.Pilot.Web.Extensions;
 using Ascon.Pilot.Web.Models;
 using Ascon.Pilot.Web.ViewComponents;
 using Ascon.Pilot.Web.ViewModels;
+using log4net;
+using log4net.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MuPDF;
 
 namespace Ascon.Pilot.Web.Controllers
@@ -20,16 +21,13 @@ namespace Ascon.Pilot.Web.Controllers
     [Authorize]
     public class FilesController : Controller
     {
-        private readonly ILogger<FilesController> _logger;
-        private readonly IHostingEnvironment _environment;
+        private readonly ILog _logger = LogManager.GetLogger(typeof(FilesController));
         private readonly IContextHolder _contextHolder;
         private readonly MuPdf _mu;
-        private static object _lockObj = new object();
+        private readonly object _lockObj = new object();
 
-        public FilesController(ILogger<FilesController> logger, IHostingEnvironment environment, IContextHolder contextHolder)
+        public FilesController(IContextHolder contextHolder)
         {
-            _logger = logger;
-            _environment = environment;
             _contextHolder = contextHolder;
             _mu = new MuPdf();
         }
@@ -293,7 +291,7 @@ namespace Ascon.Pilot.Web.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(1, "Unable to generate thumbnail for file", ex);
+                _logger.Error("Unable to generate thumbnail for file", ex);
             }
             return virtualFileResult;
         }
