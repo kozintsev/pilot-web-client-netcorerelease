@@ -60,7 +60,7 @@ namespace MuPDF
             {
                 _dataHandle.Free();
                 _nativeXps = null;
-                throw new RenderException("Initialization failed");
+                throw new RenderException("Initialization failed. " + e.Message);
             }
             finally
             {
@@ -147,7 +147,7 @@ namespace MuPDF
                     return null;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
@@ -185,7 +185,7 @@ namespace MuPDF
                     return null;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
