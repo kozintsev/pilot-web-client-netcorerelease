@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Ascon.Pilot.DataClasses;
 using Ascon.Pilot.Web.Models;
 using Microsoft.Extensions.Configuration;
@@ -9,17 +10,18 @@ namespace Ascon.Pilot.Web
     public static class ApplicationConst
     {
         public static IConfigurationRoot Configuration { get; set; }
-        static string path = Directory.GetCurrentDirectory();
+        
         static ApplicationConst()
         {
+            var executeAssLocation = Assembly.GetExecutingAssembly().Location;
+            var path = Path.GetDirectoryName(executeAssLocation);
+
             var builder = new ConfigurationBuilder();
             builder.SetBasePath(path);
-            builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            builder.AddJsonFile("appsettings.json");
             Configuration = builder.Build();
-            var pilotServer = Configuration.GetValue<string>("PilotServer:Url", "http://localhost:5545");
-            var database = Configuration.GetValue<string>("PilotServer:Database", "pilot-ice_ru");
-            PilotServerUrl = pilotServer;
-            Database = database;
+            PilotServerUrl = Configuration.GetValue<string>("PilotServer:Url", string.Empty);
+            Database = Configuration.GetValue<string>("PilotServer:Database", string.Empty);
         }
 
         public static readonly string PilotServerUrl;
