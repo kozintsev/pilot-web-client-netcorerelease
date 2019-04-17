@@ -33,7 +33,7 @@ namespace Ascon.Pilot.Web.Models
             _client.Connect(false);
             var serverApi = _client.GetServerApi(_serverCallback);
             var authApi = _client.GetAuthenticationApi();
-            authApi.Login(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth, 100);
+            authApi.Login(credentials.DatabaseName, credentials.Username, credentials.ProtectedPassword, credentials.UseWindowsAuth, ApplicationConst.LicenseCode);
             var dbInfo = serverApi.OpenDatabase();
             _repository = new Repository(serverApi, _serverCallback);
             _repository.Initialize(credentials.Username);
