@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Ascon.Pilot.Web.Models;
+using log4net;
+using log4net.Config;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MuPDF;
+using MuPDF.DocumentConverter;
 
 namespace Ascon.Pilot.Web
 {
@@ -15,6 +21,9 @@ namespace Ascon.Pilot.Web
     {
         public Startup(IHostingEnvironment env)
         {
+            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            XmlConfigurator.Configure(logRepository, new FileInfo("logger.config"));
+
             // Set up configuration sources.  
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -44,6 +53,8 @@ namespace Ascon.Pilot.Web
 
             //
             services.AddSingleton<IContextHolder, ContextHolder>();
+            services.AddScoped<IDocumentConverterFactory, DocumentConverterFactory>();
+            services.AddScoped<IDocumentRender, DocumentRender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -10,9 +10,7 @@ using Ascon.Pilot.Web.Models;
 using Ascon.Pilot.Web.ViewComponents;
 using Ascon.Pilot.Web.ViewModels;
 using log4net;
-using log4net.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using MuPDF;
 
@@ -23,13 +21,13 @@ namespace Ascon.Pilot.Web.Controllers
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(FilesController));
         private readonly IContextHolder _contextHolder;
-        private readonly MuPdf _mu;
+        private readonly IDocumentRender _render;
         private readonly object _lockObj = new object();
 
-        public FilesController(IContextHolder contextHolder)
+        public FilesController(IContextHolder contextHolder, IDocumentRender render)
         {
             _contextHolder = contextHolder;
-            _mu = new MuPdf();
+            _render = render;
         }
 
         public IActionResult ChangeFilesPanelType(string returnUrl, FilesPanelType type)
@@ -282,7 +280,7 @@ namespace Ascon.Pilot.Web.Controllers
                             fileStream.Write(file, 0, file.Length);
                         lock (_lockObj)
                         {
-                            byte[] thumbnailContent = _mu.RenderFirstPageInBytes(directory + fileName);
+                            byte[] thumbnailContent = _render.RenderFirstPage(directory + fileName);
                             System.IO.File.Delete(directory + fileName);
                             return File(thumbnailContent, pngContentType, $"{id}.png");
                         }
