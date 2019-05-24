@@ -11,7 +11,6 @@ namespace Ascon.Pilot.Web.Models
         private readonly Guid _id;
         private DPerson _initiator;
         private DPerson _executor;
-        private DPerson _person;
         private readonly DObject _source;
         private DOrganisationUnit _executorPosition;
         private DOrganisationUnit _initiatorPosition;
@@ -41,7 +40,10 @@ namespace Ascon.Pilot.Web.Models
                 if (_initiator != null)
                     return _initiator;
 
-                return InitiatorPosition != null ? _repository.GetPersonOnOrganisationUnit(InitiatorPosition.Id) : _initiator;
+                if (InitiatorPosition != null)
+                    _initiator = _repository.GetPersonOnOrganisationUnit(InitiatorPosition.Id);
+
+                return _initiator;
             }
         }
 
@@ -52,7 +54,10 @@ namespace Ascon.Pilot.Web.Models
                 if (_executor != null)
                     return _executor;
 
-                return ExecutorPosition != null ? _repository.GetPersonOnOrganisationUnit(ExecutorPosition.Id) : _executor;
+                if (ExecutorPosition != null)
+                    _executor = _repository.GetPersonOnOrganisationUnit(ExecutorPosition.Id);
+
+                return _executor;
             }
         }
 

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Ascon.Pilot.Web.Models;
+using DocumentRender;
+using DocumentRender.DocumentConverter;
 using log4net;
 using log4net.Config;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -12,8 +14,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MuPDF;
-using MuPDF.DocumentConverter;
 
 namespace Ascon.Pilot.Web
 {
@@ -54,7 +54,7 @@ namespace Ascon.Pilot.Web
             //
             services.AddSingleton<IContextHolder, ContextHolder>();
             services.AddScoped<IDocumentConverterFactory, DocumentConverterFactory>();
-            services.AddScoped<IDocumentRender, DocumentRender>();
+            services.AddScoped<IDocumentRender, DocumentRender.DocumentRender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

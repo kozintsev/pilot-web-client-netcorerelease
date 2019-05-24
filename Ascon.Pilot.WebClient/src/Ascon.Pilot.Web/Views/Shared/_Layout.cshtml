@@ -39,7 +39,7 @@
     @RenderSection("scripts", false)
 </head>
 <body>
-    @Html.Partial("_Header")
+    @await Html.PartialAsync("_Header")
 <div class="body-content">
     <br />
     @RenderSection("title", false)

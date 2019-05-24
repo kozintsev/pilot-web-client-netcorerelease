@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Document Reader Class Library</Description>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>DocumentReader</AssemblyName>
+    <PackageId></PackageId>
+    <NetStandardImplicitPackageVersion>2.0</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>DocumentRender</RootNamespace>
+    <Version>2.0.3</Version>
+    <Authors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="external\mudraw" />
+    <None Remove="external\mutool" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="external\mudraw">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
+    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="x64\Ascon.Pilot.Render.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="x86\Ascon.Pilot.Render.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
