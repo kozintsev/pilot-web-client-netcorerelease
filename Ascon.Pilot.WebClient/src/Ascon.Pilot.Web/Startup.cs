@@ -27,7 +27,8 @@ namespace Ascon.Pilot.Web
             // Set up configuration sources.  
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json");
             this.Configuration = builder.Build();
         }
 

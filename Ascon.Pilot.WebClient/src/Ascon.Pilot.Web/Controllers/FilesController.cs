@@ -5,8 +5,10 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Ascon.Pilot.DataClasses;
+using Ascon.Pilot.Transport;
 using Ascon.Pilot.Web.Extensions;
 using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.Utils;
 using Ascon.Pilot.Web.ViewComponents;
 using Ascon.Pilot.Web.ViewModels;
 using DocumentRender;
@@ -257,6 +259,18 @@ namespace Ascon.Pilot.Web.Controllers
 
             if (size >= 10 * 1024 * 1024)
                 return virtualFileResult;
+
+            var fileName = $"{id}{extension}";
+            var png = $"{id}.png";
+            var tempDirectory = DirectoryProvider.GetThumbnailsDirectory();
+
+            var imageFilename = Path.Combine(tempDirectory, png);
+            if (System.IO.File.Exists(imageFilename))
+            {
+                using (var fileStream = System.IO.File.OpenRead(imageFilename))
+                    return File(fileStream.ToByteArray(), pngContentType, png);
+            }
+
             var repository = _contextHolder.GetContext(HttpContext).Repository;
             var file = repository.GetFileChunk(id, 0, size);
 
@@ -266,23 +280,15 @@ namespace Ascon.Pilot.Web.Controllers
                 {
                     if (extension.Contains("xps"))
                     {
-                        //int page = 1;
-                        //int dpi = 150;
-                        //var RenderType = RenderType.;
-                        //bool rotateAuto = false;
-                        //string password = "";
-
-                        var fileName = $"{id}{extension}";
-                        var directory = "tmp/";
-                        if (!Directory.Exists(directory))
-                            Directory.CreateDirectory(directory);
-                        using (var fileStream = System.IO.File.Create(directory + fileName))
+                        var xpsFilename = Path.Combine(tempDirectory, fileName);
+                        using (var fileStream = System.IO.File.Create(xpsFilename))
                             fileStream.Write(file, 0, file.Length);
+
                         lock (_lockObj)
                         {
-                            byte[] thumbnailContent = _render.RenderFirstPage(directory + fileName);
-                            System.IO.File.Delete(directory + fileName);
-                            return File(thumbnailContent, pngContentType, $"{id}.png");
+                            byte[] thumbnailContent = _render.RenderFirstPage(xpsFilename);
+                            System.IO.File.Delete(xpsFilename);
+                            return File(thumbnailContent, pngContentType, png);
                         }
                     }
                 }
