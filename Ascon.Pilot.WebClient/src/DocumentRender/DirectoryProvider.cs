@@ -16,16 +16,5 @@ namespace DocumentRender
             return directory;
         }
 
-        public static string GetImageOutputDir(string fileName)
-        {
-            var resultDir = Path.GetDirectoryName(fileName);
-            var name = Path.GetFileNameWithoutExtension(fileName);
-            var outputDir = Path.Combine(resultDir, name);
-
-            if (!Directory.Exists(outputDir))
-                Directory.CreateDirectory(outputDir);
-
-            return outputDir;
-        }
     }
 }

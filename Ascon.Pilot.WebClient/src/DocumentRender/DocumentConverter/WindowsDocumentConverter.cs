@@ -8,41 +8,36 @@ namespace DocumentRender.DocumentConverter
         {
             using (var stream = File.OpenRead(fileName))
             {
-                var bytes = RenderFirstPageInBytes(stream);
-                var outputDir = DirectoryProvider.GetImageOutputDir(fileName);
-                var resultPath = Path.Combine(outputDir, $"page_{page}.png");
-                Save(bytes, resultPath);
-                return bytes;
+                return RenderFirstPageInBytes(stream, page);
             }
         }
 
-        private byte[] RenderFirstPageInBytes(Stream xpsStream)
+        private byte[] RenderFirstPageInBytes(Stream xpsStream, int page)
         {
-            byte[] result = null;
             using (var tileManager = new TilesManager(xpsStream))
             {
-                for (var i = 0; i < tileManager.PageCount; i++)
-                {
-                    int pageWidth = 0, pageHeight = 0;
-                    tileManager.LoadPage(i, ref pageWidth, ref pageHeight, false);
-                    var scale = 0.5;
-                    var tile = new Tile
-                    {
-                        PageNum = i,
-                        Height = (int)(pageHeight * scale),
-                        Width = (int)(pageWidth * scale),
-                        Scale = scale
-                    };
-                    result = tileManager.GetPageInBytes(tile, false);
-                }
+                return LoadPage(tileManager, page);
             }
-            return result;
         }
 
-        private void Save(byte[] bytes, string filename)
+        private static byte[] LoadPage(TilesManager tileManager, int page)
         {
-            using (var fileStream = File.Create(filename))
-                fileStream.Write(bytes, 0, bytes.Length);
+            var internalPage = page;
+            if (page > 0)
+                internalPage = page - 1;
+
+            int pageWidth = 0, pageHeight = 0;
+            tileManager.LoadPage(internalPage, ref pageWidth, ref pageHeight, false);
+            var scale = 0.5;
+            var tile = new Tile
+            {
+                PageNum = internalPage,
+                Height = (int) (pageHeight * scale),
+                Width = (int) (pageWidth * scale),
+                Scale = scale
+            };
+            var result = tileManager.GetPageInBytes(tile, false);
+            return result;
         }
     }
 }

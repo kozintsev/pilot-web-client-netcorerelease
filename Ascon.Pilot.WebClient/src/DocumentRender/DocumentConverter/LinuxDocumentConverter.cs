@@ -25,15 +25,16 @@ namespace DocumentRender.DocumentConverter
 
         public byte[] ConvertPage(string fileName, int page)
         {
-            var outputDir = DirectoryProvider.GetImageOutputDir(fileName);
-            var drawResultPath = Path.Combine(outputDir, "page_%d.png");
+            var outputDir = GetImageOutputDir(fileName);
+            var pageName = $"page_{page}.png";
+            var drawResultPath = Path.Combine(outputDir, pageName);
             
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = _mutoolPath,
-                    Arguments = $"-o {drawResultPath} {fileName}",
+                    Arguments = $"-o {drawResultPath} {fileName} {page}",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -43,9 +44,11 @@ namespace DocumentRender.DocumentConverter
             var result = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
             _logger.InfoFormat(result);
-            var resultPath = Path.Combine(outputDir, $"page_{page}.png");
-            _logger.Debug(resultPath);
-            return FileToBytes(resultPath);
+            //var resultPath = Path.Combine(outputDir, $"page_{page}.png");
+            //_logger.Debug(resultPath);
+            var bytes = FileToBytes(drawResultPath);
+            File.Delete(drawResultPath);
+            return bytes;
         }
 
         //public byte[] GetConvertedPage(string filename, int page)
@@ -75,6 +78,15 @@ namespace DocumentRender.DocumentConverter
         private string GetMutoolPath(string directory)
         {
             return Path.Combine(directory, "external", "mudraw");
+        }
+
+        private string GetImageOutputDir(string fileName)
+        {
+            var resultDir = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(resultDir))
+                Directory.CreateDirectory(resultDir);
+
+            return resultDir;
         }
     }
 }

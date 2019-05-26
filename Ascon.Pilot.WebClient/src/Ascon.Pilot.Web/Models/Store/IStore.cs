@@ -48,7 +48,18 @@ namespace Ascon.Pilot.Web.Models.Store
                 fileStream.Write(file, 0, file.Length);
 
             var thumbnailContent = _render.RenderPage(xpsFilename, page);
+            Save(thumbnailContent, imageFilename);
             return thumbnailContent;
+        }
+
+        private void Save(byte[] bytes, string filename)
+        {
+            var dir = Path.GetDirectoryName(filename);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            using (var fileStream = File.Create(filename))
+                fileStream.Write(bytes, 0, bytes.Length);
         }
     }
 }
