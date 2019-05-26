@@ -8,7 +8,11 @@ namespace DocumentRender.DocumentConverter
         {
             using (var stream = File.OpenRead(fileName))
             {
-                return RenderFirstPageInBytes(stream);
+                var bytes = RenderFirstPageInBytes(stream);
+                var outputDir = DirectoryProvider.GetImageOutputDir(fileName);
+                var resultPath = Path.Combine(outputDir, $"page_{page}.png");
+                Save(bytes, resultPath);
+                return bytes;
             }
         }
 
@@ -33,6 +37,12 @@ namespace DocumentRender.DocumentConverter
                 }
             }
             return result;
+        }
+
+        private void Save(byte[] bytes, string filename)
+        {
+            using (var fileStream = File.Create(filename))
+                fileStream.Write(bytes, 0, bytes.Length);
         }
     }
 }

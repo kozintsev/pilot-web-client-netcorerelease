@@ -16,22 +16,24 @@ namespace DocumentRender.DocumentConverter
             _mutoolPath = GetMutoolPath(directory);
         }
 
+        //public bool IsConverted(string filename, int page)
+        //{
+        //    var outputDir = GetOutputDir(filename);
+        //    var resultPath = Path.Combine(outputDir, $"page_{page}.png");
+        //    return File.Exists(resultPath);
+        //}
+
         public byte[] ConvertPage(string fileName, int page)
         {
-            var resultDir = Path.GetDirectoryName(fileName);
-            var name = Path.GetFileNameWithoutExtension(fileName);
-            var resultPath = Path.Combine(resultDir, $"{name}.png");
-
-            Console.WriteLine(_mutoolPath);
-
+            var outputDir = DirectoryProvider.GetImageOutputDir(fileName);
+            var drawResultPath = Path.Combine(outputDir, "page_%d.png");
+            
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    //FileName = "/bin/bash",
-                    //Arguments = $"-c \"{_mutoolPath} -o {resultPath} {fileName}\"",
                     FileName = _mutoolPath,
-                    Arguments = $"-o {resultPath} {fileName}",
+                    Arguments = $"-o {drawResultPath} {fileName}",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -41,8 +43,24 @@ namespace DocumentRender.DocumentConverter
             var result = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
             _logger.InfoFormat(result);
+            var resultPath = Path.Combine(outputDir, $"page_{page}.png");
+            _logger.Debug(resultPath);
             return FileToBytes(resultPath);
         }
+
+        //public byte[] GetConvertedPage(string filename, int page)
+        //{
+        //    var outputDir = GetOutputDir(filename);
+        //    var imageFilename = Path.Combine(outputDir, $"page_{page}.png");
+
+        //    if (File.Exists(imageFilename))
+        //    {
+        //        using (var fileStream = File.OpenRead(imageFilename))
+        //            return fileStream.ToByteArray();
+        //    }
+
+        //    return null;
+        //}
 
         private static byte[] FileToBytes(string fileName)
         {

@@ -261,10 +261,10 @@ namespace Ascon.Pilot.Web.Controllers
                 return virtualFileResult;
 
             var fileName = $"{id}{extension}";
-            var png = $"{id}.png";
+            var png = $"page_{id}.png";
             var tempDirectory = DirectoryProvider.GetThumbnailsDirectory();
 
-            var imageFilename = Path.Combine(tempDirectory, png);
+            var imageFilename = Path.Combine(tempDirectory, id.ToString(), png);
             if (System.IO.File.Exists(imageFilename))
             {
                 using (var fileStream = System.IO.File.OpenRead(imageFilename))
