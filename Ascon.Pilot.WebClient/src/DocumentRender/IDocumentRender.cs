@@ -2,6 +2,6 @@
 {
     public interface IDocumentRender
     {
-        byte[] RenderFirstPage(string fileName);
+        byte[] RenderPage(string fileName, int page);
     }
 }

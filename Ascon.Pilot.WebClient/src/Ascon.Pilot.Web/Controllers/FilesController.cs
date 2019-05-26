@@ -8,6 +8,7 @@ using Ascon.Pilot.DataClasses;
 using Ascon.Pilot.Transport;
 using Ascon.Pilot.Web.Extensions;
 using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.Models.Store;
 using Ascon.Pilot.Web.Utils;
 using Ascon.Pilot.Web.ViewComponents;
 using Ascon.Pilot.Web.ViewModels;
@@ -23,13 +24,13 @@ namespace Ascon.Pilot.Web.Controllers
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(FilesController));
         private readonly IContextHolder _contextHolder;
-        private readonly IDocumentRender _render;
+        private readonly IStore _store;
         private readonly object _lockObj = new object();
 
-        public FilesController(IContextHolder contextHolder, IDocumentRender render)
+        public FilesController(IContextHolder contextHolder, IStore store)
         {
             _contextHolder = contextHolder;
-            _render = render;
+            _store = store;
         }
 
         public IActionResult ChangeFilesPanelType(string returnUrl, FilesPanelType type)
@@ -260,43 +261,24 @@ namespace Ascon.Pilot.Web.Controllers
             if (size >= 10 * 1024 * 1024)
                 return virtualFileResult;
 
-            var fileName = $"{id}{extension}";
-            var png = $"page_{id}.png";
-            var tempDirectory = DirectoryProvider.GetThumbnailsDirectory();
-
-            var imageFilename = Path.Combine(tempDirectory, id.ToString(), png);
-            if (System.IO.File.Exists(imageFilename))
-            {
-                using (var fileStream = System.IO.File.OpenRead(imageFilename))
-                    return File(fileStream.ToByteArray(), pngContentType, png);
-            }
-
-            var repository = _contextHolder.GetContext(HttpContext).Repository;
-            var file = repository.GetFileChunk(id, 0, size);
-
             try
             {
-                if (file != null)
-                {
-                    if (extension.Contains("xps"))
-                    {
-                        var xpsFilename = Path.Combine(tempDirectory, fileName);
-                        using (var fileStream = System.IO.File.Create(xpsFilename))
-                            fileStream.Write(file, 0, file.Length);
+                //lock (_lockObj)
+                //{
+                    var page = 1;
+                    var repository = _contextHolder.GetContext(HttpContext).Repository;
+                    var image = _store.GetImageFile(repository, id, size, extension, page);
+                    if (image == null)
+                        return virtualFileResult;
 
-                        lock (_lockObj)
-                        {
-                            byte[] thumbnailContent = _render.RenderFirstPage(xpsFilename);
-                            System.IO.File.Delete(xpsFilename);
-                            return File(thumbnailContent, pngContentType, png);
-                        }
-                    }
-                }
+                    return File(image, pngContentType, $"page_{page}.png");
+                //}
             }
             catch (Exception ex)
             {
                 _logger.Error("Unable to generate thumbnail for file", ex);
             }
+            
             return virtualFileResult;
         }
 

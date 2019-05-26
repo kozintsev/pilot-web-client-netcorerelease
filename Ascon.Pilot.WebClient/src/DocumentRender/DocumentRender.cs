@@ -37,10 +37,10 @@ namespace DocumentRender
         //    }
         //}
 
-        public byte[] RenderFirstPage(string fileName)
+        public byte[] RenderPage(string fileName, int page)
         {
             var converter = _converterFactory.GetDocumentConverter();
-            return converter.ConvertPage(fileName, 1);
+            return converter.ConvertPage(fileName, page);
         }
 
         //private Bitmap RenderFirstPage(Stream xpsStream)

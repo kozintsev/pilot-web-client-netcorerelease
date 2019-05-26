@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.Models.Store;
 using DocumentRender;
 using DocumentRender.DocumentConverter;
 using log4net;
@@ -56,6 +57,7 @@ namespace Ascon.Pilot.Web
             services.AddSingleton<IContextHolder, ContextHolder>();
             services.AddScoped<IDocumentConverterFactory, DocumentConverterFactory>();
             services.AddScoped<IDocumentRender, DocumentRender.DocumentRender>();
+            services.AddScoped<IStore, Store>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
