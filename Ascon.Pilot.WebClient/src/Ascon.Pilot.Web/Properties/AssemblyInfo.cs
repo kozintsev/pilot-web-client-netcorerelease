@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Ascon.Pilot.Web")]
 [assembly: AssemblyDescription("Ascon.Pilot.Web")]
 [assembly: AssemblyProduct("Ascon.Pilot.Web")]
-[assembly: AssemblyCopyright("Copyright © ASCON Company 2018")]
+[assembly: AssemblyCopyright("Copyright © ASCON Company 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("EE857022-4088-414A-B5ED-966DC037B904")]
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "logger.config", Watch = true)]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -29,5 +30,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("2.0.2.0")]
+[assembly: AssemblyFileVersion("2.0.2.0")]

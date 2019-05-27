@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Ascon.Pilot.DataClasses;
-using Ascon.Pilot.Web.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace Ascon.Pilot.Web
@@ -9,25 +9,25 @@ namespace Ascon.Pilot.Web
     public static class ApplicationConst
     {
         public static IConfigurationRoot Configuration { get; set; }
-        static string path = Directory.GetCurrentDirectory();
+        
         static ApplicationConst()
         {
+            var executeAssLocation = Assembly.GetExecutingAssembly().Location;
+            var path = Path.GetDirectoryName(executeAssLocation);
+
             var builder = new ConfigurationBuilder();
             builder.SetBasePath(path);
-            builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            builder.AddJsonFile("appsettings.json");
             Configuration = builder.Build();
-            var pilotServer = Configuration.GetValue<string>("PilotServer:Url", "http://localhost:5545");
-            var database = Configuration.GetValue<string>("PilotServer:Database", "pilot-ice_ru");
-            PilotServerUrl = pilotServer;
-            Database = database;
+            PilotServerUrl = Configuration.GetValue<string>("PilotServer:Url", string.Empty);
+            Database = Configuration.GetValue<string>("PilotServer:Database", string.Empty);
+            LicenseCode = Configuration.GetValue<int>("PilotServer:LicenseCode", 103);
         }
 
+        public static readonly int LicenseCode;
         public static readonly string PilotServerUrl;
         public static readonly string Database;
         public static readonly string PilotMiddlewareInstanceName = "AsconPilotMiddlewareInstance";
-
-        public static readonly string HttpSchemeName = "http";
-        public static readonly string SchemeDelimiter = "://";
         public static readonly string AppName = "Web-клиент Pilot ICE";
 
         public static readonly string DefaultGlyphicon = "";
@@ -37,9 +37,6 @@ namespace Ascon.Pilot.Web
             { SystemTypes.PROJECT_FILE, "glyphicon glyphicon-file" },
             { SystemTypes.SMART_FOLDER, "glyphicon glyphicon-book" }
         };
-
-        //implicitly default files panel type is LIST cause its index in enum is 0
-        public const FilesPanelType DefaultFilesPanelType = 0;
 
         public const int SourcefolderTypeid = -24;
     }

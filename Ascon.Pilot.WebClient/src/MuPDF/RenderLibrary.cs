@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace MuPDF
@@ -13,7 +14,8 @@ namespace MuPDF
 
         static RenderLibrary()
         {
-            var directory = Directory.GetCurrentDirectory();
+            var executeAssLocation = Assembly.GetExecutingAssembly().Location;
+            var directory = Path.GetDirectoryName(executeAssLocation);
             if (string.IsNullOrEmpty(directory))
                 throw new InvalidOperationException();
             var filePath = GetRenderDllPath(directory);
