@@ -72,7 +72,7 @@ namespace Ascon.Pilot.Web
                 //     thrown in the following middlewares.
                 //   Use the HTTP Strict Transport Security Protocol (HSTS)
                 //     Middleware.
-                app.UseExceptionHandler("/Shared/Error");
+                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
