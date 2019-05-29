@@ -5,14 +5,13 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Ascon.Pilot.DataClasses;
-using Ascon.Pilot.Transport;
 using Ascon.Pilot.Web.Extensions;
 using Ascon.Pilot.Web.Models;
 using Ascon.Pilot.Web.Models.Store;
-using Ascon.Pilot.Web.Utils;
 using Ascon.Pilot.Web.ViewComponents;
 using Ascon.Pilot.Web.ViewModels;
 using DocumentRender;
+using DocumentRender.DocumentConverter;
 using log4net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,12 +24,13 @@ namespace Ascon.Pilot.Web.Controllers
         private readonly ILog _logger = LogManager.GetLogger(typeof(FilesController));
         private readonly IContextHolder _contextHolder;
         private readonly IStore _store;
-        private readonly object _lockObj = new object();
+        private readonly IDocumentRender _render;
 
-        public FilesController(IContextHolder contextHolder, IStore store)
+        public FilesController(IContextHolder contextHolder, IStore store, IDocumentRender render)
         {
             _contextHolder = contextHolder;
             _store = store;
+            _render = render;
         }
 
         public IActionResult ChangeFilesPanelType(string returnUrl, FilesPanelType type)
@@ -263,16 +263,24 @@ namespace Ascon.Pilot.Web.Controllers
 
             try
             {
-                //lock (_lockObj)
-                //{
-                    var page = 1;
-                    var repository = _contextHolder.GetContext(HttpContext).Repository;
-                    var image = _store.GetImageFile(repository, id, size, extension, page);
-                    if (image == null)
-                        return virtualFileResult;
-
+                var page = 1;
+                var repository = _contextHolder.GetContext(HttpContext).Repository;
+                var image = _store.GetImageFile(id, page);
+                if (image != null)
                     return File(image, pngContentType, $"page_{page}.png");
-                //}
+
+                var fileContent = repository.GetFileChunk(id, 0, size);
+                image = _render.RenderPage(fileContent, page);
+                if (image != null)
+                    _store.PutImageFileAsync(id, image, page);
+
+                return File(image, pngContentType, $"page_{page}.png");
+
+            }
+            catch (RenderToolNotFoundException ex)
+            {
+                _logger.Error(ex);
+                //todo show error ui
             }
             catch (Exception ex)
             {

@@ -7,34 +7,41 @@ namespace DocumentRender.DocumentConverter
 {
     internal class LinuxDocumentConverter : IDocumentConverter
     {
-        private readonly string _mutoolPath;
         private readonly ILog _logger = LogManager.GetLogger(typeof(LinuxDocumentConverter));
+        private readonly DrawToolProvider _toolProvider;
 
         public LinuxDocumentConverter()
         {
-            var directory = DirectoryProvider.GetCurrentDirectory();
-            _mutoolPath = GetMutoolPath(directory);
+            _toolProvider = new DrawToolProvider(_logger);
         }
-
-        //public bool IsConverted(string filename, int page)
-        //{
-        //    var outputDir = GetOutputDir(filename);
-        //    var resultPath = Path.Combine(outputDir, $"page_{page}.png");
-        //    return File.Exists(resultPath);
-        //}
 
         public byte[] ConvertPage(string fileName, int page)
         {
-            var outputDir = GetImageOutputDir(fileName);
-            var pageName = $"page_{page}.png";
-            var drawResultPath = Path.Combine(outputDir, pageName);
-            
-            var process = new Process()
+            var tool = _toolProvider.GetDrawTool();
+            var arguments = tool.GetArguments(fileName, page, out var drawResultPath);
+            RunDrawProcess(tool.ToolName, arguments);
+
+            var bytes = FileToBytes(drawResultPath);
+            DeleteFileSave(drawResultPath);
+            return bytes;
+        }
+
+        public byte[] ConvertPage(byte[] content, int page)
+        {
+            var filename = SaveFile(content);
+            var result = ConvertPage(filename, page);
+            DeleteFileSave(filename);
+            return result;
+        }
+
+        private void RunDrawProcess(string toolName, string arguments)
+        {
+            var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = _mutoolPath,
-                    Arguments = $"-o {drawResultPath} {fileName} {page}",
+                    FileName = toolName,
+                    Arguments = arguments,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -42,28 +49,20 @@ namespace DocumentRender.DocumentConverter
             };
             process.Start();
             var result = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
             _logger.InfoFormat(result);
-            //var resultPath = Path.Combine(outputDir, $"page_{page}.png");
-            //_logger.Debug(resultPath);
-            var bytes = FileToBytes(drawResultPath);
-            File.Delete(drawResultPath);
-            return bytes;
+
+            process.WaitForExit();
         }
 
-        //public byte[] GetConvertedPage(string filename, int page)
-        //{
-        //    var outputDir = GetOutputDir(filename);
-        //    var imageFilename = Path.Combine(outputDir, $"page_{page}.png");
+        private string SaveFile(byte[] content)
+        {
+            var tempDirectory = DirectoryProvider.GetCurrentTempDirectory();
+            var xpsFilename = Path.Combine(tempDirectory, Guid.NewGuid() + ".xps");
+            using (var fileStream = File.Create(xpsFilename))
+                fileStream.Write(content, 0, content.Length);
 
-        //    if (File.Exists(imageFilename))
-        //    {
-        //        using (var fileStream = File.OpenRead(imageFilename))
-        //            return fileStream.ToByteArray();
-        //    }
-
-        //    return null;
-        //}
+            return xpsFilename;
+        }
 
         private static byte[] FileToBytes(string fileName)
         {
@@ -75,18 +74,16 @@ namespace DocumentRender.DocumentConverter
             }
         }
 
-        private string GetMutoolPath(string directory)
+        private void DeleteFileSave(string filename)
         {
-            return Path.Combine(directory, "external", "mudraw");
-        }
-
-        private string GetImageOutputDir(string fileName)
-        {
-            var resultDir = Path.GetDirectoryName(fileName);
-            if (!Directory.Exists(resultDir))
-                Directory.CreateDirectory(resultDir);
-
-            return resultDir;
+            try
+            {
+                File.Delete(filename);
+            }
+            catch
+            {
+                // ignored
+            }
         }
     }
 }

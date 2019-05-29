@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using DocumentRender.DocumentConverter;
 
 namespace DocumentRender
@@ -12,11 +13,20 @@ namespace DocumentRender
             _converterFactory = converterFactory;
         }
 
+        public byte[] RenderPage(byte[] content, int page)
+        {
+            if (content == null)
+                return null;
+
+            var converter = _converterFactory.GetDocumentConverter();
+            var converted = converter.ConvertPage(content, page);
+            return converted;
+        }
+
         public void Dispose()
         {
             Dispose(true);
         }
-
 
         protected virtual void Dispose(bool bDisposing)
         {
@@ -27,42 +37,5 @@ namespace DocumentRender
                 GC.SuppressFinalize(this);
             }
         }
-
-        //public Bitmap RenderFirstPage(string fileName)
-        //{
-
-        //    using (var stream = File.OpenRead(fileName))
-        //    {
-        //        return RenderFirstPage(stream);
-        //    }
-        //}
-
-        public byte[] RenderPage(string fileName, int page)
-        {
-            var converter = _converterFactory.GetDocumentConverter();
-            return converter.ConvertPage(fileName, page);
-        }
-
-        //private Bitmap RenderFirstPage(Stream xpsStream)
-        //{
-        //    Bitmap result = null;
-        //    using (var tileManager = new TilesManager(xpsStream))
-        //    {
-        //        for (var i = 0; i < tileManager.PageCount; i++)
-        //        {
-        //            int pageWidth = 0, pageHeight = 0;
-        //            tileManager.LoadPage(i, ref pageWidth, ref pageHeight, false);
-        //            var tile = new Tile
-        //            {
-        //                PageNum = i,
-        //                Height = pageHeight,
-        //                Width = pageWidth,
-        //                Scale = 0.5
-        //            };
-        //            result = tileManager.GetPage(tile, false);
-        //        }
-        //    }
-        //    return result;
-        //}
     }
 }

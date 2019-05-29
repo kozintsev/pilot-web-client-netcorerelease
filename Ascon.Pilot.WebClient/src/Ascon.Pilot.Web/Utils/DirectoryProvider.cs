@@ -16,5 +16,7 @@ namespace Ascon.Pilot.Web.Utils
 
             return directory;
         }
+
+        public static string CurrentDirectory => AppDomain.CurrentDomain.BaseDirectory;
     }
 }

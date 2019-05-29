@@ -1,32 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Ascon.Pilot.Transport;
 using Ascon.Pilot.Web.Utils;
-using DocumentRender;
 
 namespace Ascon.Pilot.Web.Models.Store
 {
     public interface IStore
     {
-        byte[] GetImageFile(IRepository repository, Guid id, int size, string extension, int page);
+        byte[] GetImageFile(Guid id, int page);
+        void PutImageFileAsync(Guid id, byte[] buffer, int page);
     }
 
     class Store : IStore
     {
-        private readonly IDocumentRender _render;
+        private readonly object _lock = new object();
 
-        public Store(IDocumentRender render)
-        {
-            _render = render;
-        }
-
-        public byte[] GetImageFile(IRepository repository, Guid id, int size, string extension, int page)
+        public byte[] GetImageFile(Guid id, int page)
         {
             var png = $"page_{page}.png";
-            var tempDirectory = DirectoryProvider.GetThumbnailsDirectory();
+            var tempDirectory = GetStorageDirectory();
 
             var imageFilename = Path.Combine(tempDirectory, id.ToString(), png);
             if (File.Exists(imageFilename))
@@ -35,21 +28,25 @@ namespace Ascon.Pilot.Web.Models.Store
                     return fileStream.ToByteArray();
             }
 
-            var file = repository.GetFileChunk(id, 0, size);
-            if (file == null)
-                return null;
+            return null;
+        }
 
-            if (!extension.Contains("xps"))
-                return null;
+        public void PutImageFileAsync(Guid id, byte[] buffer, int page)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                lock (_lock)
+                {
+                    var png = $"page_{page}.png";
+                    var storeDirectory = GetStorageDirectory();
+                    var imageDir = Path.Combine(storeDirectory, id.ToString());
+                    if (!Directory.Exists(imageDir))
+                        Directory.CreateDirectory(imageDir);
 
-            var fileName = $"{id}{extension}";
-            var xpsFilename = Path.Combine(tempDirectory, fileName);
-            using (var fileStream = File.Create(xpsFilename))
-                fileStream.Write(file, 0, file.Length);
-
-            var thumbnailContent = _render.RenderPage(xpsFilename, page);
-            Save(thumbnailContent, imageFilename);
-            return thumbnailContent;
+                    var filename = Path.Combine(imageDir, png);
+                    Save(buffer, filename);
+                }
+            });
         }
 
         private void Save(byte[] bytes, string filename)
@@ -60,6 +57,15 @@ namespace Ascon.Pilot.Web.Models.Store
 
             using (var fileStream = File.Create(filename))
                 fileStream.Write(bytes, 0, bytes.Length);
+        }
+
+        private string GetStorageDirectory()
+        {
+            var directory = Path.Combine(DirectoryProvider.CurrentDirectory, "storage");
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            return directory;
         }
     }
 }

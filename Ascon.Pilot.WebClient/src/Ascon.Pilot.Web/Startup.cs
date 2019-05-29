@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Ascon.Pilot.Web.Models;
 using Ascon.Pilot.Web.Models.Store;
 using DocumentRender;
@@ -28,8 +27,7 @@ namespace Ascon.Pilot.Web
             // Set up configuration sources.  
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json");
+                .AddJsonFile("appsettings.json");
             this.Configuration = builder.Build();
         }
 
@@ -55,9 +53,9 @@ namespace Ascon.Pilot.Web
 
             //
             services.AddSingleton<IContextHolder, ContextHolder>();
-            services.AddScoped<IDocumentConverterFactory, DocumentConverterFactory>();
+            services.AddSingleton<IDocumentConverterFactory, DocumentConverterFactory>();
             services.AddScoped<IDocumentRender, DocumentRender.DocumentRender>();
-            services.AddScoped<IStore, Store>();
+            services.AddSingleton<IStore, Store>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

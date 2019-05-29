@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace DocumentRender.DocumentConverter
 {
@@ -7,6 +8,14 @@ namespace DocumentRender.DocumentConverter
         public byte[] ConvertPage(string fileName, int page)
         {
             using (var stream = File.OpenRead(fileName))
+            {
+                return RenderFirstPageInBytes(stream, page);
+            }
+        }
+
+        public byte[] ConvertPage(byte[] content, int page)
+        {
+            using (var stream = new MemoryStream(content))
             {
                 return RenderFirstPageInBytes(stream, page);
             }
