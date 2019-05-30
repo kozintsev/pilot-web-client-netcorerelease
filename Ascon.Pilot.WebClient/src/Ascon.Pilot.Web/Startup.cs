@@ -54,7 +54,7 @@ namespace Ascon.Pilot.Web
             //
             services.AddSingleton<IContextHolder, ContextHolder>();
             services.AddSingleton<IDocumentConverterFactory, DocumentConverterFactory>();
-            services.AddScoped<IDocumentRender, DocumentRender.DocumentRender>();
+            services.AddSingleton<IDocumentRender, DocumentRender.DocumentRender>();
             services.AddSingleton<IStore, Store>();
         }
 
@@ -75,11 +75,6 @@ namespace Ascon.Pilot.Web
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
-            //loggerFactory.AddNLog();
-            //loggerFactory.AddConsole(IConfiguration.GetSection("Logging"));
-            //loggerFactory.AddDebug();
-            //loggerFactory.ConfigureNLog(Path.Combine(env.ContentRootPath, "nlog.config"));
 
             app.UseSession();
             app.UseStaticFiles();

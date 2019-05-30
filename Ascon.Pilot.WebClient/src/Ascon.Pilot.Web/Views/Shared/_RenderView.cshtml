@@ -1,0 +1,13 @@
+﻿
+@model Ascon.Pilot.Web.ViewModels.RenderViewModel
+
+<div class="row">
+    @{
+        for (var i = 1; i <= Model.GetPages(); i++)
+        {
+            var href = Url.Action("Page", "Files", new {id = Model.FileId, page = i});
+            <img src="@href" alt="" />
+        }
+    }
+</div>
+

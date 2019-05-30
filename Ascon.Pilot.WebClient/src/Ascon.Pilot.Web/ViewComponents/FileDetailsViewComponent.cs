@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.Models.Store;
 using Ascon.Pilot.Web.ViewModels;
+using DocumentRender;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +16,14 @@ namespace Ascon.Pilot.Web.ViewComponents
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(FileDetailsViewComponent));
         private readonly IContextHolder _contextHolder;
+        private readonly IDocumentRender _render;
+        private readonly IStore _store;
 
-        public FileDetailsViewComponent(IContextHolder contextHolder)
+        public FileDetailsViewComponent(IContextHolder contextHolder, IDocumentRender render, IStore store)
         {
             _contextHolder = contextHolder;
+            _render = render;
+            _store = store;
         }
 
         /// <summary>
@@ -34,6 +40,10 @@ namespace Ascon.Pilot.Web.ViewComponents
                 {
                     try
                     {
+                        ViewBag.Repository = _contextHolder.GetContext(HttpContext).Repository;
+                        ViewBag.DocumentRender = _render;
+                        ViewBag.Store = _store;
+
                         var model = new FilesDetailsViewModel(docId, version, _contextHolder.GetContext(HttpContext).Repository, panelType);
                         return View("FileDetails", model);
                     }

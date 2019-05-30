@@ -57,9 +57,8 @@ namespace Ascon.Pilot.Web.Controllers
             FilesPanelType type = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
             model.CurrentFolderId = id.Value;
             model.FilesPanelType = type;
-            ViewBag.FilesPanelType = type;
-            ViewBag.IsSource = isSource;
-            
+            SetViewBagParams(isSource, type);
+
             var context = _contextHolder.GetContext(HttpContext);
             var repo = context.Repository;
             var node = repo.GetObjects(new[] { id.Value }).FirstOrDefault();
@@ -77,6 +76,16 @@ namespace Ascon.Pilot.Web.Controllers
             }
             
             return View(model);
+        }
+
+        private void SetViewBagParams(bool isSource, FilesPanelType type)
+        {
+            ViewBag.FilesPanelType = type;
+            ViewBag.IsSource = isSource;
+
+            ViewBag.Repository = _contextHolder.GetContext(HttpContext).Repository;
+            ViewBag.DocumentRender = _render;
+            ViewBag.Store = _store;
         }
 
         public async Task<IActionResult> GetNodeChilds(Guid id)
@@ -258,23 +267,22 @@ namespace Ascon.Pilot.Web.Controllers
             const string svgContentType = "image/svg+xml";
             var virtualFileResult = File(Url.Content("~/images/file.svg"), svgContentType);
 
-            if (size >= 10 * 1024 * 1024)
+            if (size >= 10 * 1024 * 1024 || size == 0)
                 return virtualFileResult;
 
             try
             {
-                var page = 1;
                 var repository = _contextHolder.GetContext(HttpContext).Repository;
-                var image = _store.GetImageFile(id, page);
+                var image = _store.GetThumbnail(id);
                 if (image != null)
-                    return File(image, pngContentType, $"page_{page}.png");
+                    return File(image, pngContentType, "image.png");
 
                 var fileContent = repository.GetFileChunk(id, 0, size);
-                image = _render.RenderPage(fileContent, page);
+                image = _render.RenderPage(fileContent, 1);
                 if (image != null)
-                    _store.PutImageFileAsync(id, image, page);
+                    _store.PutThumbnailAsync(id, image);
 
-                return File(image, pngContentType, $"page_{page}.png");
+                return File(image, pngContentType, "image.png");
 
             }
             catch (RenderToolNotFoundException ex)
@@ -287,6 +295,18 @@ namespace Ascon.Pilot.Web.Controllers
                 _logger.Error("Unable to generate thumbnail for file", ex);
             }
             
+            return virtualFileResult;
+        }
+
+        public IActionResult Page(Guid id, int page)
+        {
+            const string pngContentType = "image/png";
+            var image = _store.GetImageFile(id, page);
+            if (image != null)
+                return File(image, pngContentType, $"page_{page}.png");
+
+            const string svgContentType = "image/svg+xml";
+            var virtualFileResult = File(Url.Content("~/images/file.svg"), svgContentType);
             return virtualFileResult;
         }
 
@@ -335,6 +355,15 @@ namespace Ascon.Pilot.Web.Controllers
         //        _logger.LogWarning(1, "Unable to upload file", ex);
         //    }
         //    return RedirectToAction("Index", new { id = folderId });
+        //}
+
+        //public IActionResult GetFilePages()
+        //{
+        //    //const string pngContentType = "image/png";
+        //    //const string svgContentType = "image/svg+xml";
+        //    //var virtualFileResult = File(Url.Content("~/images/file.svg"), svgContentType);
+        //    //var result = new List<string>();
+        //    //return PartialView("_RenderView", new RenderViewModel(result));
         //}
     }
 }

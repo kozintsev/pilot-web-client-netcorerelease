@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using DocumentRender.DocumentConverter;
 
@@ -20,6 +21,16 @@ namespace DocumentRender
 
             var converter = _converterFactory.GetDocumentConverter();
             var converted = converter.ConvertPage(content, page);
+            return converted;
+        }
+
+        public IEnumerable<byte[]> RenderPages(byte[] content)
+        {
+            if (content == null)
+                return null;
+
+            var converter = _converterFactory.GetDocumentConverter();
+            var converted = converter.ConvertFile(content);
             return converted;
         }
 

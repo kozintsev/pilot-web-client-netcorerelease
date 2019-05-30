@@ -1,4 +1,6 @@
-﻿@model Ascon.Pilot.Web.ViewModels.FilesDetailsViewModel
+﻿@using Ascon.Pilot.Web.ViewModels
+@using Microsoft.AspNetCore.Http
+@model Ascon.Pilot.Web.ViewModels.FilesDetailsViewModel
 
 
 @if (Model == null || Model.File == null)
@@ -83,10 +85,7 @@ else
             <div class="file-details-body">
                 <div class="row">
                     <div class="col-md-8 col-sm-12" id="fileDetailsContent">
-                        @{
-                            var href = Url.Action("Image", "Files", new {id = Model.FileId, size = Model.Size, extension = Model.Extension, typeId = Model.ObjectTypeId});
-                        }
-                        <img class="img-responsive center-block" src="@href" alt="@Model.Name"/>
+                        @await Html.PartialAsync("_RenderView", new RenderViewModel(Model.File, ViewBag.Repository, ViewBag.DocumentRender, ViewBag.Store));
                     </div>
                     @{
                         var name = Model.Name;

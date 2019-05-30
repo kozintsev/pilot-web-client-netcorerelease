@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace DocumentRender.DocumentConverter
@@ -18,6 +19,14 @@ namespace DocumentRender.DocumentConverter
             using (var stream = new MemoryStream(content))
             {
                 return RenderFirstPageInBytes(stream, page);
+            }
+        }
+
+        public IEnumerable<byte[]> ConvertFile(byte[] content)
+        {
+            using (var stream = new MemoryStream(content))
+            {
+                return LoadPages(stream);
             }
         }
 
@@ -46,6 +55,29 @@ namespace DocumentRender.DocumentConverter
                 Scale = scale
             };
             var result = tileManager.GetPageInBytes(tile, false);
+            return result;
+        }
+
+        private IEnumerable<byte[]> LoadPages(Stream xpsStream)
+        {
+            var result = new List<byte[]>();
+            using (var tileManager = new TilesManager(xpsStream))
+            {
+                for (var i = 0; i < tileManager.PageCount; i++)
+                {
+                    int pageWidth = 0, pageHeight = 0;
+                    tileManager.LoadPage(i, ref pageWidth, ref pageHeight, false);
+                    var tile = new Tile
+                    {
+                        PageNum = i,
+                        Height = pageHeight,
+                        Width = pageWidth,
+                        Scale = 1.0
+                    };
+                    var page = tileManager.GetPageInBytes(tile, false);
+                    result.Add(page);
+                }
+            }
             return result;
         }
     }

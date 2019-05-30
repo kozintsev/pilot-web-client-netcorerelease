@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using log4net;
@@ -32,6 +33,11 @@ namespace DocumentRender.DocumentConverter
             var result = ConvertPage(filename, page);
             DeleteFileSave(filename);
             return result;
+        }
+
+        public IEnumerable<byte[]> ConvertFile(byte[] content)
+        {
+            throw new NotImplementedException();
         }
 
         private void RunDrawProcess(string toolName, string arguments)
