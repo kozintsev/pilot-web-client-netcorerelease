@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,14 +26,12 @@ namespace Ascon.Pilot.Web.Models.Store
 
         public Store()
         {
-            _tempDirectory = GetStorageDirectory();
+            _tempDirectory = Path.Combine(DirectoryProvider.CurrentDirectory, "storage");
         }
 
         public byte[] GetThumbnail(Guid id)
         {
-            var png = "image.png";
-
-            var imageFilename = Path.Combine(_tempDirectory, id + "_thumb", png);
+            var imageFilename = GetThumbnailPath(id);
             if (File.Exists(imageFilename))
             {
                 using (var fileStream = File.OpenRead(imageFilename))
@@ -50,13 +47,7 @@ namespace Ascon.Pilot.Web.Models.Store
             {
                 lock (_lock)
                 {
-                    var png = "image.png";
-                    var storeDirectory = GetStorageDirectory();
-                    var imageDir = Path.Combine(storeDirectory, id + "_thumb");
-                    if (!Directory.Exists(imageDir))
-                        Directory.CreateDirectory(imageDir);
-
-                    var filename = Path.Combine(imageDir, png);
+                    var filename = GetThumbnailPath(id);
                     Save(buffer, filename);
                 }
             });
@@ -64,25 +55,21 @@ namespace Ascon.Pilot.Web.Models.Store
 
         public byte[] GetImageFile(Guid id, int page)
         {
-            var png = $"page_{page}.png";
-            
-            var imageFilename = Path.Combine(_tempDirectory, id.ToString(), png);
-            if (File.Exists(imageFilename))
-            {
-                using (var fileStream = File.OpenRead(imageFilename))
-                    return fileStream.ToByteArray();
-            }
+            var imageFilename = GetImagePath(id, page);
+            if (!File.Exists(imageFilename))
+                return null;
 
-            return null;
+            using (var fileStream = File.OpenRead(imageFilename))
+                return fileStream.ToByteArray();
         }
 
         public int GetFilePageCount(Guid fileId)
         {
-            var imagesDirectory = Path.Combine(_tempDirectory, fileId.ToString());
-            if (!Directory.Exists(imagesDirectory))
+            var imagesStoreDirectory = GetImagesStorageDirectory(fileId);
+            if (!Directory.Exists(imagesStoreDirectory))
                 return 0;
 
-            var pages = Directory.EnumerateFiles(imagesDirectory);
+            var pages = Directory.EnumerateFiles(imagesStoreDirectory);
             return pages.Count();
         }
 
@@ -92,13 +79,7 @@ namespace Ascon.Pilot.Web.Models.Store
             {
                 lock (_lock)
                 {
-                    var png = $"page_{page}.png";
-                    var storeDirectory = GetStorageDirectory();
-                    var imageDir = Path.Combine(storeDirectory, id.ToString());
-                    if (!Directory.Exists(imageDir))
-                        Directory.CreateDirectory(imageDir);
-
-                    var filename = Path.Combine(imageDir, png);
+                    var filename = GetImagePath(id, page);
                     Save(buffer, filename);
                 }
             });
@@ -114,13 +95,25 @@ namespace Ascon.Pilot.Web.Models.Store
                 fileStream.Write(bytes, 0, bytes.Length);
         }
 
-        private string GetStorageDirectory()
+        private string GetImagesStorageDirectory(Guid imageFileId)
         {
-            var directory = Path.Combine(DirectoryProvider.CurrentDirectory, "storage");
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+            var root = Path.Combine(_tempDirectory, "pages");
+            var path = DirectoryProvider.GetStoragePath(imageFileId, root);
+            return path;
+        }
 
-            return directory;
+        private string GetThumbnailPath(Guid imageFileId)
+        {
+            var root = Path.Combine(_tempDirectory, "thumbs");
+            var thumbnailPath = DirectoryProvider.GetStoragePath(imageFileId, root);
+            var filename = Path.Combine(thumbnailPath, "thumb.png");
+            return filename;
+        }
+
+        private string GetImagePath(Guid imageFileId, int page)
+        {
+            var imageDir = GetImagesStorageDirectory(imageFileId);
+            return Path.Combine(imageDir, $"page_{page}.png");
         }
     }
 }
