@@ -85,7 +85,7 @@ else
             <div class="file-details-body">
                 <div class="row">
                     <div class="col-md-8 col-sm-12" id="fileDetailsContent">
-                        @await Html.PartialAsync("_RenderView", new RenderViewModel(Model.File, ViewBag.Repository, ViewBag.DocumentRender, ViewBag.Store));
+                        @await Html.PartialAsync("_RenderView", new RenderViewModel(Model.File, ViewBag.Repository, ViewBag.DocumentRender, ViewBag.Store))
                     </div>
                     @{
                         var name = Model.Name;
