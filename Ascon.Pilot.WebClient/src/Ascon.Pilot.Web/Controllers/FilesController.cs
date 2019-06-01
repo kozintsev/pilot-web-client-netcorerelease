@@ -64,14 +64,11 @@ namespace Ascon.Pilot.Web.Controllers
             var node = repo.GetObjects(new[] { id.Value }).FirstOrDefault();
             if (node != null)
             {
-                if (node.Children?.Any() == false)
+                var nodeType = repo.GetType(node.TypeId);
+                if (nodeType.HasFiles)
                 {
-                    var nodeType = repo.GetType(node.TypeId);
-                    if (nodeType.HasFiles)
-                    {
-                        model.Version = version;
-                        model.IsFile = true;
-                    }
+                    model.Version = version;
+                    model.IsFile = true;
                 }
             }
             

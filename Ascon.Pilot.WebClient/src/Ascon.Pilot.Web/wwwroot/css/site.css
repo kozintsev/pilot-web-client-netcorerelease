@@ -537,16 +537,10 @@ img.doc-page {
     position: relative;
 }
 
-.file-grid .file-card .file-card-icon div {
-    position: relative;
-    height: 70px;
-    width: 70px;
-}
-
 .file-grid .file-card.with-thumbnail .file-card-icon img {
     border: 1px solid #DFE4E8;
     height: 70px;
-    width: 70px;
+    max-width: 70%;
     display: block;
     margin: auto;
 }

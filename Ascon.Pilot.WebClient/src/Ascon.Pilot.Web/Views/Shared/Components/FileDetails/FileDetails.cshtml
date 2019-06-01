@@ -1,4 +1,5 @@
-﻿@using Ascon.Pilot.Web.ViewModels
+﻿@using Ascon.Pilot.Web.Utils
+@using Ascon.Pilot.Web.ViewModels
 @using Microsoft.AspNetCore.Http
 @model Ascon.Pilot.Web.ViewModels.FilesDetailsViewModel
 
@@ -52,7 +53,7 @@ else
                         @{
                             foreach (var snapshot in Model.Snapshots)
                             {
-                                var snapshotTime = new DateTimeOffset(snapshot.Created);
+                                var snapshotTime = snapshot.Created.ToDateTimeOffset();
                                 var isActive = "";
                                 var author = Model.GetPersonDisplayName(snapshot.CreatorId);
                                 var reason = "";
