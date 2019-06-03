@@ -19,8 +19,12 @@ namespace Ascon.Pilot.Web
             builder.SetBasePath(path);
             builder.AddJsonFile("appsettings.json");
             Configuration = builder.Build();
-            PilotServerUrl = Configuration.GetValue<string>("PilotServer:Url", string.Empty);
-            Database = Configuration.GetValue<string>("PilotServer:Database", string.Empty);
+            PilotServerUrl = string.IsNullOrEmpty(Program.PilotServerUrl)
+                ? Configuration.GetValue<string>("PilotServer:Url", string.Empty)
+                : Program.PilotServerUrl;
+            Database = string.IsNullOrEmpty(Program.Database)
+                ? Configuration.GetValue<string>("PilotServer:Database", string.Empty)
+                : Program.Database;
             LicenseCode = Configuration.GetValue<int>("PilotServer:LicenseCode", 103);
         }
 

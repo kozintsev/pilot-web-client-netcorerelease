@@ -10,8 +10,26 @@ namespace Ascon.Pilot.Web
 {
     public class Program
     {
+        public static string PilotServerUrl;
+        public static string Database;
+
         public static void Main(string[] args)
         {
+
+            if (args[0] == "--help" || args[0] == "-?")
+            {
+                Console.WriteLine("");              
+                Console.WriteLine("      --connectionsettings [SERVERNAME] [DATABASE]");
+                Console.WriteLine("");
+                Environment.Exit(0);
+            }
+
+            if (args[0] == "--connectionsettings" || args[0] == "-c")
+            {
+                PilotServerUrl = args[1];
+                Database = args[2];
+            }
+
             CreateWebHostBuilder(args).Build().Run();
         }
 
