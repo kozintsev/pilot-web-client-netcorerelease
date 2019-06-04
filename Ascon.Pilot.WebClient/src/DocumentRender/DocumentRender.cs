@@ -24,13 +24,13 @@ namespace DocumentRender
             return converted;
         }
 
-        public IEnumerable<byte[]> RenderPages(byte[] content)
+        public int RenderPages(byte[] content, string rootFolder)
         {
             if (content == null)
-                return null;
+                return 0;
 
             var converter = _converterFactory.GetDocumentConverter();
-            var converted = converter.ConvertFile(content);
+            var converted = converter.ConvertFileToFolder(content, rootFolder);
             return converted;
         }
 

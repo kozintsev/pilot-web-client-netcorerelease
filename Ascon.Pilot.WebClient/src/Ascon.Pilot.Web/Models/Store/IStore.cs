@@ -17,6 +17,8 @@ namespace Ascon.Pilot.Web.Models.Store
         int GetFilePageCount(Guid fileId);
 
         void PutImageFileAsync(Guid id, byte[] buffer, int page);
+
+        string GetImagesStorageDirectory(Guid id);
     }
 
     class Store : IStore
@@ -95,10 +97,13 @@ namespace Ascon.Pilot.Web.Models.Store
                 fileStream.Write(bytes, 0, bytes.Length);
         }
 
-        private string GetImagesStorageDirectory(Guid imageFileId)
+        public string GetImagesStorageDirectory(Guid imageFileId)
         {
             var root = Path.Combine(_tempDirectory, "pages");
             var path = DirectoryProvider.GetStoragePath(imageFileId, root);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
             return path;
         }
 

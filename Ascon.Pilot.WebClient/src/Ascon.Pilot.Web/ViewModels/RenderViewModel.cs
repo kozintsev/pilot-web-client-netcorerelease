@@ -48,16 +48,8 @@ namespace Ascon.Pilot.Web.ViewModels
                     return pages;
                 
                 var fileContent = _repository.GetFileChunk(_file.Body.Id, 0, (int)_file.Body.Size);
-                var contents = _documentRender.RenderPages(fileContent).ToList();
-
-                for (var i = 0; i < contents.Count; i++)
-                {
-                    var content = contents[i];
-                    var page = i + 1;
-                    _store.PutImageFileAsync(_file.Body.Id, content, page);
-                }
-
-                return contents.Count;
+                var count = _documentRender.RenderPages(fileContent, _store.GetImagesStorageDirectory(file.Body.Id));
+                return count;
             }
             catch (RenderToolNotFoundException ex)
             {

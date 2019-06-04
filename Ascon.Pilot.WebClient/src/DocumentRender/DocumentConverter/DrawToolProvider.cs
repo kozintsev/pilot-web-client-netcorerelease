@@ -52,20 +52,16 @@ namespace DocumentRender.DocumentConverter
 
         public string ToolName { get; }
 
-        public string GetArguments(string filename, int page, out string drawResultPath)
+        public string GetArguments(string filename, string outputDir, int? page)
         {
-            var outputDir = GetImageOutputDir(filename);
-            var pageName = $"{Guid.NewGuid()}_page_{page}.png";
-            drawResultPath = Path.Combine(outputDir, pageName);
+            var pageName = "page_%d.png";
+            if (page != null)
+                pageName = $"page_{page}.png";
+
+            var drawResultPath = Path.Combine(outputDir, pageName);
 
             var arguments = string.Format(_argumentsFormat, drawResultPath, filename, page);
             return arguments;
-        }
-
-        private string GetImageOutputDir(string fileName)
-        {
-            var resultDir = Path.GetDirectoryName(fileName);
-            return resultDir;
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using DocumentRender.Tools;
 using log4net;
 
 namespace DocumentRender.DocumentConverter
@@ -10,54 +11,53 @@ namespace DocumentRender.DocumentConverter
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(LinuxDocumentConverter));
         private readonly DrawToolProvider _toolProvider;
+        private readonly ToolRunner _toolRunner;
 
         public LinuxDocumentConverter()
         {
             _toolProvider = new DrawToolProvider(_logger);
-        }
-
-        public byte[] ConvertPage(string fileName, int page)
-        {
-            var tool = _toolProvider.GetDrawTool();
-            var arguments = tool.GetArguments(fileName, page, out var drawResultPath);
-            RunDrawProcess(tool.ToolName, arguments);
-
-            var bytes = FileToBytes(drawResultPath);
-            DeleteFileSave(drawResultPath);
-            return bytes;
+            _toolRunner = new ToolRunner();
         }
 
         public byte[] ConvertPage(byte[] content, int page)
         {
             var filename = SaveFile(content);
-            var result = ConvertPage(filename, page);
-            DeleteFileSave(filename);
+            var tool = _toolProvider.GetDrawTool();
+            var outputDir = GetImagesOutputDir(filename);
+            _toolRunner.Run(tool, filename, outputDir, page);
+
+            var file = Directory.GetFiles(outputDir).FirstOrDefault();
+            var result = file != null ? FileToBytes(file) : null;
+            FileSystemHelper.DeleteDirectory(outputDir);
             return result;
         }
 
         public IEnumerable<byte[]> ConvertFile(byte[] content)
         {
-            throw new NotImplementedException();
+            var filename = SaveFile(content);
+            var tool = _toolProvider.GetDrawTool();
+            var outputDir = GetImagesOutputDir(filename);
+            _toolRunner.Run(tool, filename, outputDir);
+
+            var result = new List<byte[]>();
+            foreach (var file in Directory.EnumerateFiles(outputDir))
+            {
+                var bytes = FileToBytes(file);
+                result.Add(bytes);
+            }
+
+            FileSystemHelper.DeleteDirectory(outputDir);
+            return result;
         }
 
-        private void RunDrawProcess(string toolName, string arguments)
+        public int ConvertFileToFolder(byte[] content, string rootFolder)
         {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = toolName,
-                    Arguments = arguments,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                }
-            };
-            process.Start();
-            var result = process.StandardOutput.ReadToEnd();
-            _logger.InfoFormat(result);
-
-            process.WaitForExit();
+            var filename = SaveFile(content);
+            var tool = _toolProvider.GetDrawTool();
+            _toolRunner.Run(tool, filename, rootFolder);
+            var count = GetPagesCount(rootFolder);
+            FileSystemHelper.DeleteFile(filename);
+            return count;
         }
 
         private string SaveFile(byte[] content)
@@ -80,16 +80,19 @@ namespace DocumentRender.DocumentConverter
             }
         }
 
-        private void DeleteFileSave(string filename)
+        private string GetImagesOutputDir(string fileName)
         {
-            try
-            {
-                File.Delete(filename);
-            }
-            catch
-            {
-                // ignored
-            }
+            var fileDir = Path.GetDirectoryName(fileName);
+            var resultDir = Path.Combine(fileDir, "pages");
+            if (!Directory.Exists(resultDir))
+                Directory.CreateDirectory(resultDir);
+
+            return resultDir;
+        }
+
+        private int GetPagesCount(string dir)
+        {
+            return Directory.EnumerateFiles(dir).Count();
         }
     }
 }

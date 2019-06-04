@@ -5,6 +5,6 @@ namespace DocumentRender
     public interface IDocumentRender
     {
         byte[] RenderPage(byte[] content, int page);
-        IEnumerable<byte[]> RenderPages(byte[] content);
+        int RenderPages(byte[] content, string rootFolder);
     }
 }

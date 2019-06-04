@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using DocumentRender.Tools;
 
 namespace DocumentRender.DocumentConverter
 {
     internal class WindowsDocumentConverter : IDocumentConverter
     {
-        public byte[] ConvertPage(string fileName, int page)
-        {
-            using (var stream = File.OpenRead(fileName))
-            {
-                return RenderFirstPageInBytes(stream, page);
-            }
-        }
-
         public byte[] ConvertPage(byte[] content, int page)
         {
             using (var stream = new MemoryStream(content))
@@ -27,6 +21,22 @@ namespace DocumentRender.DocumentConverter
             using (var stream = new MemoryStream(content))
             {
                 return LoadPages(stream);
+            }
+        }
+
+        public int ConvertFileToFolder(byte[] content, string rootFolder)
+        {
+            using (var stream = new MemoryStream(content))
+            {
+                var pages = LoadPages(stream).ToList();
+                for (var i = 0; i < pages.Count; i++)
+                {
+                    var page = pages[i];
+                    var filename = Path.Combine(rootFolder, $"page_{i + 1}.png");
+                    page.ToFile(filename);
+                }
+
+                return pages.Count;
             }
         }
 

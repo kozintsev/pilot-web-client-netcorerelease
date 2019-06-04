@@ -4,8 +4,8 @@ namespace DocumentRender.DocumentConverter
 {
     public interface IDocumentConverter
     {
-        byte[] ConvertPage(string fileName, int page);
         byte[] ConvertPage(byte[] content, int page);
-        IEnumerable<byte[]> ConvertFile(byte[] content);
+        //IEnumerable<byte[]> ConvertFile(byte[] content);
+        int ConvertFileToFolder(byte[] content, string rootFolder);
     }
 }

@@ -10,7 +10,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>DocumentRender</RootNamespace>
-    <Version>2.0.4</Version>
+    <Version>2.0.5</Version>
     <Authors />
   </PropertyGroup>
 
