@@ -7,7 +7,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MuPDF
+namespace DocumentRender
 {
     internal class TilesManager : IDisposable
     {

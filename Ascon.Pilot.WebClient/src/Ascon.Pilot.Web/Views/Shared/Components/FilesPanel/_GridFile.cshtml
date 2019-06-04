@@ -14,9 +14,7 @@
                 href = Url.Action("Image", "Files", new { id = Model.FileId, size = Model.Size, extension = Model.Extension, typeId = Model.ObjectTypeId });
             }
         }
-        <div class="center-block">
             <img src="@href" alt="@Model.Name"/>
-        </div>
         <input name="objectsIds" type="checkbox" value="@Model.ObjectId" onclick="processCheckboxClick(this);event.cancelBubble=true;"/>
     </div>
     <div class="file-card-name">

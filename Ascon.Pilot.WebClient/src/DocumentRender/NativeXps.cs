@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace MuPDF
+namespace DocumentRender
 {
     internal class NativeXps : IDisposable
     {

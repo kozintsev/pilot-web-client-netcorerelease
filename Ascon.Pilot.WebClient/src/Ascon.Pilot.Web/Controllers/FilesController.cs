@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using Ascon.Pilot.DataClasses;
 using Ascon.Pilot.Web.Extensions;
 using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.Models.Store;
 using Ascon.Pilot.Web.ViewComponents;
 using Ascon.Pilot.Web.ViewModels;
+using DocumentRender;
+using DocumentRender.DocumentConverter;
 using log4net;
-using log4net.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using MuPDF;
 
 namespace Ascon.Pilot.Web.Controllers
 {
@@ -23,13 +23,14 @@ namespace Ascon.Pilot.Web.Controllers
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(FilesController));
         private readonly IContextHolder _contextHolder;
-        private readonly MuPdf _mu;
-        private readonly object _lockObj = new object();
+        private readonly IStore _store;
+        private readonly IDocumentRender _render;
 
-        public FilesController(IContextHolder contextHolder)
+        public FilesController(IContextHolder contextHolder, IStore store, IDocumentRender render)
         {
             _contextHolder = contextHolder;
-            _mu = new MuPdf();
+            _store = store;
+            _render = render;
         }
 
         public IActionResult ChangeFilesPanelType(string returnUrl, FilesPanelType type)
@@ -56,26 +57,32 @@ namespace Ascon.Pilot.Web.Controllers
             FilesPanelType type = HttpContext.Session.GetSessionValues<FilesPanelType>(SessionKeys.FilesPanelType);
             model.CurrentFolderId = id.Value;
             model.FilesPanelType = type;
-            ViewBag.FilesPanelType = type;
-            ViewBag.IsSource = isSource;
-            
+            SetViewBagParams(isSource, type);
+
             var context = _contextHolder.GetContext(HttpContext);
             var repo = context.Repository;
             var node = repo.GetObjects(new[] { id.Value }).FirstOrDefault();
             if (node != null)
             {
-                if (node.Children?.Any() == false)
+                var nodeType = repo.GetType(node.TypeId);
+                if (nodeType.HasFiles)
                 {
-                    var nodeType = repo.GetType(node.TypeId);
-                    if (nodeType.HasFiles)
-                    {
-                        model.Version = version;
-                        model.IsFile = true;
-                    }
+                    model.Version = version;
+                    model.IsFile = true;
                 }
             }
             
             return View(model);
+        }
+
+        private void SetViewBagParams(bool isSource, FilesPanelType type)
+        {
+            ViewBag.FilesPanelType = type;
+            ViewBag.IsSource = isSource;
+
+            ViewBag.Repository = _contextHolder.GetContext(HttpContext).Repository;
+            ViewBag.DocumentRender = _render;
+            ViewBag.Store = _store;
         }
 
         public async Task<IActionResult> GetNodeChilds(Guid id)
@@ -257,42 +264,46 @@ namespace Ascon.Pilot.Web.Controllers
             const string svgContentType = "image/svg+xml";
             var virtualFileResult = File(Url.Content("~/images/file.svg"), svgContentType);
 
-            if (size >= 10 * 1024 * 1024)
+            if (size >= 10 * 1024 * 1024 || size == 0)
                 return virtualFileResult;
-            var repository = _contextHolder.GetContext(HttpContext).Repository;
-            var file = repository.GetFileChunk(id, 0, size);
 
             try
             {
-                if (file != null)
-                {
-                    if (extension.Contains("xps"))
-                    {
-                        //int page = 1;
-                        //int dpi = 150;
-                        //var RenderType = RenderType.;
-                        //bool rotateAuto = false;
-                        //string password = "";
+                var repository = _contextHolder.GetContext(HttpContext).Repository;
+                var image = _store.GetThumbnail(id);
+                if (image != null)
+                    return File(image, pngContentType, "image.png");
 
-                        var fileName = $"{id}{extension}";
-                        var directory = "tmp/";
-                        if (!Directory.Exists(directory))
-                            Directory.CreateDirectory(directory);
-                        using (var fileStream = System.IO.File.Create(directory + fileName))
-                            fileStream.Write(file, 0, file.Length);
-                        lock (_lockObj)
-                        {
-                            byte[] thumbnailContent = _mu.RenderFirstPageInBytes(directory + fileName);
-                            System.IO.File.Delete(directory + fileName);
-                            return File(thumbnailContent, pngContentType, $"{id}.png");
-                        }
-                    }
-                }
+                var fileContent = repository.GetFileChunk(id, 0, size);
+                image = _render.RenderPage(fileContent, 1);
+                if (image != null)
+                    _store.PutThumbnailAsync(id, image);
+
+                return File(image, pngContentType, "image.png");
+
+            }
+            catch (RenderToolNotFoundException ex)
+            {
+                _logger.Error(ex);
+                //todo show error ui
             }
             catch (Exception ex)
             {
                 _logger.Error("Unable to generate thumbnail for file", ex);
             }
+            
+            return virtualFileResult;
+        }
+
+        public IActionResult Page(Guid id, int page)
+        {
+            const string pngContentType = "image/png";
+            var image = _store.GetImageFile(id, page);
+            if (image != null)
+                return File(image, pngContentType, $"page_{page}.png");
+
+            const string svgContentType = "image/svg+xml";
+            var virtualFileResult = File(Url.Content("~/images/file.svg"), svgContentType);
             return virtualFileResult;
         }
 
@@ -341,6 +352,15 @@ namespace Ascon.Pilot.Web.Controllers
         //        _logger.LogWarning(1, "Unable to upload file", ex);
         //    }
         //    return RedirectToAction("Index", new { id = folderId });
+        //}
+
+        //public IActionResult GetFilePages()
+        //{
+        //    //const string pngContentType = "image/png";
+        //    //const string svgContentType = "image/svg+xml";
+        //    //var virtualFileResult = File(Url.Content("~/images/file.svg"), svgContentType);
+        //    //var result = new List<string>();
+        //    //return PartialView("_RenderView", new RenderViewModel(result));
         //}
     }
 }

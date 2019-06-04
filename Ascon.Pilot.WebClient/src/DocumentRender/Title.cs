@@ -1,4 +1,4 @@
-﻿namespace MuPDF
+﻿namespace DocumentRender
 {
     public class Tile
     {

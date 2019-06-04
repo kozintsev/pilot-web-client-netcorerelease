@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 using Ascon.Pilot.Web.Models;
+using Ascon.Pilot.Web.Models.Store;
+using DocumentRender;
+using DocumentRender.DocumentConverter;
+using log4net;
+using log4net.Config;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,10 +21,13 @@ namespace Ascon.Pilot.Web
     {
         public Startup(IHostingEnvironment env)
         {
+            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            XmlConfigurator.Configure(logRepository, new FileInfo("logger.config"));
+
             // Set up configuration sources.  
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json");
             this.Configuration = builder.Build();
         }
 
@@ -44,6 +53,9 @@ namespace Ascon.Pilot.Web
 
             //
             services.AddSingleton<IContextHolder, ContextHolder>();
+            services.AddSingleton<IDocumentConverterFactory, DocumentConverterFactory>();
+            services.AddSingleton<IDocumentRender, DocumentRender.DocumentRender>();
+            services.AddSingleton<IStore, Store>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,14 +72,9 @@ namespace Ascon.Pilot.Web
                 //     thrown in the following middlewares.
                 //   Use the HTTP Strict Transport Security Protocol (HSTS)
                 //     Middleware.
-                app.UseExceptionHandler("/Shared/Error");
+                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
-            //loggerFactory.AddNLog();
-            //loggerFactory.AddConsole(IConfiguration.GetSection("Logging"));
-            //loggerFactory.AddDebug();
-            //loggerFactory.ConfigureNLog(Path.Combine(env.ContentRootPath, "nlog.config"));
 
             app.UseSession();
             app.UseStaticFiles();
