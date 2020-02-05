@@ -41,7 +41,11 @@ namespace Ascon.Pilot.Web.Models
                     return _initiator;
 
                 if (InitiatorPosition != null)
+                {
+                    //var InitiatorPositionId = _source.Attributes["initiator"].Value;
+                    //_initiator = _repository.GetPersonOnOrganisationUnit((int) InitiatorPositionId);
                     _initiator = _repository.GetPersonOnOrganisationUnit(InitiatorPosition.Id);
+                }
 
                 return _initiator;
             }
@@ -87,11 +91,17 @@ namespace Ascon.Pilot.Web.Models
             {
                 if (_initiatorPosition == null)
                 {
-                    DValue initiatorPositionId;
-                    if (_source.Attributes.TryGetValue(SystemAttributes.TASK_INITIATOR_POSITION, out initiatorPositionId))
+                    if (_source.Attributes.TryGetValue(SystemAttributes.TASK_INITIATOR_POSITION, out var initiatorPositionId))
                     {
-                        int pos;
-                        if (int.TryParse(initiatorPositionId.ToString(), out pos))
+                        if (int.TryParse(initiatorPositionId.ToString(), out var pos))
+                        {
+                            _initiatorPosition = _repository.GetOrganisationUnit(pos);
+                        }
+                    }
+
+                    if (_source.Attributes.TryGetValue("initiator", out initiatorPositionId))
+                    {
+                        if (int.TryParse(initiatorPositionId.ToString(), out var pos))
                         {
                             _initiatorPosition = _repository.GetOrganisationUnit(pos);
                         }
@@ -105,9 +115,8 @@ namespace Ascon.Pilot.Web.Models
         {
             get
             {
-                DValue role;
-                _source.Attributes.TryGetValue(SystemAttributes.TASK_EXECUTOR_ROLE, out role);
-                return role.StrValue;
+                _source.Attributes.TryGetValue(SystemAttributes.TASK_EXECUTOR_ROLE, out var role);
+                return role != null ? role.StrValue : string.Empty;
             }
         }
 
@@ -168,8 +177,12 @@ namespace Ascon.Pilot.Web.Models
         {
             get
             {
-                DValue title;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_TITLE, out title))
+                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_TITLE, out var title))
+                {
+                    return title == null ? string.Empty : title.ToString();
+                }
+
+                if (_source.Attributes.TryGetValue("title", out title))
                 {
                     return title == null ? string.Empty : title.ToString();
                 }

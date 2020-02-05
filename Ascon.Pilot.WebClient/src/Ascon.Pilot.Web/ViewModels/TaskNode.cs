@@ -11,8 +11,8 @@ namespace Ascon.Pilot.Web.ViewModels
             var task = new DTask(obj, repository);
             Id = task.Id;
             Title = task.DisplayTitle;
-            Initiator = task.GetInitiatorDisplayName(repository);
-            Executor = task.GetExecutorDisplayName(repository);
+            //Initiator = task.GetInitiatorDisplayName(repository);
+            //Executor = task.GetExecutorDisplayName(repository);
             State = task.State;
             Kind = task.Kind;
             DateOfAssignment = task.DateOfAssignment;
