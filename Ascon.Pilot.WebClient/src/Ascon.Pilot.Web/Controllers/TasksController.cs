@@ -127,23 +127,41 @@ namespace Ascon.Pilot.Web.Controllers
                 {
                     list.Add(type);
                 }
-
             }
-
             return list;
-
         }
 
         private async Task<IEnumerable<TaskNode>> GetItemsAsync(int id, int results)
         {
             var context = _contextHolder.GetContext(HttpContext);
-            
 
             var repo = _contextHolder.GetContext(HttpContext).Repository;
 
             var list1 = GetMTypeTask(repo);
 
             var searchDefinition = new DSearchDefinition
+            {
+                Id = Guid.NewGuid(),
+                Request =
+                {
+                    MaxResults = results,
+                    SearchKind = (SearchKind)id,
+                    SortDefinitions =
+                    {
+                        new DSortDefinition {
+                            Ascending = false,
+                            FieldName = SystemAttributes.TASK_DATE_OF_ASSIGNMENT
+
+                        }
+                    }
+                }
+            };
+
+
+            var searchResults = await repo.Search(searchDefinition);
+            
+
+            var searchDefinition2 = new DSearchDefinition
             {
                 Id = Guid.NewGuid(),
                 Request =
@@ -162,16 +180,35 @@ namespace Ascon.Pilot.Web.Controllers
                 }
             };
 
+            var searchResults2 = await repo.Search(searchDefinition2);
 
-
-            var searchResults = await repo.Search(searchDefinition);
-            if (searchResults.Found == null)
+            if (searchResults.Found == null && searchResults2.Found == null)
             {
                 return new List<TaskNode>();
             }
 
-            var objects = repo.GetObjects(searchResults.Found.ToArray());
-            var list = objects.Select(o => new TaskNode(o, repo));
+            var objects2 = repo.GetObjects(searchResults2.Found.ToArray())
+                .Where(x => x.ParentId == Guid.Empty).ToList();
+
+
+            if (searchResults.Found != null)
+            {
+                var objects = repo.GetObjects(searchResults.Found.ToArray());
+
+
+                foreach (var item in objects)
+                {
+                    if (objects2.Any(x => x.Id == item.Id))
+                    {
+                        objects2.Remove(objects2.First(y => y.Id == item.Id));
+                    }
+                }
+
+                objects2.AddRange(objects);
+            }
+    
+
+            var list = objects2.Select(o => new TaskNode(o, repo));
             return list;
         }
 

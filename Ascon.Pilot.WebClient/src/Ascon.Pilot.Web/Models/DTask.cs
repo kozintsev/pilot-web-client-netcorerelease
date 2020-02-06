@@ -321,7 +321,6 @@ namespace Ascon.Pilot.Web.Models
 
                 if (_source.Attributes.TryGetValue("state", out state))
                 {
-                    var tt = "11748395-9a9f-48cd-92ef-7a9d9f776ecd";
                     return TaskState.Assigned;
                 }
 
