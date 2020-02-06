@@ -308,10 +308,15 @@ namespace Ascon.Pilot.Web.Models
         {
             get
             {
-                DValue state;
-                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_STATE, out state))
+                if (_source.Attributes.TryGetValue(SystemAttributes.TASK_STATE, out var state))
                 {
                     return (TaskState)Enum.Parse(typeof(TaskState), state.ToString());
+                }
+
+                if (_source.Attributes.TryGetValue("state", out state))
+                {
+                    var tt = "11748395-9a9f-48cd-92ef-7a9d9f776ecd";
+                    return TaskState.Assigned;
                 }
 
                 return TaskState.None;

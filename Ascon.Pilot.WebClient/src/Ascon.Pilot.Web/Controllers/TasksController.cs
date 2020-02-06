@@ -111,6 +111,30 @@ namespace Ascon.Pilot.Web.Controllers
             }
         }
 
+        private List<MType> GetMTypeTask(IRepository repo)
+        {
+            var types = repo.GetTypes();
+            var currentType = new MType();
+            var list = new List<MType>();
+            foreach (var type in types)
+            {
+                if (type.Name == "task_simple")
+                {
+                    currentType = type;
+                }
+
+                if (type.Name == "workflow_approval")
+                {
+                    currentType = type;
+                }
+
+                list.Add(currentType);
+            }
+
+            return list;
+
+        }
+
         private async Task<IEnumerable<TaskNode>> GetItemsAsync(int id, int results)
         {
             var context = _contextHolder.GetContext(HttpContext);
@@ -118,15 +142,7 @@ namespace Ascon.Pilot.Web.Controllers
 
             var repo = _contextHolder.GetContext(HttpContext).Repository;
 
-            //var types = repo.GetTypes();
-            //MType currenType = new MType();
-            //foreach (var type in types)
-            //{
-            //    if (type.Name == "root_tasks")
-            //    {
-            //        currenType = type;
-            //    }
-            //}
+            var list = GetMTypeTask(repo);
 
             var searchDefinition = new DSearchDefinition
             {
