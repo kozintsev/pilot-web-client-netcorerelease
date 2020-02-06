@@ -71,13 +71,19 @@ namespace Ascon.Pilot.Web.Models
             {
                 if (_executorPosition == null)
                 {
-                    DValue executorPositionId;
-                    if (_source.Attributes.TryGetValue(SystemAttributes.TASK_EXECUTOR_POSITION, out executorPositionId))
+                    if (_source.Attributes.TryGetValue(SystemAttributes.TASK_EXECUTOR_POSITION, out var executorPositionId))
                     {
-                        int pos;
-                        if (int.TryParse(executorPositionId.ToString(), out pos))
+                        if (int.TryParse(executorPositionId.ToString(), out var pos))
                         {
                             _executorPosition = _repository.GetOrganisationUnit(pos);
+                        }
+                    }
+
+                    if (_source.Attributes.TryGetValue("executor", out executorPositionId))
+                    {
+                        if (int.TryParse(executorPositionId.ToString(), out var pos))
+                        {
+                            _initiatorPosition = _repository.GetOrganisationUnit(pos);
                         }
                     }
                 }
@@ -371,6 +377,10 @@ namespace Ascon.Pilot.Web.Models
             string name;
             if (task.Executor == null)
             {
+                if (task.ExecutorPosition == null)
+                {
+                    return string.Empty;
+                }
                 name = repository.GetOrganisationUnit(task.ExecutorPosition.Id).Title;
             }
             else
